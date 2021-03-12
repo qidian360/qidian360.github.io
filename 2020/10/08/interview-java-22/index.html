@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>22.线程安全之 synchronized 和 ReentrantLock + 面试题 | 当我遇上你</title>
+  <meta name="description" content="线程安全之 synchronized 和 ReentrantLock + 面试题 前面我们介绍了很多关于多线程的内容，在多线程中有一个很重要的课题需要我们攻克，那就是线程安全问题。线程安全问题指的是在多线程中，各线程之间因为同时操作所产生的数据污染或其他非预期的程序运行结果。  线程安全  1）非线程安全事例 比如 A 和 B 同时给 C 转账的问题，假设 C 原本余额有 100 元，A 给 C">
+<meta property="og:type" content="article">
+<meta property="og:title" content="22.线程安全之 synchronized 和 ReentrantLock + 面试题">
+<meta property="og:url" content="https://idea360.cn/2020/10/08/interview-java-22/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="线程安全之 synchronized 和 ReentrantLock + 面试题 前面我们介绍了很多关于多线程的内容，在多线程中有一个很重要的课题需要我们攻克，那就是线程安全问题。线程安全问题指的是在多线程中，各线程之间因为同时操作所产生的数据污染或其他非预期的程序运行结果。  线程安全  1）非线程安全事例 比如 A 和 B 同时给 C 转账的问题，假设 C 原本余额有 100 元，A 给 C">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images.gitbook.cn/fa62f4a0-d506-11e9-b16d-918a441334dc">
+<meta property="article:published_time" content="2020-10-08T06:08:54.000Z">
+<meta property="article:modified_time" content="2020-10-08T06:23:12.335Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="面试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://images.gitbook.cn/fa62f4a0-d506-11e9-b16d-918a441334dc">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2020/10/08/interview-java-22/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E4%B9%8B-synchronized-%E5%92%8C-reentrantlock-%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text"> 线程安全之 synchronized 和 ReentrantLock + 面试题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="toc-number">1.1.</span> <span class="toc-text"> 线程安全</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E9%9D%9E%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E4%BA%8B%E4%BE%8B"><span class="toc-number">1.1.1.</span> <span class="toc-text"> 1）非线程安全事例</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E9%9D%9E%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.1.2.</span> <span class="toc-text"> 2）非线程安全代码示例</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">1.1.3.</span> <span class="toc-text"> 3）线程安全的解决方案</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E5%92%8C%E9%94%81"><span class="toc-number">1.2.</span> <span class="toc-text"> 线程同步和锁</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1synchronized"><span class="toc-number">1.2.1.</span> <span class="toc-text"> 1）synchronized</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-synchronized-%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.2.1.1.</span> <span class="toc-text"> ① synchronized 介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-synchronized-%E4%BD%BF%E7%94%A8"><span class="toc-number">1.2.1.2.</span> <span class="toc-text"> ② synchronized 使用</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-synchronized-%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="toc-number">1.2.1.3.</span> <span class="toc-text"> ③ synchronized 实现原理</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2reentrantlock"><span class="toc-number">1.2.2.</span> <span class="toc-text"> 2）ReentrantLock</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-reentrantlock-%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.2.2.1.</span> <span class="toc-text"> ① ReentrantLock 介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-reentrantlock-%E4%BD%BF%E7%94%A8"><span class="toc-number">1.2.2.2.</span> <span class="toc-text"> ② ReentrantLock 使用</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-reentrantlock-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">1.2.2.3.</span> <span class="toc-text"> ③ ReentrantLock 注意事项</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="toc-number">1.3.</span> <span class="toc-text"> 相关面试题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1reentrantlock-%E5%B8%B8%E7%94%A8%E7%9A%84%E6%96%B9%E6%B3%95%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-number">1.3.1.</span> <span class="toc-text"> 1.ReentrantLock 常用的方法有哪些？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2reentrantlock-%E6%9C%89%E5%93%AA%E4%BA%9B%E4%BC%98%E5%8A%BF"><span class="toc-number">1.3.2.</span> <span class="toc-text"> 2.ReentrantLock 有哪些优势？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3reentrantlock-%E6%80%8E%E4%B9%88%E5%88%9B%E5%BB%BA%E5%85%AC%E5%B9%B3%E9%94%81"><span class="toc-number">1.3.3.</span> <span class="toc-text"> 3.ReentrantLock 怎么创建公平锁？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%E5%85%AC%E5%B9%B3%E9%94%81%E5%92%8C%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81%E6%9C%89%E5%93%AA%E4%BA%9B%E5%8C%BA%E5%88%AB"><span class="toc-number">1.3.4.</span> <span class="toc-text"> 4.公平锁和非公平锁有哪些区别？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5reentrantlock-%E4%B8%AD-lock-%E5%92%8C-lockinterruptibly-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">1.3.5.</span> <span class="toc-text"> 5.ReentrantLock 中 lock() 和 lockInterruptibly() 有什么区别？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6synchronized-%E5%92%8C-reentrantlock-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">1.3.6.</span> <span class="toc-text"> 6.synchronized 和 ReentrantLock 有什么区别？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7reentrantlock-%E7%9A%84-trylock3-timeunitseconds-%E8%A1%A8%E7%A4%BA%E7%AD%89%E5%BE%85-3-%E7%A7%92%E5%90%8E%E5%86%8D%E5%8E%BB%E8%8E%B7%E5%8F%96%E9%94%81%E8%BF%99%E7%A7%8D%E8%AF%B4%E6%B3%95%E5%AF%B9%E5%90%97%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="toc-number">1.3.7.</span> <span class="toc-text"> 7.ReentrantLock 的 tryLock(3, TimeUnit.SECONDS) 表示等待 3 秒后再去获取锁，这种说法对吗？为什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8synchronized-%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%94%81%E5%8D%87%E7%BA%A7%E7%9A%84"><span class="toc-number">1.3.8.</span> <span class="toc-text"> 8.synchronized 是如何实现锁升级的？</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.4.</span> <span class="toc-text"> 总结</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-interview-java-22" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      22.线程安全之 synchronized 和 ReentrantLock + 面试题
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/10/08/interview-java-22/" class="article-date">
+	  <time datetime="2020-10-08T06:08:54.000Z" itemprop="datePublished">2020-10-08</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Java%E9%9D%A2%E8%AF%95%E5%85%A8%E8%A7%A3%E6%9E%90/">Java面试全解析</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/java/" rel="tag">java</a>, <a class="article-tag-link-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2020/10/08/interview-java-22/" class="leancloud_visitors"  data-flag-title="22.线程安全之 synchronized 和 ReentrantLock + 面试题">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/10/08/interview-java-22/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="线程安全之-synchronized-和-reentrantlock-面试题"><a class="markdownIt-Anchor" href="#线程安全之-synchronized-和-reentrantlock-面试题"></a> 线程安全之 synchronized 和 ReentrantLock + 面试题</h2>
+<p>前面我们介绍了很多关于多线程的内容，在多线程中有一个很重要的课题需要我们攻克，那就是线程安全问题。线程安全问题指的是在多线程中，各线程之间因为同时操作所产生的数据污染或其他非预期的程序运行结果。</p>
+<h3 id="线程安全"><a class="markdownIt-Anchor" href="#线程安全"></a> 线程安全</h3>
+<h4 id="1非线程安全事例"><a class="markdownIt-Anchor" href="#1非线程安全事例"></a> 1）非线程安全事例</h4>
+<p>比如 A 和 B 同时给 C 转账的问题，假设 C 原本余额有 100 元，A 给 C 转账 100 元，正在转的途中，此时 B 也给 C 转了 100 元，这个时候 A 先给 C 转账成功，余额变成了 200 元，但 B 事先查询 C 的余额是 100 元，转账成功之后也是 200 元。当 A 和 B 都给 C 转账完成之后，余额还是 200 元，而非预期的 300 元，这就是典型的线程安全的问题。</p>
+<p><img src="https://images.gitbook.cn/fa62f4a0-d506-11e9-b16d-918a441334dc" alt="enter image description here" /></p>
+<h4 id="2非线程安全代码示例"><a class="markdownIt-Anchor" href="#2非线程安全代码示例"></a> 2）非线程安全代码示例</h4>
+<p>上面的内容没看明白没关系，下面来看非线程安全的具体代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ThreadSafeTest</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> number = <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        Thread thread1 = <span class="keyword">new</span> Thread(() -&gt; addNumber());</span><br><span class="line">        Thread thread2 = <span class="keyword">new</span> Thread(() -&gt; addNumber());</span><br><span class="line">        thread1.start();</span><br><span class="line">        thread2.start();</span><br><span class="line">        thread1.join();</span><br><span class="line">        thread2.join();</span><br><span class="line">        System.out.println(<span class="string">&quot;number：&quot;</span> + number);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">addNumber</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line">            ++number;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<p>以上程序执行结果如下：</p>
+<blockquote>
+<p>number：12085</p>
+</blockquote>
+<p>每次执行的结果可能略有差异，不过几乎不会等于（正确的）累计之和 20000。</p>
+<h4 id="3线程安全的解决方案"><a class="markdownIt-Anchor" href="#3线程安全的解决方案"></a> 3）线程安全的解决方案</h4>
+<p>线程安全的解决方案有以下几个维度：</p>
+<ul>
+<li>数据不共享，单线程可见，比如 ThreadLocal 就是单线程可见的；</li>
+<li>使用线程安全类，比如 StringBuffer 和 JUC（java.util.concurrent）下的安全类（后面文章会专门介绍）；</li>
+<li>使用同步代码或者锁。</li>
+</ul>
+<h3 id="线程同步和锁"><a class="markdownIt-Anchor" href="#线程同步和锁"></a> 线程同步和锁</h3>
+<h4 id="1synchronized"><a class="markdownIt-Anchor" href="#1synchronized"></a> 1）synchronized</h4>
+<h5 id="1-synchronized-介绍"><a class="markdownIt-Anchor" href="#1-synchronized-介绍"></a> <strong>① synchronized 介绍</strong></h5>
+<p>synchronized 是 Java 提供的同步机制，当一个线程正在操作同步代码块（synchronized 修饰的代码）时，其他线程只能阻塞等待原有线程执行完再执行。</p>
+<h5 id="2-synchronized-使用"><a class="markdownIt-Anchor" href="#2-synchronized-使用"></a> <strong>② synchronized 使用</strong></h5>
+<p>synchronized 可以修饰代码块或者方法，示例代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 修饰代码块</span></span><br><span class="line"><span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">    <span class="comment">// do something</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 修饰方法</span></span><br><span class="line"><span class="function"><span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// do something</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<p>使用 synchronized 完善本文开头的非线程安全的代码。</p>
+<p><strong>方法一：使用 synchronized 修饰代码块</strong>，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ThreadSafeTest</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> number = <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        Thread sThread = <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">            <span class="comment">// 同步代码</span></span><br><span class="line">            <span class="keyword">synchronized</span> (ThreadSafeTest.class) &#123;</span><br><span class="line">                addNumber();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        Thread sThread2 = <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">            <span class="comment">// 同步代码</span></span><br><span class="line">            <span class="keyword">synchronized</span> (ThreadSafeTest.class) &#123;</span><br><span class="line">                addNumber();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        sThread.start();</span><br><span class="line">        sThread2.start();</span><br><span class="line">        sThread.join();</span><br><span class="line">        sThread2.join();</span><br><span class="line">        System.out.println(<span class="string">&quot;number：&quot;</span> + number);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">addNumber</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line">            ++number;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<p>以上程序执行结果如下：</p>
+<blockquote>
+<p>number：20000</p>
+</blockquote>
+<p><strong>方法二：使用 synchronized 修饰方法</strong>，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ThreadSafeTest</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> number = <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        Thread sThread = <span class="keyword">new</span> Thread(() -&gt; addNumber());</span><br><span class="line">        Thread sThread2 = <span class="keyword">new</span> Thread(() -&gt; addNumber());</span><br><span class="line">        sThread.start();</span><br><span class="line">        sThread2.start();</span><br><span class="line">        sThread.join();</span><br><span class="line">        sThread2.join();</span><br><span class="line">        System.out.println(<span class="string">&quot;number：&quot;</span> + number);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">addNumber</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line">            ++number;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<p>以上程序执行结果如下：</p>
+<blockquote>
+<p>number：20000</p>
+</blockquote>
+<h5 id="3-synchronized-实现原理"><a class="markdownIt-Anchor" href="#3-synchronized-实现原理"></a> <strong>③ synchronized 实现原理</strong></h5>
+<p>synchronized 本质是通过进入和退出的 Monitor 对象来实现线程安全的。<br />
+以下面代码为例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SynchronizedTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (SynchronizedTest.class) &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;Java&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<p>当我们使用 javap 编译之后，生成的字节码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">Compiled from <span class="string">&quot;SynchronizedTest.java&quot;</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">com</span>.<span class="title">interview</span>.<span class="title">other</span>.<span class="title">SynchronizedTest</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> com.interview.other.SynchronizedTest();</span><br><span class="line">    Code:</span><br><span class="line">       <span class="number">0</span>: aload_0</span><br><span class="line">       1: invokespecial #1                  // Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</span><br><span class="line">       <span class="number">4</span>: <span class="keyword">return</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(java.lang.String[])</span></span>;</span><br><span class="line">    Code:</span><br><span class="line">       0: ldc           #2                  // class com/interview/other/SynchronizedTest</span><br><span class="line">       <span class="number">2</span>: dup</span><br><span class="line">       <span class="number">3</span>: astore_1</span><br><span class="line">       <span class="number">4</span>: monitorenter</span><br><span class="line">       5: getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line">       8: ldc           #4                  // String Java</span><br><span class="line">      10: invokevirtual #5                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V</span><br><span class="line">      <span class="number">13</span>: aload_1</span><br><span class="line">      <span class="number">14</span>: monitorexit</span><br><span class="line">      <span class="number">15</span>: goto          <span class="number">23</span></span><br><span class="line">      <span class="number">18</span>: astore_2</span><br><span class="line">      <span class="number">19</span>: aload_1</span><br><span class="line">      <span class="number">20</span>: monitorexit</span><br><span class="line">      <span class="number">21</span>: aload_2</span><br><span class="line">      <span class="number">22</span>: athrow</span><br><span class="line">      <span class="number">23</span>: <span class="keyword">return</span></span><br><span class="line">    Exception table:</span><br><span class="line">       from    to  target type</span><br><span class="line">           <span class="number">5</span>    <span class="number">15</span>    <span class="number">18</span>   any</span><br><span class="line">          <span class="number">18</span>    <span class="number">21</span>    <span class="number">18</span>   any</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<p>可以看出 JVM（Java 虚拟机）是采用 monitorenter 和 monitorexit 两个指令来实现同步的，monitorenter 指令相当于加锁，monitorexit 相当于释放锁。而 monitorenter 和 monitorexit 就是基于 Monitor 实现的。</p>
+<h4 id="2reentrantlock"><a class="markdownIt-Anchor" href="#2reentrantlock"></a> 2）ReentrantLock</h4>
+<h5 id="1-reentrantlock-介绍"><a class="markdownIt-Anchor" href="#1-reentrantlock-介绍"></a> <strong>① ReentrantLock 介绍</strong></h5>
+<p>ReentrantLock（再入锁）是 Java 5 提供的锁实现，它的功能和 synchronized 基本相同。再入锁通过调用 lock() 方法来获取锁，通过调用 unlock() 来释放锁。</p>
+<h5 id="2-reentrantlock-使用"><a class="markdownIt-Anchor" href="#2-reentrantlock-使用"></a> <strong>② ReentrantLock 使用</strong></h5>
+<p><strong>ReentrantLock 基础使用</strong>，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Lock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">lock.lock();    <span class="comment">// 加锁</span></span><br><span class="line"><span class="comment">// 业务代码...</span></span><br><span class="line">lock.unlock();    <span class="comment">// 解锁</span></span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<p>使用 ReentrantLock 完善本文开头的非线程安全代码，请参考以下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LockTest</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> number = <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        <span class="comment">// ReentrantLock 使用</span></span><br><span class="line">        Lock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">        Thread thread1 = <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                lock.lock();</span><br><span class="line">                addNumber();</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                lock.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        Thread thread2 = <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                lock.lock();</span><br><span class="line">                addNumber();</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                lock.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        thread1.start();</span><br><span class="line">        thread2.start();</span><br><span class="line">        thread1.join();</span><br><span class="line">        thread2.join();</span><br><span class="line">        System.out.println(<span class="string">&quot;number：&quot;</span> + number);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">addNumber</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line">            ++number;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<p><strong>尝试获取锁</strong></p>
+<p>ReentrantLock 可以无阻塞尝试访问锁，使用 tryLock() 方法，具体使用如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">Lock reentrantLock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line"><span class="comment">// 线程一</span></span><br><span class="line"><span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        reentrantLock.lock();</span><br><span class="line">        Thread.sleep(<span class="number">2</span> * <span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        reentrantLock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;).start();</span><br><span class="line"><span class="comment">// 线程二</span></span><br><span class="line"><span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Thread.sleep(<span class="number">1</span> * <span class="number">1000</span>);</span><br><span class="line">        System.out.println(reentrantLock.tryLock());</span><br><span class="line">        Thread.sleep(<span class="number">2</span> * <span class="number">1000</span>);</span><br><span class="line">        System.out.println(reentrantLock.tryLock());</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;).start();</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<p>以上代码执行结果如下：</p>
+<blockquote>
+<p>false</p>
+<p>true</p>
+</blockquote>
+<p><strong>尝试一段时间内获取锁</strong></p>
+<p>tryLock() 有一个扩展方法 tryLock(long timeout, TimeUnit unit) 用于尝试一段时间内获取锁，具体实现代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">Lock reentrantLock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line"><span class="comment">// 线程一</span></span><br><span class="line"><span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        reentrantLock.lock();</span><br><span class="line">        System.out.println(LocalDateTime.now());</span><br><span class="line">        Thread.sleep(<span class="number">2</span> * <span class="number">1000</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        reentrantLock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;).start();</span><br><span class="line"><span class="comment">// 线程二</span></span><br><span class="line"><span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Thread.sleep(<span class="number">1</span> * <span class="number">1000</span>);</span><br><span class="line">        System.out.println(reentrantLock.tryLock(<span class="number">3</span>, TimeUnit.SECONDS));</span><br><span class="line">        System.out.println(LocalDateTime.now());</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;).start();</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<p>以上代码执行结果如下：</p>
+<blockquote>
+<p>2019-07-05 19:53:51</p>
+<p>true</p>
+<p>2019-07-05 19:53:53</p>
+</blockquote>
+<p>可以看出锁在休眠了 2 秒之后，就被线程二直接获取到了，所以说 tryLock(long timeout, TimeUnit unit) 方法内的 timeout 参数指的是获取锁的最大等待时间。</p>
+<h5 id="3-reentrantlock-注意事项"><a class="markdownIt-Anchor" href="#3-reentrantlock-注意事项"></a> ③ ReentrantLock 注意事项</h5>
+<p>使用 ReentrantLock 一定要记得释放锁，否则该锁会被永久占用。</p>
+<h3 id="相关面试题"><a class="markdownIt-Anchor" href="#相关面试题"></a> 相关面试题</h3>
+<h4 id="1reentrantlock-常用的方法有哪些"><a class="markdownIt-Anchor" href="#1reentrantlock-常用的方法有哪些"></a> 1.ReentrantLock 常用的方法有哪些？</h4>
+<p>答：ReentrantLock 常见方法如下：</p>
+<ul>
+<li>lock()：用于获取锁</li>
+<li>unlock()：用于释放锁</li>
+<li>tryLock()：尝试获取锁</li>
+<li>getHoldCount()：查询当前线程执行 lock() 方法的次数</li>
+<li>getQueueLength()：返回正在排队等待获取此锁的线程数</li>
+<li>isFair()：该锁是否为公平锁</li>
+</ul>
+<h4 id="2reentrantlock-有哪些优势"><a class="markdownIt-Anchor" href="#2reentrantlock-有哪些优势"></a> 2.ReentrantLock 有哪些优势？</h4>
+<p>答：ReentrantLock 具备非阻塞方式获取锁的特性，使用 tryLock() 方法。ReentrantLock 可以中断获得的锁，使用 lockInterruptibly() 方法当获取锁之后，如果所在的线程被中断，则会抛出异常并释放当前获得的锁。ReentrantLock 可以在指定时间范围内获取锁，使用 tryLock(long timeout,TimeUnit unit) 方法。</p>
+<h4 id="3reentrantlock-怎么创建公平锁"><a class="markdownIt-Anchor" href="#3reentrantlock-怎么创建公平锁"></a> 3.ReentrantLock 怎么创建公平锁？</h4>
+<p>答：new ReentrantLock() 默认创建的为非公平锁，如果要创建公平锁可以使用 new ReentrantLock(true)。</p>
+<h4 id="4公平锁和非公平锁有哪些区别"><a class="markdownIt-Anchor" href="#4公平锁和非公平锁有哪些区别"></a> 4.公平锁和非公平锁有哪些区别？</h4>
+<p>答：公平锁指的是线程获取锁的顺序是按照加锁顺序来的，而非公平锁指的是抢锁机制，先 lock() 的线程不一定先获得锁。</p>
+<h4 id="5reentrantlock-中-lock-和-lockinterruptibly-有什么区别"><a class="markdownIt-Anchor" href="#5reentrantlock-中-lock-和-lockinterruptibly-有什么区别"></a> 5.ReentrantLock 中 lock() 和 lockInterruptibly() 有什么区别？</h4>
+<p>答：lock() 和 lockInterruptibly() 的区别在于获取线程的途中如果所在的线程中断，lock() 会忽略异常继续等待获取线程，而 lockInterruptibly() 则会抛出 InterruptedException 异常。<br />
+题目解析：执行以下代码，在线程中分别使用 lock() 和 lockInterruptibly() 查看运行结果，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"> Lock interruptLock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">interruptLock.lock();</span><br><span class="line">Thread thread = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            interruptLock.lock();</span><br><span class="line">            <span class="comment">//interruptLock.lockInterruptibly();  // java.lang.InterruptedException</span></span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">thread.start();</span><br><span class="line">TimeUnit.SECONDS.sleep(<span class="number">1</span>);</span><br><span class="line">thread.interrupt();</span><br><span class="line">TimeUnit.SECONDS.sleep(<span class="number">3</span>);</span><br><span class="line">System.out.println(<span class="string">&quot;Over&quot;</span>);</span><br><span class="line">System.exit(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<p>执行以下代码会发现使用 lock() 时程序不会报错，运行完成直接退出；而使用 lockInterruptibly() 则会抛出异常 java.lang.InterruptedException，这就说明：在获取线程的途中如果所在的线程中断，lock() 会忽略异常继续等待获取线程，而 lockInterruptibly() 则会抛出 InterruptedException 异常。</p>
+<h4 id="6synchronized-和-reentrantlock-有什么区别"><a class="markdownIt-Anchor" href="#6synchronized-和-reentrantlock-有什么区别"></a> 6.synchronized 和 ReentrantLock 有什么区别？</h4>
+<p>答：synchronized 和 ReentrantLock 都是保证线程安全的，它们的区别如下：</p>
+<ul>
+<li>ReentrantLock 使用起来比较灵活，但是必须有释放锁的配合动作；</li>
+<li>ReentrantLock 必须手动获取与释放锁，而 synchronized 不需要手动释放和开启锁；</li>
+<li>ReentrantLock 只适用于代码块锁，而 synchronized 可用于修饰方法、代码块等；</li>
+<li>ReentrantLock 性能略高于 synchronized。</li>
+</ul>
+<h4 id="7reentrantlock-的-trylock3-timeunitseconds-表示等待-3-秒后再去获取锁这种说法对吗为什么"><a class="markdownIt-Anchor" href="#7reentrantlock-的-trylock3-timeunitseconds-表示等待-3-秒后再去获取锁这种说法对吗为什么"></a> 7.ReentrantLock 的 tryLock(3, TimeUnit.SECONDS) 表示等待 3 秒后再去获取锁，这种说法对吗？为什么？</h4>
+<p>答：不对，tryLock(3, TimeUnit.SECONDS) 表示获取锁的最大等待时间为 3 秒，期间会一直尝试获取，而不是等待 3 秒之后再去获取锁。</p>
+<h4 id="8synchronized-是如何实现锁升级的"><a class="markdownIt-Anchor" href="#8synchronized-是如何实现锁升级的"></a> 8.synchronized 是如何实现锁升级的？</h4>
+<p>答：在锁对象的对象头里面有一个 threadid 字段，在第一次访问的时候 threadid 为空，JVM（Java 虚拟机）让其持有偏向锁，并将 threadid 设置为其线程 id，再次进入的时候会先判断 threadid 是否尤其线程 id 一致，如果一致则可以直接使用，如果不一致，则升级偏向锁为轻量级锁，通过自旋循环一定次数来获取锁，不会阻塞，执行一定次数之后就会升级为重量级锁，进入阻塞，整个过程就是锁升级的过程。</p>
+<h3 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h3>
+<p>本文介绍了线程同步的两种方式 synchronized 和 ReentrantLock，其中 ReentrantLock 使用更加灵活，效率也率高，不过 ReentrantLock 只能修饰代码块，使用 ReentrantLock 需要开发者手动释放锁，如果忘记释放则该锁会一直被占用。synchronized 使用场景更广，可以修饰普通方法、静态方法和代码块等。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2020/10/08/interview-java-22/" title="22.线程安全之 synchronized 和 ReentrantLock + 面试题" target="_blank" rel="external">https://idea360.cn/2020/10/08/interview-java-22/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/10/08/interview-java-23/" title="23.Java 并发包中的高级同步工具 + 面试题"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/10/08/interview-java-21/" title="21.ThreadLocal 有什么用 + 面试题"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

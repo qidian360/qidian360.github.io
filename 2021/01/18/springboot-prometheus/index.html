@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>SpringBoot监控之prometheus | 当我遇上你</title>
+  <meta name="description" content="前言 配置监控时，我们首要面对的是监控数据如果采集的问题。一般我们可以把监控指标分为两类：基础监控和业务监控。监控的目的无非是为了解服务运行状况、发现服务故障和帮助定位故障原因。  基础监控 包括 CPU、内存、磁盘、端口和进程等机器、网络的操作系统级别的信息。通常情况下，成熟的监控系统（例如开源的 Prometheus、Zabbix 等）均会提供基础监控项的采集能力，这里不做过多介绍。但需要注">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot监控之prometheus">
+<meta property="og:url" content="https://idea360.cn/2021/01/18/springboot-prometheus/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="前言 配置监控时，我们首要面对的是监控数据如果采集的问题。一般我们可以把监控指标分为两类：基础监控和业务监控。监控的目的无非是为了解服务运行状况、发现服务故障和帮助定位故障原因。  基础监控 包括 CPU、内存、磁盘、端口和进程等机器、网络的操作系统级别的信息。通常情况下，成熟的监控系统（例如开源的 Prometheus、Zabbix 等）均会提供基础监控项的采集能力，这里不做过多介绍。但需要注">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/mac-node-exporter.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/img-prometheus-targets.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/prometheus-datasource-1.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/prometheus-datasource-2.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/prometheus-datasource-3.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/grafana-import-dashboard-1.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/img-grafana-dashboard-8919.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/grafana-dashboard-1860.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/img-grafana-dashboard-4701.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/img-grafana-dashboard-10280.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/img-grafana-dashboard-12856.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/grafana-windows.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/api-performance.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/api-slow.png">
+<meta property="article:published_time" content="2021-01-18T12:57:45.000Z">
+<meta property="article:modified_time" content="2021-03-03T15:30:28.501Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="springboot">
+<meta property="article:tag" content="prometheus">
+<meta property="article:tag" content="监控">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/idea360/oss/raw/master/images/mac-node-exporter.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2021/01/18/springboot-prometheus/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text"> 前言</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E7%9B%91%E6%8E%A7"><span class="toc-number">1.1.</span> <span class="toc-text"> 基础监控</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%9A%E5%8A%A1%E7%9B%91%E6%8E%A7"><span class="toc-number">1.2.</span> <span class="toc-text"> 业务监控</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%BB%84%E9%87%91%E6%8C%87%E6%A0%87"><span class="toc-number">1.3.</span> <span class="toc-text"> 黄金指标</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%90%AD%E5%BB%BA%E7%8E%AF%E5%A2%83"><span class="toc-number">2.</span> <span class="toc-text"> 搭建环境</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#springboot%E9%85%8D%E7%BD%AE"><span class="toc-number">3.</span> <span class="toc-text"> springboot配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#maven%E4%BE%9D%E8%B5%96"><span class="toc-number">3.1.</span> <span class="toc-text"> maven依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#applicationyml"><span class="toc-number">3.2.</span> <span class="toc-text"> application.yml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E7%B1%BB%E6%B3%A8%E5%85%A5bean"><span class="toc-number">3.3.</span> <span class="toc-text"> 启动类注入bean</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#metrix%E6%8C%87%E6%A0%87"><span class="toc-number">3.4.</span> <span class="toc-text"> metrix指标</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E6%8C%87%E6%A0%87"><span class="toc-number">4.</span> <span class="toc-text"> 系统指标</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEprometheus"><span class="toc-number">5.</span> <span class="toc-text"> 配置prometheus</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEgrafana"><span class="toc-number">6.</span> <span class="toc-text"> 配置grafana</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%95%B0%E6%8D%AE%E6%BA%90"><span class="toc-number">6.1.</span> <span class="toc-text"> 配置数据源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE"><span class="toc-number">6.2.</span> <span class="toc-text"> 主题配置</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#docker%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">7.</span> <span class="toc-text"> Docker环境搭建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%9A%E5%8A%A1%E6%8C%87%E6%A0%87"><span class="toc-number">8.</span> <span class="toc-text"> 业务指标</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#metrics-%E7%A7%8D%E7%B1%BB"><span class="toc-number">8.1.</span> <span class="toc-text"> Metrics 种类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="toc-number">8.2.</span> <span class="toc-text"> 表达式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87-%E6%8E%A5%E5%8F%A3%E5%B9%B3%E5%9D%87%E5%93%8D%E5%BA%94%E6%97%B6%E9%97%B4"><span class="toc-number">8.3.</span> <span class="toc-text"> 性能指标-接口平均响应时间</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%91%E7%8E%B0%E6%85%A2%E6%8E%A5%E5%8F%A3"><span class="toc-number">8.4.</span> <span class="toc-text"> 发现慢接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%B1%E8%B4%A5%E6%8E%A5%E5%8F%A3"><span class="toc-number">8.5.</span> <span class="toc-text"> 失败接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#qps"><span class="toc-number">8.6.</span> <span class="toc-text"> QPS</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#aop%E9%87%87%E9%9B%86metrix%E6%8C%87%E6%A0%87"><span class="toc-number">9.</span> <span class="toc-text"> AOP采集metrix指标</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8B%A6%E6%88%AA%E5%99%A8%E9%87%87%E9%9B%86metrix%E6%8C%87%E6%A0%87"><span class="toc-number">10.</span> <span class="toc-text"> 拦截器采集metrix指标</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">11.</span> <span class="toc-text"> 最后</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">12.</span> <span class="toc-text"> 参考</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-springboot-prometheus" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      SpringBoot监控之prometheus
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/01/18/springboot-prometheus/" class="article-date">
+	  <time datetime="2021-01-18T12:57:45.000Z" itemprop="datePublished">2021-01-18</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/spring/">spring</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/prometheus/" rel="tag">prometheus</a>, <a class="article-tag-link-link" href="/tags/springboot/" rel="tag">springboot</a>, <a class="article-tag-link-link" href="/tags/%E7%9B%91%E6%8E%A7/" rel="tag">监控</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2021/01/18/springboot-prometheus/" class="leancloud_visitors"  data-flag-title="SpringBoot监控之prometheus">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/01/18/springboot-prometheus/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
+<p>配置监控时，我们首要面对的是监控数据如果采集的问题。一般我们可以把监控指标分为两类：基础监控和业务监控。监控的目的无非是为了解服务运行状况、发现服务故障和帮助定位故障原因。</p>
+<h2 id="基础监控"><a class="markdownIt-Anchor" href="#基础监控"></a> 基础监控</h2>
+<p>包括 CPU、内存、磁盘、端口和进程等机器、网络的操作系统级别的信息。通常情况下，成熟的监控系统（例如开源的 Prometheus、Zabbix 等）均会提供基础监控项的采集能力，这里不做过多介绍。但需要注意的一点，机器级别的基础监控指标一般并不能代表服务的真实运行状况，例如单台实例的故障对一个设计合理的分布式系统来说并不会带来严重后果。所以只有结合业务相关监控指标，基础监控指标才有意义。</p>
+<h2 id="业务监控"><a class="markdownIt-Anchor" href="#业务监控"></a> 业务监控</h2>
+<p>业务监控指标由业务系统内部的服务产生，一般能够真实反应业务运行状态。设计合理的系统一般都会提供相关监控指标供监控系统采集。监控数据的采集方法一般可以分为以下几大类。</p>
+<ul>
+<li>
+<p>日志：日志可以包含服务运行的方方面面，是重要的监控数据来源。例如，通过 Nginx access 日志可以统计出错误（5xx）、延迟（响应时间）和流量，结合已知的容量上限就可以计算出饱和度。一般除监控系统提供的日志采集插件外，如 Rsyslog、Logstash、Filebeat、Flume 等都是比较优秀的日志采集软件。</p>
+</li>
+<li>
+<p>JMX：多数 Java 开发的服务均可由 JMX 接口输出监控指标。不少监控系统也有集成 JMX 采集插件，除此之外我们也可通过 jmxtrans、jmxcmd 工具进行采集。</p>
+</li>
+<li>
+<p>REST：提供 REST API 来进行监控数据的采集，如 Hadoop、ElasticSearch。</p>
+</li>
+<li>
+<p>OpenMetrics：得益于 Prometheus 的流行，作为 Prometheus 的监控数据采集方案，OpenMetrics 可能很快会成为未来监控的业界标准。目前绝大部分热门开源服务均有官方或非官方的 exporter 可供使用。</p>
+</li>
+<li>
+<p>命令行：一些服务提供本地的命令来输出监控指标。</p>
+</li>
+</ul>
+<p>主动上报：对于采用 PUSH 模型的监控系统来说，服务可以采取主动上报的方式把监控指标 push 到监控系统，如 Java 服务可使用 Metrics 接口自定义 sink 输出。另外，运维也可以使用自定义的监控插件来完成监控的采集。</p>
+<ul>
+<li>
+<p>埋点：埋点是侵入式的监控数据采集方式，其优点是其可以更灵活地为我们提供业务内部的监控指标，当然缺点也很明显：需要在代码层面动手脚（常常需要研发支持，成本较高）。</p>
+</li>
+<li>
+<p>其它方式：以上未涵盖的监控指标采集方式，例如 Zookeeper 的四字命令，MySQL 的 show status 命令。</p>
+</li>
+</ul>
+<h2 id="黄金指标"><a class="markdownIt-Anchor" href="#黄金指标"></a> 黄金指标</h2>
+<ul>
+<li>延迟</li>
+<li>通讯量</li>
+<li>错误</li>
+<li>饱和度</li>
+</ul>
+<h1 id="搭建环境"><a class="markdownIt-Anchor" href="#搭建环境"></a> 搭建环境</h1>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装prometheus</span></span><br><span class="line">brew install prometheus</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装grafana</span></span><br><span class="line">brew install grafana</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看配置文件路径及如何启动</span></span><br><span class="line">brew info prometheus</span><br></pre></td></tr></table></figure>
+<h1 id="springboot配置"><a class="markdownIt-Anchor" href="#springboot配置"></a> springboot配置</h1>
+<h2 id="maven依赖"><a class="markdownIt-Anchor" href="#maven依赖"></a> maven依赖</h2>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-actuator<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.micrometer<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>micrometer-registry-prometheus<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="applicationyml"><a class="markdownIt-Anchor" href="#applicationyml"></a> application.yml</h2>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">management:</span></span><br><span class="line">    <span class="attr">endpoints:</span></span><br><span class="line">        <span class="attr">web:</span></span><br><span class="line">            <span class="attr">exposure:</span></span><br><span class="line">                <span class="attr">include:</span> <span class="string">prometheus,health,info,metric</span></span><br><span class="line">    <span class="attr">metrics:</span></span><br><span class="line">        <span class="attr">export:</span></span><br><span class="line">            <span class="attr">prometheus:</span></span><br><span class="line">                <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">        <span class="attr">tags:</span></span><br><span class="line">            <span class="attr">application:</span> <span class="string">$&#123;spring.application.name&#125;</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">endpoint:</span></span><br><span class="line">        <span class="attr">health:</span></span><br><span class="line">            <span class="attr">show-details:</span> <span class="string">always</span></span><br><span class="line"><span class="attr">info:</span></span><br><span class="line">    <span class="attr">app:</span></span><br><span class="line">        <span class="attr">name:</span> <span class="string">$&#123;spring.application.name&#125;</span></span><br></pre></td></tr></table></figure>
+<h2 id="启动类注入bean"><a class="markdownIt-Anchor" href="#启动类注入bean"></a> 启动类注入bean</h2>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@EnableDiscoveryClient</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NlpKbProxyApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String line = <span class="string">&quot;\n----------------------------------------------------------&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> UnknownHostException</span>&#123;</span><br><span class="line">        ConfigurableApplicationContext context = SpringApplication.run(NlpKbProxyApplication.class, args);</span><br><span class="line">        String swaggerEnabled = context.getEnvironment().getProperty(<span class="string">&quot;swagger.enabled&quot;</span>);</span><br><span class="line">        afterRun(context, Boolean.parseBoolean(swaggerEnabled));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">afterRun</span><span class="params">(ConfigurableApplicationContext applicationContext, <span class="keyword">boolean</span> swaggerEnabled)</span> <span class="keyword">throws</span> UnknownHostException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (swaggerEnabled) &#123;</span><br><span class="line">            AbstractServletWebServerFactory webServerFactory = applicationContext.getBean(AbstractServletWebServerFactory.class);</span><br><span class="line">            <span class="keyword">int</span> port = webServerFactory.getPort();</span><br><span class="line">            String contextPath = webServerFactory.getContextPath();</span><br><span class="line"></span><br><span class="line">            log.info(<span class="string">&quot;\n访问swaggger接口调试 URLs:&quot;</span> +</span><br><span class="line">                            line +</span><br><span class="line">                            <span class="string">&quot;\n&quot;</span> + <span class="string">&quot;Local: \t\thttp://&#123;&#125;:&#123;&#125;&#123;&#125;/swagger-ui/index.html&quot;</span> +</span><br><span class="line">                            line</span><br><span class="line">                    , InetAddress.getLocalHost().getHostAddress(), port, contextPath);</span><br><span class="line">            log.info(<span class="string">&quot;\n健康检查 URLs:&quot;</span> +</span><br><span class="line">                            line +</span><br><span class="line">                            <span class="string">&quot;\n&quot;</span> + <span class="string">&quot;Local: \t\thttp://&#123;&#125;:&#123;&#125;&#123;&#125;/actuator&quot;</span> +</span><br><span class="line">                            line</span><br><span class="line">                    , InetAddress.getLocalHost().getHostAddress(), port, contextPath);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function">MeterRegistryCustomizer&lt;MeterRegistry&gt; <span class="title">configurer</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="meta">@Value(&quot;$&#123;spring.application.name&#125;&quot;)</span> String applicationName)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (registry) -&gt; registry.config().commonTags(<span class="string">&quot;application&quot;</span>, applicationName);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="metrix指标"><a class="markdownIt-Anchor" href="#metrix指标"></a> metrix指标</h2>
+<p>访问 <a target="_blank" rel="noopener" href="http://localhost:8080/actuator">http://localhost:8080/actuator</a>, 可以看到</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;_links&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;self&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;href&quot;</span>: <span class="string">&quot;http://localhost:8080/actuator&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;templated&quot;</span>: <span class="literal">false</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;health-path&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;href&quot;</span>: <span class="string">&quot;http://localhost:8080/actuator/health/&#123;*path&#125;&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;templated&quot;</span>: <span class="literal">true</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;health&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;href&quot;</span>: <span class="string">&quot;http://localhost:8080/actuator/health&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;templated&quot;</span>: <span class="literal">false</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;info&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;href&quot;</span>: <span class="string">&quot;http://localhost:8080/actuator/info&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;templated&quot;</span>: <span class="literal">false</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;prometheus&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;href&quot;</span>: <span class="string">&quot;http://localhost:8080/actuator/prometheus&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;templated&quot;</span>: <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="系统指标"><a class="markdownIt-Anchor" href="#系统指标"></a> 系统指标</h1>
+<p>如果要监控系统基础指标, 此时并没有metrix, 需要在 <code>prometheus.yml</code> 中监听<code>9100</code>端口采集的metrix。</p>
+<ol>
+<li>下载系统 <code>node_exporter</code>, 访问 <a target="_blank" rel="noopener" href="https://prometheus.io/download/">https://prometheus.io/download/</a>, 如图</li>
+</ol>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/mac-node-exporter.png" alt="" /></p>
+<p>启动后访问 <a target="_blank" rel="noopener" href="http://localhost:9100/">http://localhost:9100/</a>, 可以看到系统metrix。启动日志如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">➜  node_exporter-1.1.1.darwin-amd64 .&#x2F;node_exporter</span><br><span class="line">level&#x3D;info ts&#x3D;2021-02-26T16:35:39.925Z caller&#x3D;node_exporter.go:178 msg&#x3D;&quot;Starting node_exporter&quot; version&#x3D;&quot;(version&#x3D;1.1.1, branch&#x3D;HEAD, revision&#x3D;4e837d4da79cc59ee3ed1471ba9a0d9547e95540)&quot;</span><br><span class="line">level&#x3D;info ts&#x3D;2021-02-26T16:35:39.925Z caller&#x3D;node_exporter.go:179 msg&#x3D;&quot;Build context&quot; build_context&#x3D;&quot;(go&#x3D;go1.15.8, user&#x3D;root@f9e5f7d18c30, date&#x3D;20210213-13:38:51)&quot;</span><br><span class="line">level&#x3D;info ts&#x3D;2021-02-26T16:35:39.925Z caller&#x3D;filesystem_common.go:74 collector&#x3D;filesystem msg&#x3D;&quot;Parsed flag --collector.filesystem.ignored-mount-points&quot; flag&#x3D;^&#x2F;(dev)($|&#x2F;)</span><br><span class="line">level&#x3D;info ts&#x3D;2021-02-26T16:35:39.925Z caller&#x3D;filesystem_common.go:76 collector&#x3D;filesystem msg&#x3D;&quot;Parsed flag --collector.filesystem.ignored-fs-types&quot; flag&#x3D;^devfs$</span><br><span class="line">level&#x3D;info ts&#x3D;2021-02-26T16:35:39.925Z caller&#x3D;node_exporter.go:106 msg&#x3D;&quot;Enabled collectors&quot;</span><br><span class="line">level&#x3D;info ts&#x3D;2021-02-26T16:35:39.925Z caller&#x3D;node_exporter.go:113 collector&#x3D;boottime</span><br><span class="line">level&#x3D;info ts&#x3D;2021-02-26T16:35:39.925Z caller&#x3D;node_exporter.go:113 collector&#x3D;cpu</span><br><span class="line">level&#x3D;info ts&#x3D;2021-02-26T16:35:39.925Z caller&#x3D;node_exporter.go:113 collector&#x3D;diskstats</span><br><span class="line">level&#x3D;info ts&#x3D;2021-02-26T16:35:39.925Z caller&#x3D;node_exporter.go:113 collector&#x3D;filesystem</span><br><span class="line">level&#x3D;info ts&#x3D;2021-02-26T16:35:39.925Z caller&#x3D;node_exporter.go:113 collector&#x3D;loadavg</span><br><span class="line">level&#x3D;info ts&#x3D;2021-02-26T16:35:39.925Z caller&#x3D;node_exporter.go:113 collector&#x3D;meminfo</span><br><span class="line">level&#x3D;info ts&#x3D;2021-02-26T16:35:39.925Z caller&#x3D;node_exporter.go:113 collector&#x3D;netdev</span><br><span class="line">level&#x3D;info ts&#x3D;2021-02-26T16:35:39.925Z caller&#x3D;node_exporter.go:113 collector&#x3D;textfile</span><br><span class="line">level&#x3D;info ts&#x3D;2021-02-26T16:35:39.925Z caller&#x3D;node_exporter.go:113 collector&#x3D;time</span><br><span class="line">level&#x3D;info ts&#x3D;2021-02-26T16:35:39.925Z caller&#x3D;node_exporter.go:113 collector&#x3D;uname</span><br><span class="line">level&#x3D;info ts&#x3D;2021-02-26T16:35:39.926Z caller&#x3D;node_exporter.go:195 msg&#x3D;&quot;Listening on&quot; address&#x3D;:9100</span><br><span class="line">level&#x3D;info ts&#x3D;2021-02-26T16:35:39.926Z caller&#x3D;tls_config.go:191 msg&#x3D;&quot;TLS is disabled.&quot; http2&#x3D;false</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>更多exporters: <a target="_blank" rel="noopener" href="https://prometheus.io/docs/instrumenting/exporters/">https://prometheus.io/docs/instrumenting/exporters/</a></p>
+</blockquote>
+<h1 id="配置prometheus"><a class="markdownIt-Anchor" href="#配置prometheus"></a> 配置prometheus</h1>
+<p>prometheus会主动从应用拉取数据, 所以我们需要配置prometheus。</p>
+<p><code>vim /usr/local/etc/prometheus.yml</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">global:</span><br><span class="line">  # 默认每隔15秒执行一次表达式判断告警规则</span><br><span class="line">  scrape_interval: 15s</span><br><span class="line">  # 默认每隔15秒向各个监控端点拉取一次指标数据</span><br><span class="line">  evaluation_interval: 15s</span><br><span class="line">  # scrape_timeout is set to the global default (10s).</span><br><span class="line"></span><br><span class="line">  # Attach these labels to any time series or alerts when communicating with</span><br><span class="line">  # external systems (federation, remote storage, Alertmanager).</span><br><span class="line">  external_labels:</span><br><span class="line">      monitor: &#39;codelab-monitor&#39;</span><br><span class="line"></span><br><span class="line">rule_files:</span><br><span class="line">  # 表达式计算和记录，告警规则等自定义的配置文件</span><br><span class="line">  # - &quot;first.rules&quot;</span><br><span class="line">  # - &quot;second.rules&quot;</span><br><span class="line"></span><br><span class="line"># A scrape configuration containing exactly one endpoint to scrape:</span><br><span class="line"># Here it&#39;s Prometheus itself.</span><br><span class="line"></span><br><span class="line">scrape_configs:</span><br><span class="line">  - job_name: &quot;prometheus&quot;</span><br><span class="line">    static_configs:</span><br><span class="line">      # 两个监控的端点，9090是Prometheus自己，9100是机器的监控组件Node Exporter</span><br><span class="line">      - targets: [&#39;127.0.0.1:9090&#39;, &#39;127.0.0.1:9100&#39;]</span><br><span class="line"></span><br><span class="line">  - job_name: &#39;demo-java&#39; # job name</span><br><span class="line">    metrics_path: &#39;&#x2F;actuator&#x2F;prometheus&#39; # 指标获取路径, 默认 &#39;&#x2F;metrics&#39;</span><br><span class="line">    scrape_interval: 5s # pull模式, 抓取间隔</span><br><span class="line">#     basic_auth: # Spring Security basic auth </span><br><span class="line">#       username: &#39;actuator&#39;</span><br><span class="line">#       password: &#39;actuator&#39;</span><br><span class="line">    static_configs:</span><br><span class="line">      - targets: [&#39;127.0.0.1:8080&#39;] # 实例的地址，默认的协议是http</span><br><span class="line">        labels:</span><br><span class="line">          instance: demo-java</span><br></pre></td></tr></table></figure>
+<p>访问 <a target="_blank" rel="noopener" href="http://localhost:9090/targets">http://localhost:9090/targets</a> 查看实例</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/img-prometheus-targets.png" alt="" /></p>
+<h1 id="配置grafana"><a class="markdownIt-Anchor" href="#配置grafana"></a> 配置grafana</h1>
+<p>grafana默认帐号密码 <code>admin/admin</code>, 访问 <a target="_blank" rel="noopener" href="http://localhost:3000/">http://localhost:3000/</a> 登录</p>
+<h2 id="配置数据源"><a class="markdownIt-Anchor" href="#配置数据源"></a> 配置数据源</h2>
+<ol>
+<li>配置数据源</li>
+</ol>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/prometheus-datasource-1.png" alt="" /></p>
+<ol start="2">
+<li>这里我们选择 <code>prometheus</code></li>
+</ol>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/prometheus-datasource-2.png" alt="" /></p>
+<ol start="3">
+<li>填写prometheus地址 <code>http://localhost:9090</code></li>
+</ol>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/prometheus-datasource-3.png" alt="" /></p>
+<h2 id="主题配置"><a class="markdownIt-Anchor" href="#主题配置"></a> 主题配置</h2>
+<ol>
+<li>导入dashboard</li>
+</ol>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/grafana-import-dashboard-1.png" alt="" /></p>
+<ol start="2">
+<li>访问 <a target="_blank" rel="noopener" href="https://grafana.com/grafana/dashboards">https://grafana.com/grafana/dashboards</a> 选择 <code>dashboard</code> 主题.</li>
+</ol>
+<hr />
+<p><strong>8919主题</strong></p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/img-grafana-dashboard-8919.png" alt="https://grafana.com/grafana/dashboards/8919" /></p>
+<p><strong>1860主题</strong></p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/grafana-dashboard-1860.png" alt="https://grafana.com/grafana/dashboards/1860" /></p>
+<p><strong>4701主题</strong></p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/img-grafana-dashboard-4701.png" alt="https://grafana.com/grafana/dashboards/4701" /></p>
+<p><strong>10280主题</strong></p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/img-grafana-dashboard-10280.png" alt="https://grafana.com/grafana/dashboards/10280" /></p>
+<p><strong>12856主题</strong></p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/img-grafana-dashboard-12856.png" alt="https://grafana.com/grafana/dashboards/12856" /></p>
+<h1 id="docker环境搭建"><a class="markdownIt-Anchor" href="#docker环境搭建"></a> Docker环境搭建</h1>
+<p>我们以 <code>windows</code> 环境为例</p>
+<ol>
+<li>prometheus</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name&#x3D;prometheus -p 9090:9090 -v E:&#x2F;docker&#x2F;prometheus&#x2F;prometheus.yml:&#x2F;etc&#x2F;prometheus&#x2F;prometheus.yml prom&#x2F;prometheus</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>
+<p>下载(<a target="_blank" rel="noopener" href="https://github.com/prometheus/node_exporter">https://github.com/prometheus/node_exporter</a>)并运行node_exporter。metrix地址 <a target="_blank" rel="noopener" href="http://192.168.141.1:9182/metrics">http://192.168.141.1:9182/metrics</a></p>
+</li>
+<li>
+<p>prometheus.yml</p>
+</li>
+</ol>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># my global config</span></span><br><span class="line"><span class="attr">global:</span></span><br><span class="line">  <span class="attr">scrape_interval:</span>     <span class="string">15s</span> <span class="comment"># Set the scrape interval to every 15 seconds. Default is every 1 minute.</span></span><br><span class="line">  <span class="attr">evaluation_interval:</span> <span class="string">15s</span> <span class="comment"># Evaluate rules every 15 seconds. The default is every 1 minute.</span></span><br><span class="line">  <span class="comment"># scrape_timeout is set to the global default (10s).</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Attach these labels to any time series or alerts when communicating with</span></span><br><span class="line">  <span class="comment"># external systems (federation, remote storage, Alertmanager).</span></span><br><span class="line">  <span class="attr">external_labels:</span></span><br><span class="line">      <span class="attr">monitor:</span> <span class="string">&#x27;codelab-monitor&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Load rules once and periodically evaluate them according to the global &#x27;evaluation_interval&#x27;.</span></span><br><span class="line"><span class="attr">rule_files:</span></span><br><span class="line">  <span class="comment"># - &quot;first.rules&quot;</span></span><br><span class="line">  <span class="comment"># - &quot;second.rules&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># A scrape configuration containing exactly one endpoint to scrape:</span></span><br><span class="line"><span class="comment"># Here it&#x27;s Prometheus itself.</span></span><br><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line">  <span class="comment"># The job name is added as a label `job=&lt;job_name&gt;` to any timeseries scraped from this config.</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">job_name:</span> <span class="string">&#x27;prometheus&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># metrics_path defaults to &#x27;/metrics&#x27;</span></span><br><span class="line">    <span class="comment"># scheme defaults to &#x27;http&#x27;.</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">static_configs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">targets:</span> [<span class="string">&#x27;host.docker.internal:9090&#x27;</span>] <span class="comment"># Only works on Docker Desktop for Windows</span></span><br><span class="line"></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">job_name:</span> <span class="string">&#x27;eachbot-nlp-kb-proxy&#x27;</span></span><br><span class="line">    <span class="attr">metrics_path:</span> <span class="string">&#x27;/kbp/actuator/prometheus&#x27;</span> <span class="comment"># 指标获取路径</span></span><br><span class="line">         <span class="comment"># scheme defaults to &#x27;http&#x27;.</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">static_configs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">targets:</span> [<span class="string">&#x27;192.168.141.1:7103&#x27;</span>]</span><br><span class="line">        <span class="attr">labels:</span></span><br><span class="line">          <span class="attr">instance:</span> <span class="string">eachbot-nlp-kb-proxy</span> </span><br><span class="line"></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">job_name:</span> <span class="string">windows</span></span><br><span class="line">    <span class="attr">static_configs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">targets:</span> [<span class="string">&#x27;192.168.141.1:9182&#x27;</span>]</span><br><span class="line">        <span class="attr">labels:</span></span><br><span class="line">          <span class="attr">instance:</span> <span class="string">localhost</span></span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>grafana</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name&#x3D;grafana --restart&#x3D;always -p 3000:3000 grafana&#x2F;grafana</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>选择windows下dashboard主题10467</li>
+</ol>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/grafana-windows.png" alt="" /></p>
+<h1 id="业务指标"><a class="markdownIt-Anchor" href="#业务指标"></a> 业务指标</h1>
+<h2 id="metrics-种类"><a class="markdownIt-Anchor" href="#metrics-种类"></a> Metrics 种类</h2>
+<p>Prometheus 客户端库主要提供四种主要的 Metrics 类型：</p>
+<p><strong>Counter（计数器）</strong><br />
+一种累加的 Metrics，始终增加。典型的应用如：http 请求的个数，结束的任务数，出现的错误数等等。一般在定义Counter类型指标的名称时推荐使用_total作为后缀。</p>
+<p><strong>Gauge（测量仪）</strong><br />
+一种常规的 Metrics，仪表盘，当前值的一次快照(snapshot)测量，可增可减。典型的应用如：当前同时在线用户数、温度、内存使用率，运行的 goroutines 的个数，可以任意加减。</p>
+<p><strong>Histogram(直方图)</strong><br />
+可以理解为柱状图，通过分桶(bucket)方式统计样本分布。典型的应用如：请求持续时间，响应大小，可以对观察结果采样，分组及统计。</p>
+<p>类型为Histogram的监控指标prometheus_tsdb_compaction_chunk_range_bucket。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># HELP prometheus_tsdb_compaction_chunk_range Final time range of chunks on their first compaction</span><br><span class="line"># TYPE prometheus_tsdb_compaction_chunk_range histogram</span><br><span class="line">prometheus_tsdb_compaction_chunk_range_bucket&#123;le&#x3D;&quot;100&quot;&#125; 0</span><br><span class="line">prometheus_tsdb_compaction_chunk_range_bucket&#123;le&#x3D;&quot;400&quot;&#125; 0</span><br><span class="line">prometheus_tsdb_compaction_chunk_range_bucket&#123;le&#x3D;&quot;1600&quot;&#125; 0</span><br><span class="line">prometheus_tsdb_compaction_chunk_range_bucket&#123;le&#x3D;&quot;6400&quot;&#125; 0</span><br><span class="line">prometheus_tsdb_compaction_chunk_range_bucket&#123;le&#x3D;&quot;25600&quot;&#125; 0</span><br><span class="line">prometheus_tsdb_compaction_chunk_range_bucket&#123;le&#x3D;&quot;102400&quot;&#125; 0</span><br><span class="line">prometheus_tsdb_compaction_chunk_range_bucket&#123;le&#x3D;&quot;409600&quot;&#125; 0</span><br><span class="line">prometheus_tsdb_compaction_chunk_range_bucket&#123;le&#x3D;&quot;1.6384e+06&quot;&#125; 260</span><br><span class="line">prometheus_tsdb_compaction_chunk_range_bucket&#123;le&#x3D;&quot;6.5536e+06&quot;&#125; 780</span><br><span class="line">prometheus_tsdb_compaction_chunk_range_bucket&#123;le&#x3D;&quot;2.62144e+07&quot;&#125; 780</span><br><span class="line">prometheus_tsdb_compaction_chunk_range_bucket&#123;le&#x3D;&quot;+Inf&quot;&#125; 780</span><br><span class="line">prometheus_tsdb_compaction_chunk_range_sum 1.1540798e+09</span><br><span class="line">prometheus_tsdb_compaction_chunk_range_count 780</span><br></pre></td></tr></table></figure>
+<p>从样本可以看出, 小于1.6384e+06的样本数为260, 小于 6.5536e+06的样本数为780, 总样本为780.</p>
+<p><strong>Summary（汇总）</strong><br />
+根据样本统计出百分位 类似于Histogram。典型的应用如：请求持续时间，响应大小，提供观测值的 count 和 sum 功能，提供百分位的功能，即可以按百分比划分跟踪结果。</p>
+<p>例如，指标prometheus_tsdb_wal_fsync_duration_seconds的指标类型为Summary。 它记录了Prometheus Server中wal_fsync处理的处理时间，通过访问Prometheus Server的/metrics地址，可以获取到以下监控样本数据：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># HELP prometheus_tsdb_wal_fsync_duration_seconds Duration of WAL fsync.</span><br><span class="line"># TYPE prometheus_tsdb_wal_fsync_duration_seconds summary</span><br><span class="line">prometheus_tsdb_wal_fsync_duration_seconds&#123;quantile&#x3D;&quot;0.5&quot;&#125; 0.012352463</span><br><span class="line">prometheus_tsdb_wal_fsync_duration_seconds&#123;quantile&#x3D;&quot;0.9&quot;&#125; 0.014458005</span><br><span class="line">prometheus_tsdb_wal_fsync_duration_seconds&#123;quantile&#x3D;&quot;0.99&quot;&#125; 0.017316173</span><br><span class="line">prometheus_tsdb_wal_fsync_duration_seconds_sum 2.888716127000002</span><br><span class="line">prometheus_tsdb_wal_fsync_duration_seconds_count 216</span><br></pre></td></tr></table></figure>
+<p>从上面的样本中可以得知当前Prometheus Server进行wal_fsync操作的总次数为216次，耗时2.888716127000002s。其中中位数（quantile=0.5）的耗时为0.012352463，9分位数（quantile=0.9）的耗时为0.014458005s。</p>
+<h2 id="表达式"><a class="markdownIt-Anchor" href="#表达式"></a> 表达式</h2>
+<ul>
+<li>rate[1m]：表示 1 分钟的增长速率，只能用于 counter 类型的数据。</li>
+<li>sum：表示 value 求和。</li>
+<li>by type：表示将求和后的数据按 metric 原始值中的 type 进行分组。</li>
+<li>Legend format：表示指标名称的格式。</li>
+<li>Resolution：默认打点步长是 15s，Resolution 表示是否将多个样本数据合并成一个点。</li>
+</ul>
+<h2 id="性能指标-接口平均响应时间"><a class="markdownIt-Anchor" href="#性能指标-接口平均响应时间"></a> 性能指标-接口平均响应时间</h2>
+<p>5分钟内请求总时间除以总次数得到api响应时间均值</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/api-performance.png" alt="" /></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rate(api_request_duration_milliseconds_sum&#123;route&#x3D;&quot;g&#x2F;search&quot;, method&#x3D;&quot;POST&quot;&#125;[5m]) &#x2F; rate(api_request_duration_milliseconds_count&#123;route&#x3D;&quot;g&#x2F;search&quot;, method&#x3D;&quot;POST&quot;&#125;[5m])</span><br></pre></td></tr></table></figure>
+<h2 id="发现慢接口"><a class="markdownIt-Anchor" href="#发现慢接口"></a> 发现慢接口</h2>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/api-slow.png" alt="" /></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">topk(20, </span><br><span class="line">  sum by (route) (</span><br><span class="line">    rate(api_request_duration_milliseconds_sum&#123;status_code!&#x3D;&quot;500&quot;, method!&#x3D;&quot;OPTIONS&quot;&#125;[2m]) </span><br><span class="line">    &#x2F; </span><br><span class="line">    rate(api_request_duration_milliseconds_count&#123;status_code!&#x3D;&quot;500&quot;, method!&#x3D;&quot;OPTIONS&quot;&#125;[2m])</span><br><span class="line">  )</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>sum byroute 的响应时间 取Top20，得到响应时间慢的API</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">topk(10, sum by (route) (rate(api_request_duration_milliseconds_count&#123;status_code!&#x3D;&quot;500&quot;&#125;[5m])))</span><br></pre></td></tr></table></figure>
+<p>稍微调整下可以拿到当前时间请求频繁的接口</p>
+<h2 id="失败接口"><a class="markdownIt-Anchor" href="#失败接口"></a> 失败接口</h2>
+<p>基于方法和错误码统计Center的整体 rpc 请求错误频率:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sum by (method, code) (rate(rpc_invoke_cnt_c&#123;job&#x3D;&quot;Center&quot;,code!&#x3D;&quot;0&quot;&#125;[1m]))</span><br></pre></td></tr></table></figure>
+<h2 id="qps"><a class="markdownIt-Anchor" href="#qps"></a> QPS</h2>
+<p>QPS 的话，可以使用自带的函数 rate，rate(http_requests_total[10s]) 表示以 10s 作为时间单元来统计 QPS。</p>
+<h1 id="aop采集metrix指标"><a class="markdownIt-Anchor" href="#aop采集metrix指标"></a> AOP采集metrix指标</h1>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;springboot.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-configuration-processor<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;springboot.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-aop<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;springboot.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-actuator<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;springboot.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.micrometer<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>micrometer-registry-prometheus<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.6.4<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;springboot.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Target(&#123;ElementType.TYPE&#125;)</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Import(&#123;PrometheusMetricsRegistrar.class&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> EnablePrometheus &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PrometheusMetricsRegistrar</span> <span class="keyword">implements</span> <span class="title">ImportBeanDefinitionRegistrar</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerBeanDefinitions</span><span class="params">(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry)</span> </span>&#123;</span><br><span class="line">        BeanDefinition beanDefinition = BeanDefinitionBuilder.genericBeanDefinition(PrometheusMetricsAspect.class).getBeanDefinition();</span><br><span class="line">        registry.registerBeanDefinition(<span class="string">&quot;prometheusMetricsAspect&quot;</span>, beanDefinition);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PrometheusMetricsAspect</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Log logger = LogFactory.getLog(getClass());</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> CollectorRegistry collectorRegistry;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 折线图</span></span><br><span class="line">    <span class="keyword">private</span> Counter requestTotal;</span><br><span class="line">    <span class="comment">// 折线图</span></span><br><span class="line">    <span class="keyword">private</span> Counter requestError;</span><br><span class="line">    <span class="comment">// 折线图</span></span><br><span class="line">    <span class="keyword">private</span> Histogram apiTimeConsuming;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostConstruct</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span></span>&#123;</span><br><span class="line">        requestTotal = Counter.build().name(<span class="string">&quot;easyliao_http_requests_total&quot;</span>).labelNames(<span class="string">&quot;uri&quot;</span>, <span class="string">&quot;method&quot;</span>, <span class="string">&quot;status&quot;</span>)</span><br><span class="line">                .help(<span class="string">&quot;http请求总数&quot;</span>).register(collectorRegistry);</span><br><span class="line"></span><br><span class="line">        requestError  = Counter.build().name(<span class="string">&quot;easyliao_http_requests_error&quot;</span>).labelNames(<span class="string">&quot;uri&quot;</span>, <span class="string">&quot;method&quot;</span>, <span class="string">&quot;status&quot;</span>)</span><br><span class="line">                .help(<span class="string">&quot;http请求错误数&quot;</span>).register(collectorRegistry);</span><br><span class="line"></span><br><span class="line">        apiTimeConsuming = Histogram.build().name(<span class="string">&quot;easyliao_api_time_consuming&quot;</span>).labelNames(<span class="string">&quot;uri&quot;</span>, <span class="string">&quot;method&quot;</span>, <span class="string">&quot;status&quot;</span>)</span><br><span class="line">                .help(<span class="string">&quot;接口耗时&quot;</span>).buckets(<span class="number">0.01</span>, <span class="number">0.02</span>, <span class="number">0.05</span>, <span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.5</span>).register(collectorRegistry);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Pointcut(&quot;@annotation(com.easyliao.monitor.annotation.PrometheusMetrics)&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">api</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Around(value = &quot;api()&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">metricsCollector</span><span class="params">(ProceedingJoinPoint point)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line"></span><br><span class="line">        MethodSignature methodSignature = (MethodSignature) point.getSignature();</span><br><span class="line">        PrometheusMetrics prometheusMetrics = methodSignature.getMethod().getAnnotation(PrometheusMetrics.class);</span><br><span class="line">        <span class="keyword">if</span> (prometheusMetrics != <span class="keyword">null</span>) &#123;</span><br><span class="line">            String uri;</span><br><span class="line">            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())</span><br><span class="line">                    .getRequest();</span><br><span class="line">            HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())</span><br><span class="line">                    .getResponse();</span><br><span class="line">            <span class="keyword">if</span> (StringUtils.isNotEmpty(prometheusMetrics.name())) &#123;</span><br><span class="line">                uri = prometheusMetrics.name();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                uri = request.getRequestURI();</span><br><span class="line">            &#125;</span><br><span class="line">            String method = request.getMethod();</span><br><span class="line">            <span class="keyword">int</span> status = response.getStatus();</span><br><span class="line"></span><br><span class="line">            requestTotal.labels(uri, method, String.valueOf(status)).inc();</span><br><span class="line">            Histogram.Timer requestTimer = apiTimeConsuming.labels(uri, method, String.valueOf(status)).startTimer();</span><br><span class="line">            Object object;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                object = point.proceed();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                requestError.labels(uri, method, String.valueOf(status)).inc();</span><br><span class="line">                <span class="keyword">throw</span> e;</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                requestTimer.observeDuration();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> object;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> point.proceed();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(ElementType.METHOD)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> PrometheusMetrics &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 默认为空,程序使用method signature作为Metric name 如果name有设置值,使用name作为Metric name</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">String <span class="title">name</span><span class="params">()</span> <span class="keyword">default</span> &quot;&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="拦截器采集metrix指标"><a class="markdownIt-Anchor" href="#拦截器采集metrix指标"></a> 拦截器采集metrix指标</h1>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 请求总量的监控Counter</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> cuishiying</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021-01-22</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CounterMetrics</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> CollectorRegistry collectorRegistry;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * name: 指标的名称</span></span><br><span class="line"><span class="comment">     * labelNames: 该metrics拥有的维度label</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Counter <span class="title">httpRequestsTotalCounterCollector</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Counter.build().name(<span class="string">&quot;http_requests_total&quot;</span>).labelNames(<span class="string">&quot;path&quot;</span>, <span class="string">&quot;method&quot;</span>, <span class="string">&quot;code&quot;</span>).help(<span class="string">&quot;http请求总计数&quot;</span>)</span><br><span class="line">                .register(collectorRegistry);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 当前正在处理的http请求数</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> cuishiying</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021-01-22</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GuageMetrics</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> CollectorRegistry collectorRegistry;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Gauge <span class="title">httpInprogressRequestsGuageCollector</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> Gauge.build()</span><br><span class="line">                .name(<span class="string">&quot;http_inprogress_requests&quot;</span>).labelNames(<span class="string">&quot;path&quot;</span>, <span class="string">&quot;method&quot;</span>, <span class="string">&quot;code&quot;</span>)</span><br><span class="line">                .help(<span class="string">&quot;http当前正在处理的请求数&quot;</span>).register(collectorRegistry);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 自带buckets区间用于统计分布统计图</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> cuishiying</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021-01-22</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HistogramMetrics</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> CollectorRegistry collectorRegistry;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Histogram <span class="title">httpRequestsBytesHistogramCollector</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> Histogram.build().labelNames(<span class="string">&quot;path&quot;</span>, <span class="string">&quot;method&quot;</span>, <span class="string">&quot;code&quot;</span>)</span><br><span class="line">                .name(<span class="string">&quot;http_requests_bytes_histogram&quot;</span>).help(<span class="string">&quot;http bucket 请求大小区间分布图&quot;</span>)</span><br><span class="line">                .register(collectorRegistry);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SummaryMetrics</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> CollectorRegistry collectorRegistry;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * name: 指标的名称</span></span><br><span class="line"><span class="comment">     * labelNames: 该metrics拥有的维度label</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Summary <span class="title">httpRequestsBytesSummaryCollector</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Summary.build()</span><br><span class="line">                .name(<span class="string">&quot;http_requests_bytes_summary&quot;</span>)</span><br><span class="line">                .labelNames(<span class="string">&quot;path&quot;</span>, <span class="string">&quot;method&quot;</span>, <span class="string">&quot;code&quot;</span>)</span><br><span class="line">                .help(<span class="string">&quot;Request bytes &quot;</span>).register(collectorRegistry);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PrometheusInterceptor</span> <span class="keyword">implements</span> <span class="title">HandlerInterceptor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// http请求总数</span></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="meta">@Qualifier(&quot;httpRequestsTotalCounterCollector&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Counter httpRequestsTotalCounterCollector;</span><br><span class="line">    <span class="comment">// 当前正在处理的请求数</span></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="meta">@Qualifier(&quot;httpInprogressRequestsGuageCollector&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Gauge httpInprogressRequestsGuageCollector;</span><br><span class="line">    <span class="comment">// http请求内容长度的区间分布图</span></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="meta">@Qualifier(&quot;httpRequestsBytesHistogramCollector&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Histogram httpRequestsBytesHistogramCollector;</span><br><span class="line">    <span class="comment">// 百分位数</span></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="meta">@Qualifier(&quot;httpRequestsBytesSummaryCollector&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Summary httpRequestsBytesSummaryCollector;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">preHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;Prometheus intercrptor preHandle ...&quot;</span>);</span><br><span class="line">        String requestURI = request.getRequestURI();</span><br><span class="line">        String method = request.getMethod();</span><br><span class="line">        <span class="keyword">int</span> status = response.getStatus();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 对应 &quot;path&quot;, &quot;method&quot;, &quot;code&quot; 3个纬度</span></span><br><span class="line">        httpRequestsTotalCounterCollector.labels(requestURI, method, String.valueOf(status)).inc();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//当前正在处理的请求数 + 1</span></span><br><span class="line">        httpInprogressRequestsGuageCollector.labels(requestURI, method, String.valueOf(status)).inc();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//请求大小</span></span><br><span class="line">        httpRequestsBytesHistogramCollector.labels(requestURI, method, String.valueOf(status)).observe(request.getContentLength());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 百分位</span></span><br><span class="line">        httpRequestsBytesSummaryCollector.labels(requestURI, method, String.valueOf(status)).observe(<span class="keyword">new</span> Random().nextInt(<span class="number">100</span>));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> HandlerInterceptor.<span class="keyword">super</span>.preHandle(request, response, handler);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler,</span></span></span><br><span class="line"><span class="function"><span class="params">                           ModelAndView modelAndView)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">        HandlerInterceptor.<span class="keyword">super</span>.postHandle(request, response, handler, modelAndView);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterCompletion</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">        String requestURI = request.getRequestURI();</span><br><span class="line">        String method = request.getMethod();</span><br><span class="line">        <span class="keyword">int</span> status = response.getStatus();</span><br><span class="line">        <span class="comment">//当前正在处理的请求数 - 1</span></span><br><span class="line">        httpInprogressRequestsGuageCollector.labels(requestURI, method, String.valueOf(status)).dec();</span><br><span class="line">        HandlerInterceptor.<span class="keyword">super</span>.afterCompletion(request, response, handler, ex);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InterceptorConfiguration</span> <span class="keyword">implements</span> <span class="title">WebMvcConfigurer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> HandlerInterceptor <span class="title">prometheusInterceptor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> PrometheusInterceptor();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addInterceptors</span><span class="params">(InterceptorRegistry registry)</span> </span>&#123;</span><br><span class="line">        registry.addInterceptor(prometheusInterceptor()).addPathPatterns(<span class="string">&quot;/**&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="最后"><a class="markdownIt-Anchor" href="#最后"></a> 最后</h1>
+<p>本文到此结束，感谢阅读。如果您觉得不错，请关注公众号【当我遇上你】，您的支持是我写作的最大动力。</p>
+<h1 id="参考"><a class="markdownIt-Anchor" href="#参考"></a> 参考</h1>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://yunlzheng.gitbook.io/prometheus-book/parti-prometheus-ji-chu/quickstart/why-monitor">https://yunlzheng.gitbook.io/prometheus-book/parti-prometheus-ji-chu/quickstart/why-monitor</a></li>
+<li><a target="_blank" rel="noopener" href="http://code2life.top/2020/02/28/0048-prometheus-in-action-start/">http://code2life.top/2020/02/28/0048-prometheus-in-action-start/</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.infoq.cn/article/txmnqw_d7hpi8kyxf4wz">https://www.infoq.cn/article/txmnqw_d7hpi8kyxf4wz</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/chanshuyi/p/07_springboot_custom_index_monitor.html">https://www.cnblogs.com/chanshuyi/p/07_springboot_custom_index_monitor.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.shuzhiduo.com/A/x9J26NaZJ6/">https://www.shuzhiduo.com/A/x9J26NaZJ6/</a></li>
+<li><a target="_blank" rel="noopener" href="https://xinlichao.cn/back-end/java/prometheus/">https://xinlichao.cn/back-end/java/prometheus/</a></li>
+<li><a target="_blank" rel="noopener" href="https://gitee.com/ITEater/prometheus-spring-boot-starter">https://gitee.com/ITEater/prometheus-spring-boot-starter</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.infoq.cn/article/rpzvedlkpocfrnxta2al">https://www.infoq.cn/article/rpzvedlkpocfrnxta2al</a></li>
+<li><a target="_blank" rel="noopener" href="https://sb-woms.gitbook.io/sb/prometheus/springboot-prometheus-05">https://sb-woms.gitbook.io/sb/prometheus/springboot-prometheus-05</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.pingcap.com/zh/tidb/stable/grafana-monitor-best-practices">https://docs.pingcap.com/zh/tidb/stable/grafana-monitor-best-practices</a></li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2021/01/18/springboot-prometheus/" title="SpringBoot监控之prometheus" target="_blank" rel="external">https://idea360.cn/2021/01/18/springboot-prometheus/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2021/01/30/java-poi-import-image/" title="Java开发中如何用POI导入包含图片的Excel文件"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2021/01/15/springboot-deploy-shell/" title="springboot发布脚本"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

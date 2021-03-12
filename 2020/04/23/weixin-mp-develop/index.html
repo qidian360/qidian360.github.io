@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>微信公众号开发(关注、取消、发送模板消息) | 当我遇上你</title>
+  <meta name="description" content="前言 现在很多业务会基于微信公众号实现。笔者做这部分开发的时候，项目不允许再引入外部jar包，故做的相当蛋疼。这里是总结时写的demo节选。  如何将xml消息转换成json对象？  xstream maven依赖 12345&lt;dependency&gt;    &lt;groupId&gt;com.thoughtworks.xstream&lt;&#x2F;groupId&gt;    &lt;a">
+<meta property="og:type" content="article">
+<meta property="og:title" content="微信公众号开发(关注、取消、发送模板消息)">
+<meta property="og:url" content="https://idea360.cn/2020/04/23/weixin-mp-develop/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="前言 现在很多业务会基于微信公众号实现。笔者做这部分开发的时候，项目不允许再引入外部jar包，故做的相当蛋疼。这里是总结时写的demo节选。  如何将xml消息转换成json对象？  xstream maven依赖 12345&lt;dependency&gt;    &lt;groupId&gt;com.thoughtworks.xstream&lt;&#x2F;groupId&gt;    &lt;a">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-23T15:55:43.000Z">
+<meta property="article:modified_time" content="2021-02-23T14:49:43.672Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="微信">
+<meta property="article:tag" content="公众号">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2020/04/23/weixin-mp-develop/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text"> 前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%B0%86xml%E6%B6%88%E6%81%AF%E8%BD%AC%E6%8D%A2%E6%88%90json%E5%AF%B9%E8%B1%A1"><span class="toc-number">2.</span> <span class="toc-text"> 如何将xml消息转换成json对象？</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#xstream"><span class="toc-number">2.1.</span> <span class="toc-text"> xstream</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#w3cdom"><span class="toc-number">2.2.</span> <span class="toc-text"> w3c.Dom</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dom4j"><span class="toc-number">2.3.</span> <span class="toc-text"> dom4j</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#json%E5%AF%B9%E8%B1%A1%E5%A6%82%E4%BD%95%E9%80%82%E9%85%8D%E5%AD%97%E6%AE%B5%E6%A0%BC%E5%BC%8F"><span class="toc-number">3.</span> <span class="toc-text"> Json对象如何适配字段格式？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81"><span class="toc-number">4.</span> <span class="toc-text"> 消息推送</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%B3%E6%B3%A8%E4%B8%8E%E5%8F%96%E5%85%B3"><span class="toc-number">5.</span> <span class="toc-text"> 关注与取关</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">6.</span> <span class="toc-text"> 最后</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-weixin-mp-develop" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      微信公众号开发(关注、取消、发送模板消息)
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/04/23/weixin-mp-develop/" class="article-date">
+	  <time datetime="2020-04-23T15:55:43.000Z" itemprop="datePublished">2020-04-23</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%85%AC%E4%BC%97%E5%8F%B7/">公众号</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/%E5%85%AC%E4%BC%97%E5%8F%B7/" rel="tag">公众号</a>, <a class="article-tag-link-link" href="/tags/%E5%BE%AE%E4%BF%A1/" rel="tag">微信</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2020/04/23/weixin-mp-develop/" class="leancloud_visitors"  data-flag-title="微信公众号开发(关注、取消、发送模板消息)">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/04/23/weixin-mp-develop/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
+<p>现在很多业务会基于微信公众号实现。笔者做这部分开发的时候，项目不允许再引入外部jar包，故做的相当蛋疼。这里是总结时写的demo节选。</p>
+<h1 id="如何将xml消息转换成json对象"><a class="markdownIt-Anchor" href="#如何将xml消息转换成json对象"></a> 如何将xml消息转换成json对象？</h1>
+<h2 id="xstream"><a class="markdownIt-Anchor" href="#xstream"></a> xstream</h2>
+<p>maven依赖</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.thoughtworks.xstream<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>xstream<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.4.12<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>消息原型(xmlString)</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">xml</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ToUserName</span>&gt;</span>&lt;![CDATA[gh_d0c6b73cc08e]]&gt;<span class="tag">&lt;/<span class="name">ToUserName</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">FromUserName</span>&gt;</span>&lt;![CDATA[oHOLJw-r6lBxSXU4pRDKpoDyqWI0]]&gt;<span class="tag">&lt;/<span class="name">FromUserName</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">CreateTime</span>&gt;</span>1587459486<span class="tag">&lt;/<span class="name">CreateTime</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">MsgType</span>&gt;</span>&lt;![CDATA[event]]&gt;<span class="tag">&lt;/<span class="name">MsgType</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">Event</span>&gt;</span>&lt;![CDATA[subscribe]]&gt;<span class="tag">&lt;/<span class="name">Event</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">EventKey</span>&gt;</span>&lt;![CDATA[]]&gt;<span class="tag">&lt;/<span class="name">EventKey</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">xml</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>对应的java对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@XStreamAlias(&quot;xml&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XmlMessage</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@XStreamAlias(&quot;ToUserName&quot;)</span></span><br><span class="line">    <span class="meta">@XStreamConverter(XStreamCDataConverter.class)</span></span><br><span class="line">    <span class="keyword">private</span> String toUser;</span><br><span class="line">    <span class="meta">@XStreamAlias(&quot;FromUserName&quot;)</span></span><br><span class="line">    <span class="meta">@XStreamConverter(XStreamCDataConverter.class)</span></span><br><span class="line">    <span class="keyword">private</span> String fromUser;</span><br><span class="line">    <span class="meta">@XStreamAlias(&quot;CreateTime&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Long createTime;</span><br><span class="line">    <span class="meta">@XStreamAlias(&quot;MsgType&quot;)</span></span><br><span class="line">    <span class="meta">@XStreamConverter(XStreamCDataConverter.class)</span></span><br><span class="line">    <span class="keyword">private</span> String msgType;</span><br><span class="line">    <span class="meta">@XStreamAlias(&quot;Event&quot;)</span></span><br><span class="line">    <span class="meta">@XStreamConverter(XStreamCDataConverter.class)</span></span><br><span class="line">    <span class="keyword">private</span> String event;</span><br><span class="line">    <span class="meta">@XStreamAlias(&quot;EventKey&quot;)</span></span><br><span class="line">    <span class="meta">@XStreamConverter(XStreamCDataConverter.class)</span></span><br><span class="line">    <span class="keyword">private</span> String eventKey;</span><br><span class="line">    <span class="meta">@XStreamAlias(&quot;Ticket&quot;)</span></span><br><span class="line">    <span class="meta">@XStreamConverter(XStreamCDataConverter.class)</span></span><br><span class="line">    <span class="keyword">private</span> String ticket;</span><br><span class="line">    <span class="meta">@XStreamAlias(&quot;MsgID&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Long msgId;</span><br><span class="line">    <span class="meta">@XStreamAlias(&quot;Status&quot;)</span></span><br><span class="line">    <span class="meta">@XStreamConverter(value = XStreamCDataConverter.class)</span></span><br><span class="line">    <span class="keyword">private</span> String status;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XStreamCDataConverter</span> <span class="keyword">extends</span> <span class="title">StringConverter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">XStreamCDataConverter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&lt;![CDATA[&quot;</span> + <span class="keyword">super</span>.toString(obj) + <span class="string">&quot;]]&gt;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>类型转换</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">xml2ObjectByXStream</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    XStream xStream = <span class="keyword">new</span> XStream();</span><br><span class="line">    XStream.setupDefaultSecurity(xStream);</span><br><span class="line">    xStream.allowTypes(<span class="keyword">new</span> Class[]&#123;XmlMessage.class&#125;);</span><br><span class="line">    xStream.processAnnotations(XmlMessage.class);</span><br><span class="line"></span><br><span class="line">    XmlMessage message = (XmlMessage)xStream.fromXML(xmlString);</span><br><span class="line">    log.info(message.toString());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="w3cdom"><a class="markdownIt-Anchor" href="#w3cdom"></a> w3c.Dom</h2>
+<p>类型转换</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">xml2ObjectByDom</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();</span><br><span class="line">    DocumentBuilder builder = factory.newDocumentBuilder();</span><br><span class="line">    InputSource is = <span class="keyword">new</span> InputSource(<span class="keyword">new</span> StringReader(xmlString));</span><br><span class="line">    Document document = builder.parse(is);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// xml标签</span></span><br><span class="line">    Element rootElement = document.getDocumentElement();</span><br><span class="line">    NodeList childNodes = rootElement.getChildNodes();</span><br><span class="line">    Map&lt;String, Object&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;(<span class="number">16</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; childNodes.getLength(); i++) &#123;</span><br><span class="line">        Node node = childNodes.item(i);</span><br><span class="line">        <span class="keyword">if</span> (node.getNodeType() == Node.ELEMENT_NODE) &#123;</span><br><span class="line">            Element child = (Element) node;</span><br><span class="line"></span><br><span class="line">            String nodeName = child.getNodeName();</span><br><span class="line">            String textContent = child.getTextContent();</span><br><span class="line">            map.put(nodeName, textContent);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    log.info(map.toString());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="dom4j"><a class="markdownIt-Anchor" href="#dom4j"></a> dom4j</h2>
+<p>maven依赖</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>dom4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>dom4j<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.6.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>类型转换</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">xml2ObjectByDom4j</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">    Map&lt;String, String&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;(<span class="number">16</span>);</span><br><span class="line">    SAXReader saxReader = <span class="keyword">new</span> SAXReader();</span><br><span class="line">    org.dom4j.Document doc = saxReader.read(<span class="keyword">new</span> StringReader(xmlString));</span><br><span class="line">    org.dom4j.Element root = doc.getRootElement();</span><br><span class="line">    List&lt;org.dom4j.Element&gt; elements = root.elements();</span><br><span class="line">    <span class="keyword">for</span> (org.dom4j.Element element : elements) &#123;</span><br><span class="line">        map.put(element.getName(), element.getTextTrim());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    log.info(map.toString());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="json对象如何适配字段格式"><a class="markdownIt-Anchor" href="#json对象如何适配字段格式"></a> Json对象如何适配字段格式？</h1>
+<p>微信公众号默认的模板消息结构如下</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;touser&quot;</span>: <span class="string">&quot;oHOLJw-r6lBxSXU4pRDKpoDyqWI0&quot;</span>, </span><br><span class="line">    <span class="attr">&quot;template_id&quot;</span>: <span class="string">&quot;7BsKKP1MsDxbNmfYfTaNVm9guRvgwH8l2PmFbDCMip0&quot;</span>, </span><br><span class="line">    <span class="attr">&quot;url&quot;</span>: <span class="string">&quot;http://idea360.cn&quot;</span>, </span><br><span class="line">    <span class="attr">&quot;data&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;value&quot;</span>: <span class="string">&quot;登高射太阳！&quot;</span>, </span><br><span class="line">            <span class="attr">&quot;color&quot;</span>: <span class="string">&quot;#173177&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>消息占位符字典的形式很难扩展，所以我们想办法把它变为List集合处理</p>
+<p>maven依赖</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.google.code.gson<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>gson<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.8.6<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>消息结构定义</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeixinTemplateMessage</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String toUser;</span><br><span class="line">    <span class="keyword">private</span> String templateId;</span><br><span class="line">    <span class="keyword">private</span> String url;</span><br><span class="line">    <span class="keyword">private</span> List&lt;WeixinTemplateData&gt; data;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeixinTemplateData</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String key;</span><br><span class="line">    <span class="keyword">private</span> String value;</span><br><span class="line">    <span class="keyword">private</span> String color;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>类型转换适配器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TemplateMessageGsonAdapter</span> <span class="keyword">implements</span> <span class="title">JsonSerializer</span>&lt;<span class="title">WeixinTemplateMessage</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> JsonElement <span class="title">serialize</span><span class="params">(WeixinTemplateMessage message, Type typeOfSrc, JsonSerializationContext context)</span> </span>&#123;</span><br><span class="line">        JsonObject messageJson = <span class="keyword">new</span> JsonObject();</span><br><span class="line">        messageJson.addProperty(<span class="string">&quot;touser&quot;</span>, message.getToUser());</span><br><span class="line">        messageJson.addProperty(<span class="string">&quot;template_id&quot;</span>, message.getTemplateId());</span><br><span class="line">        messageJson.addProperty(<span class="string">&quot;url&quot;</span>, message.getUrl());</span><br><span class="line"></span><br><span class="line">        JsonObject data = <span class="keyword">new</span> JsonObject();</span><br><span class="line">        messageJson.add(<span class="string">&quot;data&quot;</span>, data);</span><br><span class="line"></span><br><span class="line">        WeixinTemplateData item;</span><br><span class="line">        JsonObject dataJson;</span><br><span class="line">        <span class="keyword">for</span>(Iterator itemData = message.getData().iterator(); itemData.hasNext(); data.add(item.getKey(), dataJson)) &#123;</span><br><span class="line">            item = (WeixinTemplateData)itemData.next();</span><br><span class="line">            dataJson = <span class="keyword">new</span> JsonObject();</span><br><span class="line">            dataJson.addProperty(<span class="string">&quot;value&quot;</span>, item.getValue());</span><br><span class="line">            dataJson.addProperty(<span class="string">&quot;color&quot;</span>, item.getColor());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> messageJson;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>gson注册转换器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeixinGsonBuilder</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> GsonBuilder INSTANCE = <span class="keyword">new</span> com.google.gson.GsonBuilder();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">WeixinGsonBuilder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Gson <span class="title">create</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> INSTANCE.create();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        INSTANCE.registerTypeAdapter(WeixinTemplateMessage.class, <span class="keyword">new</span> TemplateMessageGsonAdapter());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>格式转换</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">gsonAdapter</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    WeixinTemplateMessage weixinTemplateMessage = <span class="keyword">new</span> WeixinTemplateMessage();</span><br><span class="line">    weixinTemplateMessage.setTemplateId(<span class="string">&quot;7BsKKP1MsDxbNmfYfTaNVm9guRvgwH8l2PmFbDCMip0&quot;</span>);</span><br><span class="line">    weixinTemplateMessage.setToUser(<span class="string">&quot;oHOLJw-r6lBxSXU4pRDKpoDyqWI0&quot;</span>);</span><br><span class="line">    weixinTemplateMessage.setUrl(<span class="string">&quot;http://idea360.cn&quot;</span>);</span><br><span class="line"></span><br><span class="line">    WeixinTemplateData weixinTemplateData = <span class="keyword">new</span> WeixinTemplateData();</span><br><span class="line">    weixinTemplateData.setKey(<span class="string">&quot;name&quot;</span>);</span><br><span class="line">    weixinTemplateData.setValue(<span class="string">&quot;当我遇上你&quot;</span>);</span><br><span class="line">    weixinTemplateData.setColor(<span class="string">&quot;#ff0000&quot;</span>);</span><br><span class="line"></span><br><span class="line">    weixinTemplateMessage.setData(Arrays.asList(weixinTemplateData));</span><br><span class="line"></span><br><span class="line">    String message = WeixinGsonBuilder.create().toJson(weixinTemplateMessage);</span><br><span class="line">    log.info(message);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果输出发现就是前边我们需要的 <code>json</code> 格式。</p>
+<h1 id="消息推送"><a class="markdownIt-Anchor" href="#消息推送"></a> 消息推送</h1>
+<p>根据上述 <code>gson</code> 对模板消息的处理。参照 <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/vUrsBHHcfS7pIlQxCJrv8Q">微信公众号接口学习</a> 一文，即可轻松实现模板消息的推送。</p>
+<blockquote>
+<p>模板没有创建接口，在公众号后台配置即可。</p>
+</blockquote>
+<h1 id="关注与取关"><a class="markdownIt-Anchor" href="#关注与取关"></a> 关注与取关</h1>
+<p>关注与取关的实现都是基于微信的事件推送来实现的。上述关于 <code>xml</code> 消息的处理即是为这里做铺垫。微信默认的推送消息是xml格式的。这里需要注意的是: <strong>认证后的公众号有EncodingAESKey</strong>, 即可实现消息的加密选项。</p>
+<p>微信事件推送接口和签名校验接口地址相同，区别在于时间推送接口基于 <code>POST</code>。</p>
+<p>对于事件推送的处理的伪代码如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleEvent</span><span class="params">(String encType, String timestamp, String nonce, String signature, String xmlMessage, String msgSignature)</span> <span class="keyword">throws</span> WxException </span>&#123;</span><br><span class="line"></span><br><span class="line">    logger.info(<span class="string">&quot;收到微信推送消息:encType=&#123;&#125;, timestamp=&#123;&#125;, nonce=&#123;&#125;, signature=&#123;&#125;, xmlMessage=&#123;&#125;&quot;</span>, encType, timestamp, nonce, signature, xmlMessage);</span><br><span class="line"></span><br><span class="line">    WxMpXmlMessage message = <span class="keyword">null</span>;</span><br><span class="line">    XStream xStream = <span class="keyword">new</span> XStream();</span><br><span class="line">    XStream.setupDefaultSecurity(xStream);</span><br><span class="line">    xStream.allowTypes(<span class="keyword">new</span> Class[]&#123;WxMpXmlMessage.class&#125;);</span><br><span class="line">    xStream.processAnnotations(WxMpXmlMessage.class);</span><br><span class="line">    <span class="keyword">if</span> (encType == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// 明文传输的消息</span></span><br><span class="line">        message = (WxMpXmlMessage)xStream.fromXML(xmlMessage);</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;aes&quot;</span>.equalsIgnoreCase(encType)) &#123;</span><br><span class="line">        <span class="comment">// aes加密的消息</span></span><br><span class="line">        WxMpCryptUtil cryptUtil = <span class="keyword">new</span> WxMpCryptUtil(wxMpService.getWxMpConfigStorage());</span><br><span class="line">        String plainText = cryptUtil.decrypt(msgSignature, timestamp, nonce, xmlMessage);</span><br><span class="line">        logger.debug(<span class="string">&quot;解密后的原始xml消息内容：&#123;&#125;&quot;</span>, plainText);</span><br><span class="line"></span><br><span class="line">        message = (WxMpXmlMessage)xStream.fromXML(plainText);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (message.getMsgType().equals(<span class="string">&quot;event&quot;</span>)) &#123;</span><br><span class="line">        wxMpEventHandlerFactory.handler(message.getEvent(), message);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里由于事件比较多，我们可以基于 <code>工厂+策略</code> 的模式来做业务处理。</p>
+<ol>
+<li>定义handler接口</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">WxMpEventHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function">String <span class="title">event</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">handler</span><span class="params">(WxMpXmlMessage message)</span> <span class="keyword">throws</span> WxException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>handler实现</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SubscribeHandler</span> <span class="keyword">implements</span> <span class="title">WxMpEventHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger logger = LoggerFactory.getLogger(SubscribeHandler.class);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">event</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;subscribe&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Transactional(rollbackFor = Exception.class)</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handler</span><span class="params">(WxMpXmlMessage message)</span> <span class="keyword">throws</span> WxException </span>&#123;</span><br><span class="line">        <span class="comment">// 可以获取个人信息，绑定系统账户</span></span><br><span class="line">        logger.info(<span class="string">&quot;有新用户关注:&#123;&#125;&quot;</span>, userInfo);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>工厂类实现</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WxMpEventHandlerFactory</span> <span class="keyword">implements</span> <span class="title">ApplicationContextAware</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger logger = LoggerFactory.getLogger(WxMpEventHandlerFactory.class);</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Map&lt;String, WxMpEventHandler&gt; handlerMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">WxMpEventHandlerFactory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handler</span><span class="params">(String event, WxMpXmlMessage message)</span> <span class="keyword">throws</span> WxException </span>&#123;</span><br><span class="line">        WxMpEventHandler eventHandler = handlerMap.get(event);</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> != eventHandler) &#123;</span><br><span class="line">            eventHandler.handler(message);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            logger.error(<span class="string">&quot;暂无该类型消息处理器&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setApplicationContext</span><span class="params">(ApplicationContext applicationContext)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        Map&lt;String, WxMpEventHandler&gt; beansOfType = applicationContext.getBeansOfType(WxMpEventHandler.class);</span><br><span class="line">        <span class="keyword">for</span> (WxMpEventHandler bean : beansOfType.values()) &#123;</span><br><span class="line">            handlerMap.put(bean.event(), bean);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>事件处理</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (message.getMsgType().equals(<span class="string">&quot;event&quot;</span>)) &#123;</span><br><span class="line">    wxMpEventHandlerFactory.handler(message.getEvent(), message);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="最后"><a class="markdownIt-Anchor" href="#最后"></a> 最后</h1>
+<p>本篇到此结束。代码比较多，节选了关键代码。大家如有疑问可公众号【当我遇上你】后台留言。感谢阅读。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2020/04/23/weixin-mp-develop/" title="微信公众号开发(关注、取消、发送模板消息)" target="_blank" rel="external">https://idea360.cn/2020/04/23/weixin-mp-develop/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/05/02/docker-gitlab/" title="Docker实战之Gitlab搭建"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/04/22/maven-learning/" title="maven学习笔记"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

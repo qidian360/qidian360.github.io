@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>33.Redis 面试题汇总 | 当我遇上你</title>
+  <meta name="description" content="Redis 面试题汇总  1.Redis 使用场景有哪些？ 答：Redis 使用场景如下：  记录帖子点赞数、点击数、评论数 缓存近期热帖 缓存文章详情信息 记录用户会话信息   2.Redis 有哪些功能？ 答：Redis 功能如下：  数据缓存功能 分布式锁的功能 支持数据持久化 支持事务 支持消息队列   3.Redis 支持哪些数据类型？ 答：Redis 支持的数据类型如下：  Stri">
+<meta property="og:type" content="article">
+<meta property="og:title" content="33.Redis 面试题汇总">
+<meta property="og:url" content="https://idea360.cn/2020/10/08/interview-java-33/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="Redis 面试题汇总  1.Redis 使用场景有哪些？ 答：Redis 使用场景如下：  记录帖子点赞数、点击数、评论数 缓存近期热帖 缓存文章详情信息 记录用户会话信息   2.Redis 有哪些功能？ 答：Redis 功能如下：  数据缓存功能 分布式锁的功能 支持数据持久化 支持事务 支持消息队列   3.Redis 支持哪些数据类型？ 答：Redis 支持的数据类型如下：  Stri">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images.gitbook.cn/4ea56a20-e05b-11e9-99bc-59d43b30c641">
+<meta property="og:image" content="https://images.gitbook.cn/693382a0-e05b-11e9-bc61-0549c31758ee">
+<meta property="article:published_time" content="2020-10-08T06:09:29.000Z">
+<meta property="article:modified_time" content="2020-10-08T06:25:05.157Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="面试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://images.gitbook.cn/4ea56a20-e05b-11e9-99bc-59d43b30c641">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2020/10/08/interview-java-33/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#redis-%E9%9D%A2%E8%AF%95%E9%A2%98%E6%B1%87%E6%80%BB"><span class="toc-number">1.</span> <span class="toc-text"> Redis 面试题汇总</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1redis-%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-number">1.0.1.</span> <span class="toc-text"> 1.Redis 使用场景有哪些？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2redis-%E6%9C%89%E5%93%AA%E4%BA%9B%E5%8A%9F%E8%83%BD"><span class="toc-number">1.0.2.</span> <span class="toc-text"> 2.Redis 有哪些功能？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3redis-%E6%94%AF%E6%8C%81%E5%93%AA%E4%BA%9B%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.0.3.</span> <span class="toc-text"> 3.Redis 支持哪些数据类型？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4redis-%E7%9B%B8%E6%AF%94-memcached-%E6%9C%89%E5%93%AA%E4%BA%9B%E4%BC%98%E5%8A%BF"><span class="toc-number">1.0.4.</span> <span class="toc-text"> 4.Redis 相比 Memcached 有哪些优势？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5redis-%E6%94%AF%E6%8C%81%E5%93%AA%E4%BA%9B%E6%B7%98%E6%B1%B0%E7%AD%96%E7%95%A5"><span class="toc-number">1.0.5.</span> <span class="toc-text"> 5.Redis 支持哪些淘汰策略？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6%E5%AE%98%E6%96%B9%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E6%94%AF%E6%8C%81-windows-%E7%89%88%E6%9C%AC"><span class="toc-number">1.0.6.</span> <span class="toc-text"> 6.官方为什么不支持 Windows 版本？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7%E4%B8%BA%E4%BB%80%E4%B9%88-redis-%E6%98%AF%E5%8D%95%E7%BA%BF%E7%A8%8B%E7%9A%84"><span class="toc-number">1.0.7.</span> <span class="toc-text"> 7.为什么 Redis 是单线程的？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8%E4%B8%BA%E4%BB%80%E4%B9%88-redis-%E9%9C%80%E8%A6%81%E6%8A%8A%E6%89%80%E6%9C%89%E6%95%B0%E6%8D%AE%E6%94%BE%E5%88%B0%E5%86%85%E5%AD%98%E4%B8%AD"><span class="toc-number">1.0.8.</span> <span class="toc-text"> 8.为什么 Redis 需要把所有数据放到内存中？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9%E5%9C%A8-redis-%E4%B8%AD-key-%E7%9A%84%E6%9C%80%E5%A4%A7%E5%AE%B9%E9%87%8F%E6%98%AF%E5%A4%9A%E5%B0%91"><span class="toc-number">1.0.9.</span> <span class="toc-text"> 9.在 Redis 中 key 的最大容量是多少？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10jedis-%E5%92%8C-redisson-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">1.0.10.</span> <span class="toc-text"> 10.Jedis 和 Redisson 有什么区别？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#11redis-%E5%A6%82%E4%BD%95%E8%AE%BE%E7%BD%AE%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4%E5%A6%82%E4%BD%95%E8%AE%BE%E7%BD%AE%E6%B0%B8%E4%B9%85%E6%9C%89%E6%95%88"><span class="toc-number">1.0.11.</span> <span class="toc-text"> 11.Redis 如何设置过期时间？如何设置永久有效？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#12%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81-redis-%E7%9A%84%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7"><span class="toc-number">1.0.12.</span> <span class="toc-text"> 12.如何保证 Redis 的数据一致性？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#13redis-%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%98%AF%E4%BB%80%E4%B9%88%E5%AE%83%E6%9C%89%E4%BB%80%E4%B9%88%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-number">1.0.13.</span> <span class="toc-text"> 13.Redis 的数据结构是什么？它有什么优缺点？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#14redis-%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8%E8%B7%B3%E8%B7%83%E8%A1%A8%E6%9D%A5%E5%AD%98%E5%82%A8"><span class="toc-number">1.0.14.</span> <span class="toc-text"> 14.Redis 为什么用跳跃表来存储？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#15%E4%BB%80%E4%B9%88%E6%98%AF%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3"><span class="toc-number">1.0.15.</span> <span class="toc-text"> 15.什么是缓存穿透？如何解决？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#16%E4%BB%80%E4%B9%88%E6%98%AF%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9%E8%AF%A5%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3"><span class="toc-number">1.0.16.</span> <span class="toc-text"> 16.什么是缓存雪崩，该如何解决？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#17%E4%BB%80%E4%B9%88%E6%98%AF%E7%BC%93%E5%AD%98%E9%A2%84%E7%83%AD%E6%9C%89%E5%87%A0%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="toc-number">1.0.17.</span> <span class="toc-text"> 17.什么是缓存预热？有几种实现方式？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#18%E5%9C%A8-java-%E7%A8%8B%E5%BA%8F%E4%B8%AD%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8-redis"><span class="toc-number">1.0.18.</span> <span class="toc-text"> 18.在 Java 程序中如何使用 Redis？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19%E4%BB%80%E4%B9%88%E6%98%AF-redis-%E6%8C%81%E4%B9%85%E5%8C%96%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8C-redis-%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">1.0.19.</span> <span class="toc-text"> 19.什么是 Redis 持久化？如何进行 Redis 持久化？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#20rdb-%E5%92%8C-aof-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">1.0.20.</span> <span class="toc-text"> 20.RDB 和 AOF 有什么区别？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#21redis-%E7%9A%84%E7%9B%91%E6%8E%A7%E5%B7%A5%E5%85%B7%E9%83%BD%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-number">1.0.21.</span> <span class="toc-text"> 21.Redis 的监控工具都有哪些？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#22%E5%A6%82%E4%BD%95%E5%AE%9A%E4%BD%8D-redis-%E7%9A%84%E6%85%A2%E6%9F%A5%E8%AF%A2"><span class="toc-number">1.0.22.</span> <span class="toc-text"> 22.如何定位 Redis 的慢查询？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#23save-%E5%92%8C-bgsave-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">1.0.23.</span> <span class="toc-text"> 23.SAVE 和 BGSAVE 有什么区别？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#24redis-%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%90%8C%E6%AD%A5%E7%9A%84"><span class="toc-number">1.0.24.</span> <span class="toc-text"> 24.Redis 是如何实现同步的？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#25redis-%E5%8F%AF%E4%BB%A5%E5%88%87%E6%8D%A2%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%97%E5%A6%82%E4%BD%95%E5%88%87%E6%8D%A2"><span class="toc-number">1.0.25.</span> <span class="toc-text"> 25.Redis 可以切换数据库吗？如何切换？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#26redis-%E6%9C%89%E5%93%AA%E4%BA%9B%E9%9B%86%E7%BE%A4%E7%AD%96%E7%95%A5"><span class="toc-number">1.0.26.</span> <span class="toc-text"> 26.Redis 有哪些集群策略？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#27redis-%E9%9B%86%E7%BE%A4%E6%96%B9%E6%A1%88%E9%83%BD%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-number">1.0.27.</span> <span class="toc-text"> 27.Redis 集群方案都有哪些？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#28redis-%E5%A6%82%E4%BD%95%E5%81%9A%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96"><span class="toc-number">1.0.28.</span> <span class="toc-text"> 28.Redis 如何做内存优化？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#29%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E8%AE%BE%E8%AE%A1%E6%97%B6%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E5%93%AA%E4%BA%9B%E4%BA%8B%E9%A1%B9"><span class="toc-number">1.0.29.</span> <span class="toc-text"> 29.分布式锁设计时需要注意哪些事项？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#30redis-%E9%9B%86%E7%BE%A4%E5%AE%9E%E7%8E%B0%E7%9A%84%E5%8E%9F%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.0.30.</span> <span class="toc-text"> 30.Redis 集群实现的原理是什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#31redis-%E5%B8%B8%E8%A7%81%E7%9A%84%E6%80%A7%E8%83%BD%E9%97%AE%E9%A2%98%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-number">1.0.31.</span> <span class="toc-text"> 31.Redis 常见的性能问题有哪些？</span></a></li></ol></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-interview-java-33" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      33.Redis 面试题汇总
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/10/08/interview-java-33/" class="article-date">
+	  <time datetime="2020-10-08T06:09:29.000Z" itemprop="datePublished">2020-10-08</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Java%E9%9D%A2%E8%AF%95%E5%85%A8%E8%A7%A3%E6%9E%90/">Java面试全解析</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/java/" rel="tag">java</a>, <a class="article-tag-link-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2020/10/08/interview-java-33/" class="leancloud_visitors"  data-flag-title="33.Redis 面试题汇总">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/10/08/interview-java-33/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="redis-面试题汇总"><a class="markdownIt-Anchor" href="#redis-面试题汇总"></a> Redis 面试题汇总</h2>
+<h4 id="1redis-使用场景有哪些"><a class="markdownIt-Anchor" href="#1redis-使用场景有哪些"></a> 1.Redis 使用场景有哪些？</h4>
+<p>答：Redis 使用场景如下：</p>
+<ul>
+<li>记录帖子点赞数、点击数、评论数</li>
+<li>缓存近期热帖</li>
+<li>缓存文章详情信息</li>
+<li>记录用户会话信息</li>
+</ul>
+<h4 id="2redis-有哪些功能"><a class="markdownIt-Anchor" href="#2redis-有哪些功能"></a> 2.Redis 有哪些功能？</h4>
+<p>答：Redis 功能如下：</p>
+<ul>
+<li>数据缓存功能</li>
+<li>分布式锁的功能</li>
+<li>支持数据持久化</li>
+<li>支持事务</li>
+<li>支持消息队列</li>
+</ul>
+<h4 id="3redis-支持哪些数据类型"><a class="markdownIt-Anchor" href="#3redis-支持哪些数据类型"></a> 3.Redis 支持哪些数据类型？</h4>
+<p>答：Redis 支持的数据类型如下：</p>
+<ul>
+<li>String 字符串</li>
+<li>List 列表</li>
+<li>Set 无序集合</li>
+<li>ZSet 有序集合</li>
+<li>Hash 哈希类型</li>
+</ul>
+<h4 id="4redis-相比-memcached-有哪些优势"><a class="markdownIt-Anchor" href="#4redis-相比-memcached-有哪些优势"></a> 4.Redis 相比 Memcached 有哪些优势？</h4>
+<p>答：Redis 相比 Memcached 优势如下：</p>
+<ul>
+<li>Memcached 所有的值均是简单的字符串，Redis 支持更为丰富的数据类型</li>
+<li>Redis 的速度比 Memcached 要快</li>
+<li>Redis 可以持久化</li>
+<li>Redis 可以设置过期时间</li>
+<li>Redis 支持主从同步</li>
+</ul>
+<h4 id="5redis-支持哪些淘汰策略"><a class="markdownIt-Anchor" href="#5redis-支持哪些淘汰策略"></a> 5.Redis 支持哪些淘汰策略？</h4>
+<p>答：Redis 淘汰策略如下：</p>
+<ul>
+<li>noeviction：禁止淘汰数据；</li>
+<li>allkeys-lru：尝试回收最少使用的键，使得新添加的数据有空间存放；</li>
+<li>volatile-lru：尝试回收最少使用的键，但仅限于在过期集合的键，使得新添加的数据有空间存放；</li>
+<li>allkeys-random：回收随机的键使得新添加的数据有空间存放；</li>
+<li>volatile-random：回收随机的键使得新添加的数据有空间存放，但仅限于在过期集合的键；</li>
+<li>volatile-ttl：回收在过期集合的键，并且优先回收存活时间较短的键，使得新添加的数据有空间存放。</li>
+</ul>
+<h4 id="6官方为什么不支持-windows-版本"><a class="markdownIt-Anchor" href="#6官方为什么不支持-windows-版本"></a> 6.官方为什么不支持 Windows 版本？</h4>
+<p>答：Redis 官方是不支持 Windows 版的，因为目前 Linux 版本已经相当稳定，如果开发 Windows 版本，反而会带来兼容性等问题。</p>
+<h4 id="7为什么-redis-是单线程的"><a class="markdownIt-Anchor" href="#7为什么-redis-是单线程的"></a> 7.为什么 Redis 是单线程的？</h4>
+<p>答：因为 Redis 的瓶颈最有可能是机器内存或者网络带宽，而非单线程，既然单线程不是 Redis 的性能瓶颈，并且单线程又比较容易实现，所以 Redis 就选择使用单线程来实现。</p>
+<p>单线程并不代表运行速度就慢，比如，Nginx 和 NodeJs 都是单线程高性能的代表。</p>
+<h4 id="8为什么-redis-需要把所有数据放到内存中"><a class="markdownIt-Anchor" href="#8为什么-redis-需要把所有数据放到内存中"></a> 8.为什么 Redis 需要把所有数据放到内存中？</h4>
+<p>答：Redis 为了达到最快的读写速度将数据都读到内存中，并通过异步的方式将数据写入磁盘，这样 Redis 就拥有了快速查询和数据持久化等特征。</p>
+<h4 id="9在-redis-中-key-的最大容量是多少"><a class="markdownIt-Anchor" href="#9在-redis-中-key-的最大容量是多少"></a> 9.在 Redis 中 key 的最大容量是多少？</h4>
+<p>答：最大容量 512 MB，官方说明如下图所示：</p>
+<p><img src="https://images.gitbook.cn/4ea56a20-e05b-11e9-99bc-59d43b30c641" alt="1" /></p>
+<h4 id="10jedis-和-redisson-有什么区别"><a class="markdownIt-Anchor" href="#10jedis-和-redisson-有什么区别"></a> 10.Jedis 和 Redisson 有什么区别？</h4>
+<p>答：Jedis 和 Redisson 的区别如下：</p>
+<ul>
+<li>Jedis 是 Redis 的 Java 实现客户端，其 API 提供了比较全面的 Redis 命令的支持；</li>
+<li>Redisson 实现了分布式和可扩展的 Java 数据结构，和 Jedis 相比，功能较为简单，不支持字符串操作，不支持排序、事务、管道、分区等 Redis 特性。Redisson 的宗旨是促进使用者对 Redis 的关注分离，从而让使用者能够将精力更集中地放在处理业务逻辑上。</li>
+</ul>
+<h4 id="11redis-如何设置过期时间如何设置永久有效"><a class="markdownIt-Anchor" href="#11redis-如何设置过期时间如何设置永久有效"></a> 11.Redis 如何设置过期时间？如何设置永久有效？</h4>
+<p>答：Redis 通过 expire() 方法设置过期时间，语法：redis.expire(key, expiration)。当 expire 的过期时间设置为 -1 时，表示永不过期。</p>
+<h4 id="12如何保证-redis-的数据一致性"><a class="markdownIt-Anchor" href="#12如何保证-redis-的数据一致性"></a> 12.如何保证 Redis 的数据一致性？</h4>
+<p>答：可使用以下方法来保证 Redis 的数据一致性：</p>
+<ul>
+<li>合理设置缓存的过期时间；</li>
+<li>新增、更改、删除数据库操作时同步更新 Redis，可以使用事物机制来保证数据的一致性。</li>
+</ul>
+<h4 id="13redis-的数据结构是什么它有什么优缺点"><a class="markdownIt-Anchor" href="#13redis-的数据结构是什么它有什么优缺点"></a> 13.Redis 的数据结构是什么？它有什么优缺点？</h4>
+<p>答：Redis 的数据结构是跳跃表，跳跃表是一种基于链表的扩展，跳跃表还是一个链表，是一个有序的链表，在遍历的时候基于比较，但普通链表只能遍历，跳跃表加入了一个层的概念，层级越高元素越少，每次先从高层查找，直到找到合适的位置，从图中可以看到高层的节点远远少于底层的节点数，从而实现了跳跃式查找。</p>
+<p><img src="https://images.gitbook.cn/693382a0-e05b-11e9-bc61-0549c31758ee" alt="2" /></p>
+<p>跳跃表优点：</p>
+<ul>
+<li>实现比红黑树简单</li>
+<li>比红黑树更容易扩展</li>
+<li>红黑树插入删除时为了平衡高度需要旋转附近节点，高并发需要锁，跳跃表不需要考虑</li>
+</ul>
+<p>跳跃表缺点：</p>
+<ul>
+<li>比红黑树占用更多的内存，每个节点的大小取决于该节点层数</li>
+<li>空间局部性差导致缓存命中率低，比红黑树略慢</li>
+</ul>
+<h4 id="14redis-为什么用跳跃表来存储"><a class="markdownIt-Anchor" href="#14redis-为什么用跳跃表来存储"></a> 14.Redis 为什么用跳跃表来存储？</h4>
+<p>答：第一是因为红黑树存储比较复杂，调整涉及到多个节点的并发修改；第二是越接近根节点的地方越容易产生竞争，即使是不同叶子节点的操作由于平衡操作也可能逐级向上涉及到接近根的节点，而跳跃表可以用 CAS（Compare And Swap）来并发操作节点，比较容易实现，且更加局部化。</p>
+<h4 id="15什么是缓存穿透如何解决"><a class="markdownIt-Anchor" href="#15什么是缓存穿透如何解决"></a> 15.什么是缓存穿透？如何解决？</h4>
+<p>答：缓存穿透是指查询一个一定不存在的数据，由于缓存中没有，因而每次需要从数据库中查询，但数据库也没有相应的数据，所以不会写入缓存，这就将导致每次请求都会去数据库查询，这种行为就叫缓存穿透。</p>
+<p>解决方案是不管查询数据库是否有数据，都缓存起来，只不过把没有数据的缓存结果的过期时间设置为比较短的一个值，比如 3 分钟。</p>
+<h4 id="16什么是缓存雪崩该如何解决"><a class="markdownIt-Anchor" href="#16什么是缓存雪崩该如何解决"></a> 16.什么是缓存雪崩，该如何解决？</h4>
+<p>答：指缓存由于某些原因，比如，宕机或者缓存大量过期等，从而导致大量请求到达后端数据库，进而导致数据库崩溃的情况。</p>
+<p>解决缓存雪崩的方案如下：</p>
+<ul>
+<li>分析业务功能，尽量让缓存的失效时间点均匀分布；</li>
+<li>使用 Redis 主备，保证缓存系统的高可用。</li>
+</ul>
+<h4 id="17什么是缓存预热有几种实现方式"><a class="markdownIt-Anchor" href="#17什么是缓存预热有几种实现方式"></a> 17.什么是缓存预热？有几种实现方式？</h4>
+<p>答：缓存预热是指系统上线后，将相关的缓存数据直接加载到缓存系统，这样就可以避免在用户请求的时候，先查询数据库，然后再将数据缓存的问题。</p>
+<p>缓存预热的实现方式，可分为以下两种：</p>
+<ul>
+<li>数据量不大的时候，工程启动的时候进行加载缓存动作；</li>
+<li>数据量大的时候，设置一个定时任务脚本，进行缓存的刷新。</li>
+</ul>
+<h4 id="18在-java-程序中如何使用-redis"><a class="markdownIt-Anchor" href="#18在-java-程序中如何使用-redis"></a> 18.在 Java 程序中如何使用 Redis？</h4>
+<p>答：在 Java 程序中可使用 Jedis 来操作 Redis，使用步骤如下：</p>
+<p>1）添加 Jedis 引用</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>redis.clients<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jedis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>x.x.x<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<p>2）连接并操作 Redis</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Jedis jedis = <span class="keyword">new</span> Jedis(<span class="string">&quot;127.0.0.1&quot;</span>,<span class="number">6379</span>);</span><br><span class="line"><span class="comment">// 存值</span></span><br><span class="line">jedis.set(<span class="string">&quot;hello&quot;</span>,<span class="string">&quot;world&quot;</span>);</span><br><span class="line"><span class="comment">// 取值</span></span><br><span class="line">jedis.get(<span class="string">&quot;hello&quot;</span>);</span><br><span class="line"><span class="comment">// 关闭连接</span></span><br><span class="line">jedis.close();</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<h4 id="19什么是-redis-持久化如何进行-redis-持久化"><a class="markdownIt-Anchor" href="#19什么是-redis-持久化如何进行-redis-持久化"></a> 19.什么是 Redis 持久化？如何进行 Redis 持久化？</h4>
+<p>答：Redis 持久化是指将内存中的数据保存在磁盘中，重启的时候可以再次加载进行使用。 Redis 有以下两种持久化方案：</p>
+<ul>
+<li>RDB（Redis DataBase）：是指在制定的时间间隔内将内存中的数据集快照写入磁盘；</li>
+<li>AOF（Append Only File）：该机制将以日志的形式记录服务器所处理的每一个写操作，在 Redis 服务器启动之初会读取该文件来重新构建数据库，以保证启动后数据库中的数据是完整的。</li>
+</ul>
+<p>Redis 默认支持的持久化方式是 RDB 方式。</p>
+<h4 id="20rdb-和-aof-有什么区别"><a class="markdownIt-Anchor" href="#20rdb-和-aof-有什么区别"></a> 20.RDB 和 AOF 有什么区别？</h4>
+<p>答：RDB 和 AOF 的区别如下：</p>
+<ul>
+<li>RDB 可能会引起一定程度的数据丢失，AOF 不会造成数据丢失</li>
+<li>RDB 的启动效率更高</li>
+<li>AOF 占用的空间比 RDB 大，AOF 的同步速度比 RDB 慢</li>
+</ul>
+<p>总体来说如果对数据的完整性要求不高，RDB 是最好的解决方案，反之则选择 AOF。</p>
+<h4 id="21redis-的监控工具都有哪些"><a class="markdownIt-Anchor" href="#21redis-的监控工具都有哪些"></a> 21.Redis 的监控工具都有哪些？</h4>
+<p>答：常用的 Redis 监控工具如下：</p>
+<ul>
+<li>Redis-stat：采用 Ruby 开发，基于 Redis 的 info 命令来统计，不影响 Redis 的性能；</li>
+<li>RedisLive：采用 Python 开发的可视化及查询分析工具，它是通过监控脚本来 Redis 提供的 MONITOR 命令从被监控 Redis 实例中获取数据，并存储到 Redis 的监控实例中。</li>
+</ul>
+<h4 id="22如何定位-redis-的慢查询"><a class="markdownIt-Anchor" href="#22如何定位-redis-的慢查询"></a> 22.如何定位 Redis 的慢查询？</h4>
+<p>答：使用 slowlog get 来定位慢查询操作，如下所示：</p>
+<blockquote>
+<p>127.0.0.1:6379&gt; slowlog get</p>
+<ol>
+<li>
+<ol>
+<li>(integer) 0</li>
+</ol>
+</li>
+<li>
+<p>(integer) 1565937939</p>
+</li>
+<li>
+<p>(integer) 28003</p>
+</li>
+<li>
+<ol>
+<li>“lpush”</li>
+</ol>
+</li>
+<li>
+<p>“list”</p>
+</li>
+<li>
+<p>“1”</p>
+</li>
+<li>
+<p>“2”</p>
+</li>
+<li>
+<p>“6”</p>
+</li>
+<li>
+<p>“3”</p>
+</li>
+<li>
+<p>“4”</p>
+</li>
+<li>
+<p>“9”</p>
+</li>
+<li>
+<p>“8”</p>
+</li>
+</ol>
+</blockquote>
+<p>其中：</p>
+<ol>
+<li>
+<p>表示慢查询记录 id</p>
+</li>
+<li>
+<p>表示发起命令的时间戳</p>
+</li>
+<li>
+<p>表示命令耗时，单位为微秒</p>
+</li>
+<li>
+<p>表示该条记录的命令及参数</p>
+</li>
+</ol>
+<h4 id="23save-和-bgsave-有什么区别"><a class="markdownIt-Anchor" href="#23save-和-bgsave-有什么区别"></a> 23.SAVE 和 BGSAVE 有什么区别？</h4>
+<p>答：SAVE 和 BGSAVE 都是用于 Redis 持久化的，它们的区别如下：</p>
+<ul>
+<li>SAVE 直接调用 rdbSave 函数（用于 Redis 持久化的函数），阻塞 Redis 主进程，直到保存完成为止，在主进程阻塞期间，服务器不能处理客户端的任何请求；</li>
+<li>BGSAVE 则会创建一个子进程，子进程负责调用 rdbSave 函数，并在保存完成之后向主进程发送完成信号，Redis 服务器在 BGSAVE  执行期间仍然可以继续处理客户端的请求。</li>
+</ul>
+<h4 id="24redis-是如何实现同步的"><a class="markdownIt-Anchor" href="#24redis-是如何实现同步的"></a> 24.Redis 是如何实现同步的？</h4>
+<p>答：Redis 可以实现主从同步和从从同步。当第一次同步时，主节点做一次 BGSAVE，并同时将后续修改操作记录到内存中，待完成后将 RDB 文件全量同步到复制节点，复制节点接受完成后将 RDB 镜像加载到内存，加载完成后再通知主节点将期间修改的操作记录，同步到复制节点进行重放，这样就完成了同步过程。</p>
+<h4 id="25redis-可以切换数据库吗如何切换"><a class="markdownIt-Anchor" href="#25redis-可以切换数据库吗如何切换"></a> 25.Redis 可以切换数据库吗？如何切换？</h4>
+<p>答：Redis 不像 MySQL 等关系型数据库那样有数据库的概念，不同的数据存在不同的数据库中，Redis 数据库是由一个整数索引标识，而不是一个数据库名称，默认情况下客户端连接到数据库 0，可以在配置文件中控制数据库总数，默认是 16 个。</p>
+<p>可以使用 select index 来切换数据库，如下所示：</p>
+<blockquote>
+<p>127.0.0.1:6379&gt; select 0</p>
+<p>OK</p>
+</blockquote>
+<h4 id="26redis-有哪些集群策略"><a class="markdownIt-Anchor" href="#26redis-有哪些集群策略"></a> 26.Redis 有哪些集群策略？</h4>
+<p>答：Redis 集群策略有以下 3 种：</p>
+<ul>
+<li>主从策略：1 台机器作为写操作，另外 2 台作为读操作，类似于 MySQL 的主从方式；</li>
+<li>哨兵策略：增加 1 台机器作为哨兵，监控 3 台主从机器，当主节点挂机的时候，机器内部进行选举，从集群中从节点里指定一台机器升级为主节点，从而实现高可用。当主节点恢复的时候，加入到从节点中继续提供服务；</li>
+<li>集群策略：Redis 3.0 之后增加了集群的概念，可实现多主多从的结构，实现真正的高可用。</li>
+</ul>
+<h4 id="27redis-集群方案都有哪些"><a class="markdownIt-Anchor" href="#27redis-集群方案都有哪些"></a> 27.Redis 集群方案都有哪些？</h4>
+<p>答：Redis 集群实现方案如下：</p>
+<ul>
+<li>Twemproxy 是 Twitter 开源的 Redis 代理，它的使用和普通 Redis 完全一致，它会以一个代理的身份接收请求，并使用 hash 算法将请求转接到具体 Redis，将结果再返回 Twemproxy；</li>
+<li>Codis 是开源解决方案，也是目前用的最多的集群方案，基本和 Twemproxy 效果一致，但它支持在节点数量改变情况下，旧节点数据可恢复到新 hash 节点；</li>
+<li>Redis Cluster 是 Redis 3.0 自带的集群方案，特点在于他的分布式算法不是一致性 hash，而是 hash 槽的概念，以及自身支持节点设置从节点；</li>
+<li>业务代码层实现，创建几个独立的 Redis 实例，在代码层对 key 进行 hash 计算，然后去对应的 Redis 实例操作数据。这种方式对 hash 层代码要求比较高，考虑部分包括，节点失效后的替代算法方案，数据震荡后的自动脚本恢复、实例的监控等。</li>
+</ul>
+<h4 id="28redis-如何做内存优化"><a class="markdownIt-Anchor" href="#28redis-如何做内存优化"></a> 28.Redis 如何做内存优化？</h4>
+<p>答：把相关的信息整体存储，而不是把每个信息独立存储，这样就可以有效的减少内存使用。</p>
+<h4 id="29分布式锁设计时需要注意哪些事项"><a class="markdownIt-Anchor" href="#29分布式锁设计时需要注意哪些事项"></a> 29.分布式锁设计时需要注意哪些事项？</h4>
+<p>答：通常分布式锁在设计时，需同时满足以下四个约束条件。</p>
+<ul>
+<li>互斥性：在任意时刻，只有一个客户端能持有锁。</li>
+<li>安全性：即不会形成死锁，当一个客户端在持有锁的期间崩溃而没有主动解锁的情况下，其持有的锁也能够被正确释放，并保证后续其他客户端能加锁。</li>
+<li>可用性：就 Redis 而言，当提供锁服务的 Redis master 节点发生宕机等不可恢复性故障时，slave 节点能够升主并继续提供服务，支持客户端加锁和解锁；对基于分布式一致性算法实现的锁服务，如 ETCD 而言，当 leader 节点宕机时，follow 节点能够选举出新的 leader 继续提供锁服务。</li>
+<li>对称性：对于任意一个锁，其加锁和解锁必须是同一个客户端，即，客户端 A 不能把客户端 B 加的锁给解了。</li>
+</ul>
+<h4 id="30redis-集群实现的原理是什么"><a class="markdownIt-Anchor" href="#30redis-集群实现的原理是什么"></a> 30.Redis 集群实现的原理是什么？</h4>
+<p>答：集群的实现原理和集群的实现方式有关，如下所述：</p>
+<ul>
+<li>Redis Sentinal 着眼于高可用，在 Master 宕机时会自动将 Slave 提升为 Master，继续提供服务；</li>
+<li>Redis Cluster 着眼于扩展性，在单个 Redis 内存不足时，使用 Cluster 进行分片存储。</li>
+</ul>
+<h4 id="31redis-常见的性能问题有哪些"><a class="markdownIt-Anchor" href="#31redis-常见的性能问题有哪些"></a> 31.Redis 常见的性能问题有哪些？</h4>
+<p>答：Redis 常见性能问题如下：</p>
+<ul>
+<li>主服务器写内存快照，会阻塞主线程的工作，当快照比较大时对性能影响是非常大的，会间断性暂停服务，因此主服务器最好不要写内存快照；</li>
+<li>Redis 主从复制的性能问题，为了主从复制的速度和连接的稳定性，主从库最好在同一个局域网内。</li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2020/10/08/interview-java-33/" title="33.Redis 面试题汇总" target="_blank" rel="external">https://idea360.cn/2020/10/08/interview-java-33/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/10/08/interview-java-34/" title="34.设计模式常见面试题汇总"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/10/08/interview-java-32/" title="32.MySQL 面试题汇总"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

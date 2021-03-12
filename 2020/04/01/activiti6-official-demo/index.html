@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>activiti6官方示例笔记 | 当我遇上你</title>
+  <meta name="description" content="概述 要想学习 activiti工作流, 入门便是学习官方的示例。下边我将基于官方的demo做一遍流程，考虑自己的业务该如何基于 activiti 设计逻辑。 工作流要素:  流程 表单 用户  有了以上3大要素，流程便可以流转。   表单绑定在流程节点上，用来输入当前流程信息 用户绑定在流程节点上，用来处理当前流程任务    下载安装 首先到 官方 下载activiti6.0.0。 对 act">
+<meta property="og:type" content="article">
+<meta property="og:title" content="activiti6官方示例笔记">
+<meta property="og:url" content="https://idea360.cn/2020/04/01/activiti6-official-demo/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="概述 要想学习 activiti工作流, 入门便是学习官方的示例。下边我将基于官方的demo做一遍流程，考虑自己的业务该如何基于 activiti 设计逻辑。 工作流要素:  流程 表单 用户  有了以上3大要素，流程便可以流转。   表单绑定在流程节点上，用来输入当前流程信息 用户绑定在流程节点上，用来处理当前流程任务    下载安装 首先到 官方 下载activiti6.0.0。 对 act">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti6-download.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-identity-management.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-create-user.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-create-user-lisi.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-create-process1.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-process-create-form.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-process-create-2.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-bind-user1.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-create-newform.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-form-edit-field.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-save-form.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-create-app.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-app-bind-process.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-app-process-bind-result.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-app-publish.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-publish-home.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-publish-home.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-create-task1.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-create-task2.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-create-task3.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-handle-task1.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-handle-task2.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-handle-task3.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-admin-manage.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti-admin-history.png">
+<meta property="article:published_time" content="2020-04-01T15:35:10.000Z">
+<meta property="article:modified_time" content="2021-02-23T14:50:19.699Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="activiti">
+<meta property="article:tag" content="工作流">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/idea360/oss/raw/master/images/activiti6-download.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2020/04/01/activiti6-official-demo/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text"> 概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E5%AE%89%E8%A3%85"><span class="toc-number">2.</span> <span class="toc-text"> 下载安装</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86"><span class="toc-number">3.</span> <span class="toc-text"> 用户管理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B5%81%E7%A8%8B%E5%AE%9A%E4%B9%89"><span class="toc-number">4.</span> <span class="toc-text"> 流程定义</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E8%A1%A8%E5%8D%95"><span class="toc-number">5.</span> <span class="toc-text"> 动态表单</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B5%81%E7%A8%8B%E5%8F%91%E5%B8%83"><span class="toc-number">6.</span> <span class="toc-text"> 流程发布</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B5%81%E7%A8%8B%E6%B5%8B%E8%AF%95"><span class="toc-number">7.</span> <span class="toc-text"> 流程测试</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B5%81%E7%A8%8B%E7%AE%A1%E7%90%86"><span class="toc-number">8.</span> <span class="toc-text"> 流程管理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">9.</span> <span class="toc-text"> 持久化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#activiti-app%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">9.1.</span> <span class="toc-text"> activiti-app持久化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#activiti-admin%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">9.2.</span> <span class="toc-text"> activiti-admin持久化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#activiti-rest%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">9.3.</span> <span class="toc-text"> activiti-rest持久化</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">10.</span> <span class="toc-text"> 最后</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-activiti6-official-demo" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      activiti6官方示例笔记
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/04/01/activiti6-official-demo/" class="article-date">
+	  <time datetime="2020-04-01T15:35:10.000Z" itemprop="datePublished">2020-04-01</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/activiti/">activiti</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/activiti/" rel="tag">activiti</a>, <a class="article-tag-link-link" href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81/" rel="tag">工作流</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2020/04/01/activiti6-official-demo/" class="leancloud_visitors"  data-flag-title="activiti6官方示例笔记">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/04/01/activiti6-official-demo/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="概述"><a class="markdownIt-Anchor" href="#概述"></a> 概述</h1>
+<p>要想学习 <code>activiti工作流</code>, 入门便是学习官方的示例。下边我将基于官方的demo做一遍流程，考虑自己的业务该如何基于 <code>activiti</code> 设计逻辑。</p>
+<p>工作流要素:</p>
+<ul>
+<li>流程</li>
+<li>表单</li>
+<li>用户</li>
+</ul>
+<p>有了以上3大要素，流程便可以流转。</p>
+<blockquote>
+<ul>
+<li>表单绑定在流程节点上，用来输入当前流程信息</li>
+<li>用户绑定在流程节点上，用来处理当前流程任务</li>
+</ul>
+</blockquote>
+<h1 id="下载安装"><a class="markdownIt-Anchor" href="#下载安装"></a> 下载安装</h1>
+<p>首先到 <a target="_blank" rel="noopener" href="https://www.activiti.org/get-started">官方</a> 下载activiti6.0.0。</p>
+<p>对 <code>activiti7</code> 感兴趣的可以看 <a target="_blank" rel="noopener" href="https://activiti.gitbook.io/activiti-7-developers-guide/getting-started/getting-started-activiti-core">这里</a></p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti6-download.png" alt="" /></p>
+<p>然后将war包置于 <code>tomcat/webapps</code> 目录下，启动tomcat即可。</p>
+<table>
+<thead>
+<tr>
+<th>应用</th>
+<th>说明</th>
+<th>地址</th>
+<th>帐号/密码</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>activiti-app</td>
+<td>流程、表单、用户、发布、任务…</td>
+<td><a target="_blank" rel="noopener" href="http://localhost:8080/activiti-app">http://localhost:8080/activiti-app</a></td>
+<td>admin/test</td>
+</tr>
+<tr>
+<td>activiti-admin</td>
+<td>平台管理查看流程平台运行详情</td>
+<td><a target="_blank" rel="noopener" href="http://localhost:8080/activiti-admin">http://localhost:8080/activiti-admin</a></td>
+<td>admin/admin</td>
+</tr>
+<tr>
+<td>activiti-rest</td>
+<td>rest-api接口应用</td>
+<td><a target="_blank" rel="noopener" href="http://localhost:8080/activiti-rest">http://localhost:8080/activiti-rest</a></td>
+<td>kermit/kermit</td>
+</tr>
+</tbody>
+</table>
+<h1 id="用户管理"><a class="markdownIt-Anchor" href="#用户管理"></a> 用户管理</h1>
+<p>登录 <a target="_blank" rel="noopener" href="http://localhost:8080/activiti-app/#/">http://localhost:8080/activiti-app/#/</a></p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-identity-management.png" alt="" /></p>
+<ul>
+<li>Kickstart App：主要用于流程模型管理、表单管理及应用（App）管理，一个应用可以包含多个流程模型，应用可发布给其他用户使用。</li>
+<li>Task App：用于管理整个activiti-app的任务，在该功能里面也可以启动流程</li>
+<li>Idenity management：身份信息管理，可以管理用户、用户组等数据</li>
+</ul>
+<p>创建用户</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-create-user.png" alt="" /></p>
+<p>创建过程如下，注意id即是登录帐号。依次分别创建3个帐号用户审批流程。</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-create-user-lisi.png" alt="" /></p>
+<h1 id="流程定义"><a class="markdownIt-Anchor" href="#流程定义"></a> 流程定义</h1>
+<p>在主界面点击 <code>Kickstart App</code> 进入流程定义页面。</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-create-process1.png" alt="" /></p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-process-create-form.png" alt="" /></p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-process-create-2.png" alt="" /></p>
+<p>上图中模拟了一个请假流程，但是流程的执行需要人来参与，所以下边我们进行流程和帐号绑定。<br />
+选定流程节点后点击 <code>Assignment</code> 属性，会有弹窗进行绑定。</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-bind-user1.png" alt="" /></p>
+<p>同理，将其他节点进行绑定。然后保存关闭即可，可以看到一个流程已创建完毕。</p>
+<h1 id="动态表单"><a class="markdownIt-Anchor" href="#动态表单"></a> 动态表单</h1>
+<p>之前的都是基本演示，假设我们需要复杂的表单，那么可以在流程节点上绑定表单即可，这里做下动态表单的基本演示。</p>
+<ol>
+<li>选中流程节点，编辑 <code>Referenced form</code>, 动态创建节点关联表单。</li>
+</ol>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-create-newform.png" alt="" /></p>
+<ol start="2">
+<li>编辑表单字段</li>
+</ol>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-form-edit-field.png" alt="" /></p>
+<ol start="3">
+<li>保存表单</li>
+</ol>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-save-form.png" alt="" /></p>
+<p>这样在流程中我们就可以通过表单流转复杂的信息了，大家可以实践下，下边的流程就不演示了。</p>
+<h1 id="流程发布"><a class="markdownIt-Anchor" href="#流程发布"></a> 流程发布</h1>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-create-app.png" alt="" /></p>
+<p>将应用和我们之前创建的流程绑定。</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-app-bind-process.png" alt="" /></p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-app-process-bind-result.png" alt="" /></p>
+<p>然后点击发布流程</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-app-publish.png" alt="" /></p>
+<p>发布完成后回到首页可以看到发布结果</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-publish-home.png" alt="" /></p>
+<h1 id="流程测试"><a class="markdownIt-Anchor" href="#流程测试"></a> 流程测试</h1>
+<ol>
+<li>登录 <code>zhangsan</code> 帐号创建请假任务</li>
+</ol>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-publish-home.png" alt="" /></p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-create-task1.png" alt="" /></p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-create-task2.png" alt="" /></p>
+<p>查看流程当前流转状态。</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-create-task3.png" alt="" /></p>
+<p>点击 <code>complete</code>, 任务流转到下一个流程节点。</p>
+<ol start="2">
+<li>登录 <code>lisi</code> 审批</li>
+</ol>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-handle-task1.png" alt="" /></p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-handle-task2.png" alt="" /></p>
+<ol start="3">
+<li>同理，登录 <code>wangwu</code> 审批，流程结束。</li>
+</ol>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-handle-task3.png" alt="" /></p>
+<h1 id="流程管理"><a class="markdownIt-Anchor" href="#流程管理"></a> 流程管理</h1>
+<p>登录 <a target="_blank" rel="noopener" href="http://localhost:8080/activiti-admin/#/login">http://localhost:8080/activiti-admin/#/login</a></p>
+<p>配置应用服务节点</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-admin-manage.png" alt="" /></p>
+<p>配置后即可查看历史流程记录</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/activiti-admin-history.png" alt="" /></p>
+<h1 id="持久化"><a class="markdownIt-Anchor" href="#持久化"></a> 持久化</h1>
+<p><code>tomcat</code> 重启后，<code>activiti</code> 相关的数据会重置，如果想持久化，可以把数据持久化到 <code>MySQL</code>。</p>
+<p><strong>首先删除3个war包，避免重启覆盖我们修改的配置</strong></p>
+<h2 id="activiti-app持久化"><a class="markdownIt-Anchor" href="#activiti-app持久化"></a> activiti-app持久化</h2>
+<p>修改 <code>activiti-app/WEB-INF/classes/META-INF/activiti-app/activiti-app.properties</code>。修改后的配置文件如下(需要手动创建activiti6ui库，下边几个项目类似):</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">#</span><br><span class="line"># SECURITY</span><br><span class="line">#</span><br><span class="line">security.rememberme.key&#x3D;testkey</span><br><span class="line"></span><br><span class="line">#</span><br><span class="line"># DATABASE</span><br><span class="line">#</span><br><span class="line"></span><br><span class="line"># datasource.driver&#x3D;org.h2.Driver</span><br><span class="line"># datasource.url&#x3D;jdbc:h2:mem:activiti;DB_CLOSE_DELAY&#x3D;-1</span><br><span class="line"></span><br><span class="line">datasource.driver&#x3D;com.mysql.jdbc.Driver</span><br><span class="line">datasource.url&#x3D;jdbc:mysql:&#x2F;&#x2F;127.0.0.1:3306&#x2F;activiti6ui?characterEncoding&#x3D;UTF-8</span><br><span class="line"></span><br><span class="line">datasource.username&#x3D;root</span><br><span class="line">datasource.password&#x3D;root</span><br><span class="line"></span><br><span class="line"># hibernate.dialect&#x3D;org.hibernate.dialect.H2Dialect</span><br><span class="line">hibernate.dialect&#x3D;org.hibernate.dialect.MySQLDialect</span><br><span class="line">#hibernate.dialect&#x3D;org.hibernate.dialect.Oracle10gDialect</span><br><span class="line">#hibernate.dialect&#x3D;org.hibernate.dialect.SQLServerDialect</span><br><span class="line">#hibernate.dialect&#x3D;org.hibernate.dialect.DB2Dialect</span><br><span class="line">#hibernate.dialect&#x3D;org.hibernate.dialect.PostgreSQLDialect</span><br><span class="line"></span><br><span class="line"># </span><br><span class="line"># EMAIL</span><br><span class="line"># </span><br><span class="line"></span><br><span class="line">#email.enabled&#x3D;true</span><br><span class="line">#email.host&#x3D;localhost</span><br><span class="line">#email.port&#x3D;1025</span><br><span class="line">#email.useCredentials&#x3D;false</span><br><span class="line">#email.username&#x3D;</span><br><span class="line">#email.password&#x3D;</span><br><span class="line"></span><br><span class="line"># The base url that will be used to create urls in emails.</span><br><span class="line">#email.base.url&#x3D;http:&#x2F;&#x2F;localhost:9999&#x2F;activiti-app</span><br><span class="line"></span><br><span class="line">#email.from.default&#x3D;no-reply@activiti.alfresco.com</span><br><span class="line">#email.from.default.name&#x3D;Activiti</span><br><span class="line">#email.feedback.default&#x3D;activiti@alfresco.com</span><br><span class="line">        </span><br><span class="line">#</span><br><span class="line"># ACTIVITI</span><br><span class="line">#</span><br><span class="line"></span><br><span class="line">activiti.process-definitions.cache.max&#x3D;500</span><br><span class="line"></span><br><span class="line">#</span><br><span class="line"># DEFAULT ADMINISTRATOR ACCOUNT</span><br><span class="line">#</span><br><span class="line"></span><br><span class="line">admin.email&#x3D;admin</span><br><span class="line">admin.password&#x3D;test</span><br><span class="line">admin.lastname&#x3D;Administrator</span><br><span class="line"></span><br><span class="line">admin.group&#x3D;Superusers</span><br><span class="line"></span><br><span class="line"># The maximum file upload limit. Set to -1 to set to &#39;no limit&#39;. Expressed in bytes</span><br><span class="line">file.upload.max.size&#x3D;104857600</span><br><span class="line"></span><br><span class="line"># For development purposes, data folder is created inside the sources .&#x2F;data folder</span><br><span class="line">contentstorage.fs.rootFolder&#x3D;data&#x2F;</span><br><span class="line">contentstorage.fs.createRoot&#x3D;true</span><br><span class="line">contentstorage.fs.depth&#x3D;4</span><br><span class="line">contentstorage.fs.blockSize&#x3D;1024</span><br></pre></td></tr></table></figure>
+<h2 id="activiti-admin持久化"><a class="markdownIt-Anchor" href="#activiti-admin持久化"></a> activiti-admin持久化</h2>
+<p>修改 <code>activiti-admin/WEB-INF/classes/META-INF/activiti-admin/activiti-admin.properties</code>。修改后的配置文件如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br></pre></td><td class="code"><pre><span class="line"># security configuration (this key should be unique for your application, and kept secret)</span><br><span class="line">security.rememberme.key&#x3D;activitis3cr3tk3y</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># H2 example (default)</span><br><span class="line"></span><br><span class="line">#datasource.driver&#x3D;org.h2.Driver</span><br><span class="line">#datasource.url&#x3D;jdbc:h2:tcp:&#x2F;&#x2F;localhost&#x2F;activitiadmin</span><br><span class="line"></span><br><span class="line"># MySQL example</span><br><span class="line"></span><br><span class="line">datasource.driver&#x3D;com.mysql.jdbc.Driver</span><br><span class="line">datasource.url&#x3D;jdbc:mysql:&#x2F;&#x2F;127.0.0.1:3306&#x2F;activitiadmin?characterEncoding&#x3D;UTF-8</span><br><span class="line"></span><br><span class="line">#datasource.driver&#x3D;org.postgresql.Driver</span><br><span class="line">#datasource.url&#x3D;jdbc:postgresql:&#x2F;&#x2F;localhost:5432&#x2F;activitiadmin</span><br><span class="line"></span><br><span class="line">#datasource.driver&#x3D;com.microsoft.sqlserver.jdbc.SQLServerDriver</span><br><span class="line">#datasource.url&#x3D;jdbc:sqlserver:&#x2F;&#x2F;localhost:1433;databaseName&#x3D;activitiadmin</span><br><span class="line"></span><br><span class="line">#datasource.driver&#x3D;oracle.jdbc.driver.OracleDriver</span><br><span class="line">#datasource.url&#x3D;jdbc:oracle:thin:@localhost:1521:ACTIVITIADMIN</span><br><span class="line"></span><br><span class="line">#datasource.driver&#x3D;com.ibm.db2.jcc.DB2Driver</span><br><span class="line">#datasource.url&#x3D;jdbc:db2:&#x2F;&#x2F;localhost:50000&#x2F;activitiadmin</span><br><span class="line"></span><br><span class="line">datasource.username&#x3D;root</span><br><span class="line">datasource.password&#x3D;root</span><br><span class="line"></span><br><span class="line"># JNDI CONFIG</span><br><span class="line"></span><br><span class="line"># If uncommented, the datasource will be looked up using the configured JNDI name.</span><br><span class="line"># This will have preference over any datasource configuration done below that doesn&#39;t use JNDI</span><br><span class="line">#</span><br><span class="line"># Eg for JBoss: java:jboss&#x2F;datasources&#x2F;activitiDS</span><br><span class="line">#</span><br><span class="line">#datasource.jndi.name&#x3D;jdbc&#x2F;activitiDS</span><br><span class="line"></span><br><span class="line"># Set whether the lookup occurs in a J2EE container, i.e. if the prefix &quot;java:comp&#x2F;env&#x2F;&quot; needs to be added if the JNDI</span><br><span class="line"># name doesn&#39;t already contain it. Default is &quot;true&quot;.</span><br><span class="line">#datasource.jndi.resourceRef&#x3D;true</span><br><span class="line"></span><br><span class="line">#hibernate.dialect&#x3D;org.hibernate.dialect.H2Dialect</span><br><span class="line">hibernate.dialect&#x3D;org.hibernate.dialect.MySQLDialect</span><br><span class="line">#hibernate.dialect&#x3D;org.hibernate.dialect.Oracle10gDialect</span><br><span class="line">#hibernate.dialect&#x3D;org.hibernate.dialect.SQLServerDialect</span><br><span class="line">#hibernate.dialect&#x3D;org.hibernate.dialect.DB2Dialect</span><br><span class="line">#hibernate.dialect&#x3D;org.hibernate.dialect.PostgreSQLDialect</span><br><span class="line">#hibernate.show_sql&#x3D;false</span><br><span class="line">#hibernate.generate_statistics&#x3D;false</span><br><span class="line"></span><br><span class="line">#</span><br><span class="line"># Connection pool (see http:&#x2F;&#x2F;www.mchange.com&#x2F;projects&#x2F;c3p0&#x2F;#configuration)</span><br><span class="line">#</span><br><span class="line"></span><br><span class="line">#datasource.min-pool-size&#x3D;5</span><br><span class="line">#datasource.max-pool-size&#x3D;100</span><br><span class="line">#datasource.acquire-increment&#x3D;5</span><br><span class="line"># test query for H2, MySQL, PostgreSQL and Microsoft SQL Server</span><br><span class="line">#datasource.preferred-test-query&#x3D;select 1</span><br><span class="line"># test query for Oracle</span><br><span class="line">#datasource.preferred-test-query&#x3D;SELECT 1 FROM DUAL</span><br><span class="line"># test query for DB2</span><br><span class="line">#datasource.preferred-test-query&#x3D;SELECT current date FROM sysibm.sysdummy1</span><br><span class="line">#datasource.test-connection-on-checkin&#x3D;true</span><br><span class="line">#datasource.test-connection-on-checkout&#x3D;true</span><br><span class="line">#datasource.max-idle-time&#x3D;1800</span><br><span class="line">#datasource.max-idle-time-excess-connections&#x3D;1800</span><br><span class="line"></span><br><span class="line">#</span><br><span class="line"># Cluster settings</span><br><span class="line">#</span><br><span class="line"></span><br><span class="line"># This a period of time, expressed in milliseconds, that indicates</span><br><span class="line"># when a node is deemed to be inactive and is removed from the list</span><br><span class="line"># of nodes of a cluster (nor will it appear in the &#39;monitoring&#39; section of the application).</span><br><span class="line">#</span><br><span class="line"># When a node is properly shut down, it will send out an event indicating</span><br><span class="line"># it is shut down. From that point on, the data will be kept in memory for the amount</span><br><span class="line"># of time indicated here.</span><br><span class="line"># When a node is not properly shut down (eg hardware failure), this is the period of time</span><br><span class="line"># before removal, since the time the last event is received.</span><br><span class="line">#</span><br><span class="line"># Make sure the value here is higher than the sending interval of the nodes, to avoid</span><br><span class="line"># that nodes incorrectly removed.</span><br><span class="line">#</span><br><span class="line"># By default 10 minutes</span><br><span class="line">cluster.monitoring.max.inactive.time&#x3D;600000</span><br><span class="line"></span><br><span class="line"># A cron expression that configures when the check for inactive nodes is made.</span><br><span class="line"># When executed, this will mark any node that hasn&#39;t been active for &#39;cluster.monitoring.max.inactive.time&#39;</span><br><span class="line"># seconds, as an inactive node. Default: every 5 minutes.</span><br><span class="line">cluster.monitoring.inactive.check.cronexpression&#x3D;0 0&#x2F;5 * * * ?</span><br><span class="line"></span><br><span class="line"># REST endpoint config</span><br><span class="line">rest.app.name&#x3D;Activiti app</span><br><span class="line">rest.app.description&#x3D;Activiti app Rest config</span><br><span class="line">rest.app.host&#x3D;http:&#x2F;&#x2F;localhost</span><br><span class="line">rest.app.port&#x3D;8080</span><br><span class="line">rest.app.contextroot&#x3D;activiti-app</span><br><span class="line">rest.app.restroot&#x3D;api</span><br><span class="line">rest.app.user&#x3D;admin</span><br><span class="line">rest.app.password&#x3D;test</span><br><span class="line"></span><br><span class="line"># Passwords for rest endpoints and master configs are stored encrypted in the database using AES&#x2F;CBC&#x2F;PKCS5PADDING</span><br><span class="line"># It needs a 128-bit initialization vector (http:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Initialization_vector)</span><br><span class="line"># and a 128-bit secret key represented as 16 ascii characters below</span><br><span class="line">#</span><br><span class="line"># Do note that if these properties are changed after passwords have been saved, all existing passwords</span><br><span class="line"># will not be able to be decrypted and the password would need to be reset in the UI.</span><br><span class="line">security.encryption.credentialsIVSpec&#x3D;j8kdO2hejA9lKmm6</span><br><span class="line">security.encryption.credentialsSecretSpec&#x3D;9FGl73ngxcOoJvmL</span><br><span class="line"></span><br><span class="line"># BPMN 2.0 Modeler config</span><br><span class="line"></span><br><span class="line">modeler.url&#x3D;https:&#x2F;&#x2F;activiti.alfresco.com&#x2F;activiti-app&#x2F;api&#x2F;</span><br><span class="line"></span><br><span class="line"># Enable multi tenant support, disabled by default</span><br><span class="line">#multi-tenant.enabled&#x3D;true </span><br></pre></td></tr></table></figure>
+<p>由于该项目下没有mysql驱动包，手动复制 <code>activiti-app/WEB-INF/lib/mysql-connector-java-5.1.30.jar</code> 到 <code>activiti-admin/WEB-INF/lib</code> 下。</p>
+<h2 id="activiti-rest持久化"><a class="markdownIt-Anchor" href="#activiti-rest持久化"></a> activiti-rest持久化</h2>
+<p>修改 <code>activiti-rest/WEB-INF/classes/db.properties</code>, 修改后的配置文件如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># db&#x3D;h2</span><br><span class="line"># jdbc.driver&#x3D;org.h2.Driver</span><br><span class="line"># jdbc.url&#x3D;jdbc:h2:mem:activiti;DB_CLOSE_DELAY&#x3D;-1</span><br><span class="line"># jdbc.username&#x3D;sa</span><br><span class="line"># jdbc.password&#x3D;</span><br><span class="line"></span><br><span class="line">db&#x3D;MySQL</span><br><span class="line">datasource.driver&#x3D;com.mysql.jdbc.Driver</span><br><span class="line">datasource.url&#x3D;jdbc:mysql:&#x2F;&#x2F;127.0.0.1:3306&#x2F;activiti6ui?characterEncoding&#x3D;UTF-8</span><br><span class="line">datasource.username&#x3D;root</span><br><span class="line">datasource.password&#x3D;root</span><br><span class="line">hibernate.dialect&#x3D;org.hibernate.dialect.MySQLDialect</span><br></pre></td></tr></table></figure>
+<p>同样，将 <code>activiti-app/WEB-INF/lib/mysql-connector-java-5.1.30.jar</code> 复制到 <code>activiti-rest/WEB-INF/lib</code>。</p>
+<p>文档路径: <a target="_blank" rel="noopener" href="http://127.0.0.1:8080/activiti-rest/docs/">http://127.0.0.1:8080/activiti-rest/docs/</a></p>
+<p><strong>启动Tomcat, 按照默认url和帐号访问3个项目即可</strong></p>
+<h1 id="最后"><a class="markdownIt-Anchor" href="#最后"></a> 最后</h1>
+<p>官方 <code>activiti6</code> 前端是基于 <code>angular</code> 编写的，UI也不太符合国人习惯，大家可以基于官方设计重写UI即可。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2020/04/01/activiti6-official-demo/" title="activiti6官方示例笔记" target="_blank" rel="external">https://idea360.cn/2020/04/01/activiti6-official-demo/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/04/04/spring-cloud-gateway-route-static/" title="spring-cloud-gateway静态路由"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/03/29/curl-study/" title="curl用法指南"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

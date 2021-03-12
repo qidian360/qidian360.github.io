@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>5.深入了解 Java 中的异常处理 + 面试题 | 当我遇上你</title>
+  <meta name="description" content="深入了解 Java 中的异常处理 + 面试题 在程序开发中，异常处理也是我们经常使用到的模块，只是平常很少去深究异常模块的一些知识点。比如，try-catch 处理要遵循的原则是什么，finally 为什么总是能执行，try-catch 为什么比较消耗程序的执行性能等问题，我们本讲内容都会给出相应的答案，当然还有面试中经常被问到的异常模块的一些面试题，也是我们本篇要讲解的重点内容。  异常处理基">
+<meta property="og:type" content="article">
+<meta property="og:title" content="5.深入了解 Java 中的异常处理 + 面试题">
+<meta property="og:url" content="https://idea360.cn/2020/10/08/interview-java-5/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="深入了解 Java 中的异常处理 + 面试题 在程序开发中，异常处理也是我们经常使用到的模块，只是平常很少去深究异常模块的一些知识点。比如，try-catch 处理要遵循的原则是什么，finally 为什么总是能执行，try-catch 为什么比较消耗程序的执行性能等问题，我们本讲内容都会给出相应的答案，当然还有面试中经常被问到的异常模块的一些面试题，也是我们本篇要讲解的重点内容。  异常处理基">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images.gitbook.cn/5f929c30-be47-11e9-b285-b7b5dec36e68">
+<meta property="article:published_time" content="2020-10-08T06:07:52.000Z">
+<meta property="article:modified_time" content="2020-10-08T06:27:58.341Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="面试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://images.gitbook.cn/5f929c30-be47-11e9-b285-b7b5dec36e68">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2020/10/08/interview-java-5/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3-java-%E4%B8%AD%E7%9A%84%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86-%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text"> 深入了解 Java 中的异常处理 + 面试题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.1.</span> <span class="toc-text"> 异常处理基础介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E7%9A%84%E5%8F%91%E5%B1%95"><span class="toc-number">1.2.</span> <span class="toc-text"> 异常处理的发展</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%88%99"><span class="toc-number">1.3.</span> <span class="toc-text"> 异常处理的基本原则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%AF%B9%E7%A8%8B%E5%BA%8F%E6%80%A7%E8%83%BD%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="toc-number">1.4.</span> <span class="toc-text"> 异常处理对程序性能的影响</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="toc-number">1.5.</span> <span class="toc-text"> 相关面试题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-try-%E5%8F%AF%E4%BB%A5%E5%8D%95%E7%8B%AC%E4%BD%BF%E7%94%A8%E5%90%97"><span class="toc-number">1.5.1.</span> <span class="toc-text"> 1. try 可以单独使用吗？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E4%BB%A5%E4%B8%8B-try-catch-%E5%8F%AF%E4%BB%A5%E6%AD%A3%E5%B8%B8%E8%BF%90%E8%A1%8C%E5%90%97"><span class="toc-number">1.5.2.</span> <span class="toc-text"> 2. 以下 try-catch 可以正常运行吗？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E4%BB%A5%E4%B8%8B-try-finally-%E5%8F%AF%E4%BB%A5%E6%AD%A3%E5%B8%B8%E8%BF%90%E8%A1%8C%E5%90%97"><span class="toc-number">1.5.3.</span> <span class="toc-text"> 3. 以下 try-finally 可以正常运行吗？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E4%BB%A5%E4%B8%8B%E4%BB%A3%E7%A0%81-catch-%E9%87%8C%E4%B9%9F%E5%8F%91%E7%94%9F%E4%BA%86%E5%BC%82%E5%B8%B8%E7%A8%8B%E5%BA%8F%E4%BC%9A%E6%80%8E%E4%B9%88%E6%89%A7%E8%A1%8C"><span class="toc-number">1.5.4.</span> <span class="toc-text"> 4. 以下代码 catch 里也发生了异常，程序会怎么执行？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-%E4%BB%A5%E4%B8%8B%E4%BB%A3%E7%A0%81-finally-%E9%87%8C%E4%B9%9F%E5%8F%91%E7%94%9F%E4%BA%86%E5%BC%82%E5%B8%B8%E7%A8%8B%E5%BA%8F%E4%BC%9A%E6%80%8E%E4%B9%88%E8%BF%90%E8%A1%8C"><span class="toc-number">1.5.5.</span> <span class="toc-text"> 5. 以下代码 finally 里也发生了异常，程序会怎么运行？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-%E5%B8%B8%E8%A7%81%E7%9A%84%E8%BF%90%E8%A1%8C%E6%97%B6%E5%BC%82%E5%B8%B8%E9%83%BD%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-number">1.5.6.</span> <span class="toc-text"> 6. 常见的运行时异常都有哪些？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-exception-%E5%92%8C-error-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">1.5.7.</span> <span class="toc-text"> 7. Exception 和 Error 有什么区别？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8-throw-%E5%92%8C-throws-%E7%9A%84%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.5.8.</span> <span class="toc-text"> 8. throw 和 throws 的区别是什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-integerparseintnull-%E5%92%8C-doubleparsedoublenull-%E6%8A%9B%E5%87%BA%E7%9A%84%E5%BC%82%E5%B8%B8%E4%B8%80%E6%A0%B7%E5%90%97%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="toc-number">1.5.9.</span> <span class="toc-text"> 9. Integer.parseInt(null) 和 Double.parseDouble(null) 抛出的异常一样吗？为什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10-noclassdeffounderror-%E5%92%8C-classnofoundexception-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">1.5.10.</span> <span class="toc-text"> 10. NoClassDefFoundError 和 ClassNoFoundException 有什么区别？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#11-%E4%BD%BF%E7%94%A8-try-catch-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%AF%94%E8%BE%83%E8%80%97%E8%B4%B9%E6%80%A7%E8%83%BD"><span class="toc-number">1.5.11.</span> <span class="toc-text"> 11. 使用 try-catch 为什么比较耗费性能？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#12-%E5%B8%B8%E8%A7%81%E7%9A%84-oom-%E5%8E%9F%E5%9B%A0%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-number">1.5.12.</span> <span class="toc-text"> 12. 常见的 OOM 原因有哪些？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#13-%E4%BB%A5%E4%B8%8B%E7%A8%8B%E5%BA%8F%E7%9A%84%E8%BF%94%E5%9B%9E%E7%BB%93%E6%9E%9C%E6%98%AF"><span class="toc-number">1.5.13.</span> <span class="toc-text"> 13. 以下程序的返回结果是？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#14-finally-finalize-%E7%9A%84%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.5.14.</span> <span class="toc-text"> 14. finally、finalize 的区别是什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#15-%E4%B8%BA%E4%BB%80%E4%B9%88-finally-%E6%80%BB%E8%83%BD%E8%A2%AB%E6%89%A7%E8%A1%8C"><span class="toc-number">1.5.15.</span> <span class="toc-text"> 15. 为什么 finally 总能被执行？</span></a></li></ol></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-interview-java-5" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      5.深入了解 Java 中的异常处理 + 面试题
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/10/08/interview-java-5/" class="article-date">
+	  <time datetime="2020-10-08T06:07:52.000Z" itemprop="datePublished">2020-10-08</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Java%E9%9D%A2%E8%AF%95%E5%85%A8%E8%A7%A3%E6%9E%90/">Java面试全解析</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/java/" rel="tag">java</a>, <a class="article-tag-link-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2020/10/08/interview-java-5/" class="leancloud_visitors"  data-flag-title="5.深入了解 Java 中的异常处理 + 面试题">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/10/08/interview-java-5/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="深入了解-java-中的异常处理-面试题"><a class="markdownIt-Anchor" href="#深入了解-java-中的异常处理-面试题"></a> 深入了解 Java 中的异常处理 + 面试题</h2>
+<p>在程序开发中，异常处理也是我们经常使用到的模块，只是平常很少去深究异常模块的一些知识点。比如，try-catch 处理要遵循的原则是什么，finally 为什么总是能执行，try-catch 为什么比较消耗程序的执行性能等问题，我们本讲内容都会给出相应的答案，当然还有面试中经常被问到的异常模块的一些面试题，也是我们本篇要讲解的重点内容。</p>
+<h3 id="异常处理基础介绍"><a class="markdownIt-Anchor" href="#异常处理基础介绍"></a> 异常处理基础介绍</h3>
+<p>先来看看<strong>异常处理的语法格式</strong>：</p>
+<blockquote>
+<p>try{ … } catch(Exception e){ … } finally{ … }</p>
+</blockquote>
+<p>其中，</p>
+<ul>
+<li><strong>try</strong>：是用来监测可能会出现异常的代码段。</li>
+<li><strong>catch</strong>：是用来捕获 try 代码块中某些代码引发的异常，如果 try 里面没有异常发生，那么 catch 也一定不会执行。在 Java 语言中，try 后面可以有多个 catch 代码块，用来捕获不同类型的异常，需要注意的是前面的 catch 捕获异常类型一定不能包含后面的异常类型，这样的话，编译器会报错。</li>
+<li><strong>finally</strong>：不论 try-catch 如何执行，finally 一定是最后执行的代码块，所有通常用来处理一些资源的释放，比如关闭数据库连接、关闭打开的系统资源等。</li>
+</ul>
+<p><strong>异常处理的基本使用</strong>，具体可以参考下面的代码段：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    int i &#x3D; 10 &#x2F; 0;</span><br><span class="line">&#125; catch (ArithmeticException e) &#123;</span><br><span class="line">    System.out.println(e);</span><br><span class="line">&#125; finally &#123;</span><br><span class="line">    System.out.println(&quot;finally&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>多 catch 的使用</strong>，具体可以参考下面的代码段：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    int i &#x3D; Integer.parseInt(null);</span><br><span class="line">&#125; catch (ArithmeticException ae) &#123;</span><br><span class="line">    System.out.println(&quot;ArithmeticException&quot;);</span><br><span class="line">&#125; catch (NullPointerException ne) &#123;</span><br><span class="line">    System.out.println(&quot;NullPointerException&quot;);</span><br><span class="line">&#125; catch (Exception e) &#123;</span><br><span class="line">    System.out.println(&quot;Exception&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>需要注意的是 Java 虚拟机会从上往下匹配错误类型，因此前面的 catch 异常类型不能包含后面的异常类型。比如上面的代码如果把 Exception 放在最前面编译器就会报错，具体可以参考下面的图片。</p>
+<p><img src="https://images.gitbook.cn/5f929c30-be47-11e9-b285-b7b5dec36e68" alt="enter image description here" /></p>
+<h3 id="异常处理的发展"><a class="markdownIt-Anchor" href="#异常处理的发展"></a> 异常处理的发展</h3>
+<p>随着 Java 语言的发展，JDK 7 的时候引入了一些更加便利的特性，用来更方便的处理异常信息，如 try-with-resources 和 multiple catch，具体可以参考下面的代码段：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">try (FileReader fileReader &#x3D; new FileReader(&quot;&quot;);</span><br><span class="line">     FileWriter fileWriter &#x3D; new FileWriter(&quot;&quot;)) &#123; &#x2F;&#x2F; try-with-resources</span><br><span class="line">    System.out.println(&quot;try&quot;);</span><br><span class="line">&#125; catch (IOException | NullPointerException e) &#123; &#x2F;&#x2F; multiple catch</span><br><span class="line">    System.out.println(e);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="异常处理的基本原则"><a class="markdownIt-Anchor" href="#异常处理的基本原则"></a> 异常处理的基本原则</h3>
+<p>先来看下面这段代码，有没有发现一些问题？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">  &#x2F;&#x2F; ...</span><br><span class="line">  int i &#x3D; Integer.parseInt(null);</span><br><span class="line">&#125; catch (Exception e) &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上的这段代码，看似“正常”，却违背了异常处理的两个基本原则：</p>
+<ul>
+<li>第一，尽量不要捕获通用异常，也就是像 Exception 这样的异常，而是应该捕获特定异常，这样更有助于你发现问题；</li>
+<li>第二，不要忽略异常，像上面的这段代码只是加了 catch，但没有进行如何的错误处理，信息就已经输出了，这样在程序出现问题的时候，根本找不到问题出现的原因，因此要切记不要直接忽略异常。</li>
+</ul>
+<h3 id="异常处理对程序性能的影响"><a class="markdownIt-Anchor" href="#异常处理对程序性能的影响"></a> 异常处理对程序性能的影响</h3>
+<p>异常处理固然好用，但一定不要滥用，比如下面的代码片段：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 使用 com.alibaba.fastjson</span><br><span class="line">JSONArray array &#x3D; new JSONArray();</span><br><span class="line">String jsonStr &#x3D; &quot;&#123;&#39;name&#39;:&#39;laowang&#39;&#125;&quot;;</span><br><span class="line">try &#123;</span><br><span class="line">    array &#x3D; JSONArray.parseArray(jsonStr);</span><br><span class="line">&#125; catch (Exception e) &#123;</span><br><span class="line">    array.add(JSONObject.parse(jsonStr));</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(array.size());</span><br></pre></td></tr></table></figure>
+<p>这段代码是借助了 try-catch 去处理程序的业务逻辑，通常是不可取的，原因包括下列两个方面。</p>
+<ul>
+<li>try-catch 代码段会产生额外的性能开销，或者换个角度说，它往往会影响 JVM 对代码进行优化，因此建议仅捕获有必要的代码段，尽量不要一个大的 try 包住整段的代码；与此同时，利用异常控制代码流程，也不是一个好主意，远比我们通常意义上的条件语句（if/else、switch）要低效。</li>
+<li>Java 每实例化一个 Exception，都会对当时的栈进行快照，这是一个相对比较重的操作。如果发生的非常频繁，这个开销可就不能被忽略了。</li>
+</ul>
+<p>以上使用 try-catch 处理业务的代码，可以修改为下列代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 使用 com.alibaba.fastjson</span><br><span class="line">JSONArray array &#x3D; new JSONArray();</span><br><span class="line">String jsonStr &#x3D; &quot;&#123;&#39;name&#39;:&#39;laowang&#39;&#125;&quot;;</span><br><span class="line">if (null !&#x3D; jsonStr &amp;&amp; !jsonStr.equals(&quot;&quot;)) &#123;</span><br><span class="line">    String firstChar &#x3D; jsonStr.substring(0, 1);</span><br><span class="line">    if (firstChar.equals(&quot;&#123;&quot;)) &#123;</span><br><span class="line">        array.add(JSONObject.parse(jsonStr));</span><br><span class="line">    &#125; else if (firstChar.equals(&quot;[&quot;)) &#123;</span><br><span class="line">        array &#x3D; JSONArray.parseArray(jsonStr);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(array.size());</span><br></pre></td></tr></table></figure>
+<h3 id="相关面试题"><a class="markdownIt-Anchor" href="#相关面试题"></a> 相关面试题</h3>
+<h4 id="1-try-可以单独使用吗"><a class="markdownIt-Anchor" href="#1-try-可以单独使用吗"></a> 1. try 可以单独使用吗？</h4>
+<p>答：try 不能单独使用，否则就失去了 try 的意义和价值。</p>
+<h4 id="2-以下-try-catch-可以正常运行吗"><a class="markdownIt-Anchor" href="#2-以下-try-catch-可以正常运行吗"></a> 2. 以下 try-catch 可以正常运行吗？</h4>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    int i &#x3D; 10 &#x2F; 0;</span><br><span class="line">&#125; catch &#123;</span><br><span class="line">    System.out.println(&quot;last&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>答：不能正常运行，catch 后必须包含异常信息，如 catch (Exception e)。</p>
+<h4 id="3-以下-try-finally-可以正常运行吗"><a class="markdownIt-Anchor" href="#3-以下-try-finally-可以正常运行吗"></a> 3. 以下 try-finally 可以正常运行吗？</h4>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    int i &#x3D; 10 &#x2F; 0;</span><br><span class="line">&#125; finally &#123;</span><br><span class="line">    System.out.println(&quot;last&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>答：可以正常运行。</p>
+<h4 id="4-以下代码-catch-里也发生了异常程序会怎么执行"><a class="markdownIt-Anchor" href="#4-以下代码-catch-里也发生了异常程序会怎么执行"></a> 4. 以下代码 catch 里也发生了异常，程序会怎么执行？</h4>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">10</span> / <span class="number">0</span>;</span><br><span class="line">    System.out.println(<span class="string">&quot;try&quot;</span>);</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    <span class="keyword">int</span> j = <span class="number">2</span> / <span class="number">0</span>;</span><br><span class="line">    System.out.println(<span class="string">&quot;catch&quot;</span>);</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;finally&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(<span class="string">&quot;main&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p>答：程序会打印出 finally 之后抛出异常并终止运行。</p>
+<h4 id="5-以下代码-finally-里也发生了异常程序会怎么运行"><a class="markdownIt-Anchor" href="#5-以下代码-finally-里也发生了异常程序会怎么运行"></a> 5. 以下代码 finally 里也发生了异常，程序会怎么运行？</h4>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    System.out.println(&quot;try&quot;);</span><br><span class="line">&#125; catch (Exception e) &#123;</span><br><span class="line">    System.out.println(&quot;catch&quot;);</span><br><span class="line">&#125; finally &#123;</span><br><span class="line">    int k &#x3D; 3 &#x2F; 0;</span><br><span class="line">    System.out.println(&quot;finally&quot;);</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(&quot;main&quot;);</span><br></pre></td></tr></table></figure>
+<p>答：程序在输出 try 之后抛出异常并终止运行，不会再执行 finally 异常之后的代码。</p>
+<h4 id="6-常见的运行时异常都有哪些"><a class="markdownIt-Anchor" href="#6-常见的运行时异常都有哪些"></a> 6. 常见的运行时异常都有哪些？</h4>
+<p>答：常见的运行时异常如下：</p>
+<ul>
+<li>java.lang.NullPointerException 空指针异常；出现原因：调用了未经初始化的对象或者是不存在的对象；</li>
+<li>java.lang.ClassNotFoundException 指定的类找不到；出现原因：类的名称和路径加载错误，通常是程序</li>
+</ul>
+<p>试图通过字符串来加载某个类时引发的异常；</p>
+<ul>
+<li>java.lang.NumberFormatException 字符串转换为数字异常；出现原因：字符型数据中包含非数字型字符；</li>
+<li>java.lang.IndexOutOfBoundsException 数组角标越界异常，常见于操作数组对象时发生；</li>
+<li>java.lang.ClassCastException 数据类型转换异常；</li>
+<li>java.lang.NoClassDefFoundException 未找到类定义错误；</li>
+<li>java.lang.NoSuchMethodException 方法不存在异常；</li>
+<li>java.lang.IllegalArgumentException 方法传递参数错误。</li>
+</ul>
+<h4 id="7-exception-和-error-有什么区别"><a class="markdownIt-Anchor" href="#7-exception-和-error-有什么区别"></a> 7. Exception 和 Error 有什么区别？</h4>
+<p>答：Exception 和 Error 都属于 Throwable 的子类，在 Java 中只有 Throwable 及其之类才能被捕获或抛出，它们的区别如下：</p>
+<ul>
+<li>Exception（异常）是程序正常运行中，可以预期的意外情况，并且可以使用 try/catch 进行捕获处理的。Exception 又分为运行时异常（Runtime Exception）和受检查的异常（Checked Exception），运行时异常编译能通过，但如果运行过程中出现这类未处理的异常，程序会终止运行；而受检查的异常，要么用 try/catch 捕获，要么用 throws 字句声明抛出，否则编译不会通过。</li>
+<li>Error（错误）是指突发的非正常情况，通常是不可以恢复的，比如 Java 虚拟机内存溢出，诸如此类的问题叫做 Error。</li>
+</ul>
+<h4 id="8-throw-和-throws-的区别是什么"><a class="markdownIt-Anchor" href="#8-throw-和-throws-的区别是什么"></a> 8. throw 和 throws 的区别是什么？</h4>
+<p>答：它们的区别如下：</p>
+<ul>
+<li>throw 语句用在方法体内，表示抛出异常由方法体内的语句处理，执行 throw 一定是抛出了某种异常；</li>
+<li>throws 语句用在方法声明的后面，该方法的调用者要对异常进行处理，throws 代表可能会出现某种异常，并不一定会发生这种异常。</li>
+</ul>
+<h4 id="9-integerparseintnull-和-doubleparsedoublenull-抛出的异常一样吗为什么"><a class="markdownIt-Anchor" href="#9-integerparseintnull-和-doubleparsedoublenull-抛出的异常一样吗为什么"></a> 9. Integer.parseInt(null) 和 Double.parseDouble(null) 抛出的异常一样吗？为什么？</h4>
+<p>答：Integer.parseInt(null) 和 Double.parseDouble(null) 抛出的异常类型不一样，如下所示：</p>
+<ul>
+<li>Integer.parseInt(null) 抛出的异常是 NumberFormatException；</li>
+<li>Double.parseDouble(null) 抛出的异常是 NullPointerException。</li>
+</ul>
+<p>至于为什么会产生不同的异常，其实没有特殊的原因，主要是由于这两个功能是不同人开发的，因而就产生了两种不同的异常信息。</p>
+<h4 id="10-noclassdeffounderror-和-classnofoundexception-有什么区别"><a class="markdownIt-Anchor" href="#10-noclassdeffounderror-和-classnofoundexception-有什么区别"></a> 10. NoClassDefFoundError 和 ClassNoFoundException 有什么区别？</h4>
+<ul>
+<li>NoClassDefFoundError 是 Error（错误）类型，而 ClassNoFoundExcept 是 Exception（异常）类型；</li>
+<li>ClassNoFoundExcept 是 Java 使用 Class.forName 方法动态加载类，没有加载到，就会抛出 ClassNoFoundExcept 异常；</li>
+<li>NoClassDefFoundError 是 Java 虚拟机或者 ClassLoader 尝试加载类的时候却找不到类订阅导致的，也就是说要查找的类在编译的时候是存在的，运行的时候却找不到，这个时候就会出现 NoClassDefFoundError 的错误。</li>
+</ul>
+<h4 id="11-使用-try-catch-为什么比较耗费性能"><a class="markdownIt-Anchor" href="#11-使用-try-catch-为什么比较耗费性能"></a> 11. 使用 try-catch 为什么比较耗费性能？</h4>
+<p>答：这个问题要从 JVM（Java 虚拟机）层面找答案了。首先 Java 虚拟机在构造异常实例的时候需要生成该异常的栈轨迹，这个操作会逐一访问当前线程的栈帧，并且记录下各种调试信息，包括栈帧所指向方法的名字，方法所在的类名、文件名，以及在代码中的第几行触发该异常等信息，这就是使用异常捕获耗时的主要原因了。</p>
+<h4 id="12-常见的-oom-原因有哪些"><a class="markdownIt-Anchor" href="#12-常见的-oom-原因有哪些"></a> 12. 常见的 OOM 原因有哪些？</h4>
+<p>答：常见的 OOM 原因有以下几个：</p>
+<ul>
+<li>数据库资源没有关闭；</li>
+<li>加载特别大的图片；</li>
+<li>递归次数过多，并一直操作未释放的变量。</li>
+</ul>
+<h4 id="13-以下程序的返回结果是"><a class="markdownIt-Anchor" href="#13-以下程序的返回结果是"></a> 13. 以下程序的返回结果是？</h4>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getNumber</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">int</span> number = <span class="number">0</span> / <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">3</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>A：0</p>
+<p>B：2</p>
+<p>C：3</p>
+<p>D：1</p>
+<p>答：3</p>
+<p>题目解析：程序最后一定会执行 finally 里的代码，会把之前的结果覆盖为 3。</p>
+<h4 id="14-finally-finalize-的区别是什么"><a class="markdownIt-Anchor" href="#14-finally-finalize-的区别是什么"></a> 14. finally、finalize 的区别是什么？</h4>
+<p>答：finally、finalize 的区别如下：</p>
+<ul>
+<li>finally 是异常处理语句的一部分，表示总是执行；</li>
+<li>finalize 是 Object 类的一个方法，子类可以覆盖该方法以实现资源清理工作，垃圾回收之前会调用此方法。</li>
+</ul>
+<h4 id="15-为什么-finally-总能被执行"><a class="markdownIt-Anchor" href="#15-为什么-finally-总能被执行"></a> 15. 为什么 finally 总能被执行？</h4>
+<p>答：finally 总会被执行，都是编译器的作用，因为编译器在编译 Java 代码时，会复制 finally 代码块的内容，然后分别放在 try-catch 代码块所有的正常执行路径及异常执行路径的出口中，这样 finally 才会不管发生什么情况都会执行。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2020/10/08/interview-java-5/" title="5.深入了解 Java 中的异常处理 + 面试题" target="_blank" rel="external">https://idea360.cn/2020/10/08/interview-java-5/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/10/08/interview-java-6/" title="6.玩转时间操作 + 面试题"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/10/08/interview-java-4/" title="4.Java 中的运算符和流程控制 + 面试题"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

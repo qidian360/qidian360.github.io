@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>37.常见面试题翻车合集 | 当我遇上你</title>
+  <meta name="description" content="常见面试题翻车合集  1.去掉 main 方法的 static 修饰符，程序会怎样？ A：程序无法编译 B：程序正常编译，正常运行 C：程序正常编译，正常运行一下马上退出 D：程序正常编译，运行时报错 答：D 题目解析：运行时异常如下：  错误: main 方法不是类 xxx 中的 static, 请将 main 方法定义为: public static void main(String[] a">
+<meta property="og:type" content="article">
+<meta property="og:title" content="37.常见面试题翻车合集">
+<meta property="og:url" content="https://idea360.cn/2020/10/08/interview-java-37/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="常见面试题翻车合集  1.去掉 main 方法的 static 修饰符，程序会怎样？ A：程序无法编译 B：程序正常编译，正常运行 C：程序正常编译，正常运行一下马上退出 D：程序正常编译，运行时报错 答：D 题目解析：运行时异常如下：  错误: main 方法不是类 xxx 中的 static, 请将 main 方法定义为: public static void main(String[] a">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-10-08T06:09:43.000Z">
+<meta property="article:modified_time" content="2020-10-08T06:25:44.838Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="面试">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2020/10/08/interview-java-37/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E9%A2%98%E7%BF%BB%E8%BD%A6%E5%90%88%E9%9B%86"><span class="toc-number">1.</span> <span class="toc-text"> 常见面试题翻车合集</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E5%8E%BB%E6%8E%89-main-%E6%96%B9%E6%B3%95%E7%9A%84-static-%E4%BF%AE%E9%A5%B0%E7%AC%A6%E7%A8%8B%E5%BA%8F%E4%BC%9A%E6%80%8E%E6%A0%B7"><span class="toc-number">1.0.1.</span> <span class="toc-text"> 1.去掉 main 方法的 static 修饰符，程序会怎样？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E4%BB%A5%E4%B8%8B%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C%E7%9A%84%E7%BB%93%E6%9E%9C%E6%98%AF"><span class="toc-number">1.0.2.</span> <span class="toc-text"> 2.以下程序运行的结果是？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E4%BB%A5%E4%B8%8B%E7%A8%8B%E5%BA%8F%E6%9C%89%E5%87%A0%E5%A4%84%E9%94%99%E8%AF%AF"><span class="toc-number">1.0.3.</span> <span class="toc-text"> 3.以下程序有几处错误？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%E4%BB%A5%E4%B8%8B%E7%A8%8B%E5%BA%8F%E6%89%A7%E8%A1%8C%E7%9A%84%E7%BB%93%E6%9E%9C%E6%98%AF"><span class="toc-number">1.0.4.</span> <span class="toc-text"> 4.以下程序执行的结果是？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5switch-%E8%AF%AD%E6%B3%95%E5%8F%AF%E4%BB%A5%E9%85%8D%E5%90%88-return-%E4%B8%80%E8%B5%B7%E4%BD%BF%E7%94%A8%E5%90%97return-%E5%92%8C-break-%E5%9C%A8-switch-%E4%BD%BF%E7%94%A8%E4%B8%8A%E6%9C%89%E4%BD%95%E4%B8%8D%E5%90%8C"><span class="toc-number">1.0.5.</span> <span class="toc-text"> 5.switch 语法可以配合 return 一起使用吗？return 和 break 在 switch 使用上有何不同？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6%E4%B8%80%E4%B8%AA%E6%A0%88%E7%9A%84%E5%85%A5%E6%A0%88%E9%A1%BA%E5%BA%8F%E6%98%AF-a-b-c-d-e-%E5%88%99%E5%87%BA%E6%A0%88%E4%B8%8D%E5%8F%AF%E8%83%BD%E7%9A%84%E9%A1%BA%E5%BA%8F%E6%98%AF"><span class="toc-number">1.0.6.</span> <span class="toc-text"> 6.一个栈的入栈顺序是 A、B、C、D、E 则出栈不可能的顺序是？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7%E5%8F%AF%E4%BB%A5%E5%9C%A8-finally-%E5%9D%97%E4%B8%AD%E4%BD%BF%E7%94%A8-return%E5%90%97"><span class="toc-number">1.0.7.</span> <span class="toc-text"> 7.可以在 finally 块中使用 return吗？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8fileinputstream-%E5%8F%AF%E4%BB%A5%E5%AE%9E%E7%8E%B0%E4%BB%80%E4%B9%88%E5%8A%9F%E8%83%BD"><span class="toc-number">1.0.8.</span> <span class="toc-text"> 8.FileInputStream 可以实现什么功能？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9%E4%BB%A5%E4%B8%8B%E7%A8%8B%E5%BA%8F%E6%89%93%E5%8D%B0%E7%9A%84%E7%BB%93%E6%9E%9C%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.0.9.</span> <span class="toc-text"> 9.以下程序打印的结果是什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10%E5%A6%82%E4%BD%95%E8%AE%BE%E7%BD%AE%E5%AE%88%E6%8A%A4%E7%BA%BF%E7%A8%8B"><span class="toc-number">1.0.10.</span> <span class="toc-text"> 10.如何设置守护线程？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#11%E4%BB%A5%E4%B8%8B%E8%AF%B4%E6%B3%95%E4%B8%AD%E5%85%B3%E4%BA%8E%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1%E7%9A%84%E8%AF%B4%E6%B3%95%E9%94%99%E8%AF%AF%E7%9A%84%E6%98%AF"><span class="toc-number">1.0.11.</span> <span class="toc-text"> 11.以下说法中关于线程通信的说法错误的是？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#12reentrantlock-%E9%BB%98%E8%AE%A4%E5%88%9B%E5%BB%BA%E7%9A%84%E6%98%AF%E5%85%AC%E5%B9%B3%E9%94%81%E8%BF%98%E6%98%AF%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81"><span class="toc-number">1.0.12.</span> <span class="toc-text"> 12.ReentrantLock 默认创建的是公平锁还是非公平锁？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#13reentrantlock-%E5%A6%82%E4%BD%95%E5%9C%A8%E4%B8%80%E6%AE%B5%E6%97%B6%E9%97%B4%E5%86%85%E6%97%A0%E9%98%BB%E5%A1%9E%E5%B0%9D%E8%AF%95%E8%AE%BF%E9%97%AE%E9%94%81"><span class="toc-number">1.0.13.</span> <span class="toc-text"> 13.ReentrantLock 如何在一段时间内无阻塞尝试访问锁？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#14%E6%9E%9A%E4%B8%BE%E6%AF%94%E8%BE%83%E4%BD%BF%E7%94%A8-equals-%E8%BF%98%E6%98%AF"><span class="toc-number">1.0.14.</span> <span class="toc-text"> 14.枚举比较使用 equals 还是 &#x3D;&#x3D;？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#15%E5%9C%A8-spring-%E4%B8%AD%E4%BD%BF%E7%94%A8-value-%E8%B5%8B%E5%80%BC%E9%9D%99%E6%80%81%E5%8F%98%E9%87%8F%E4%B8%BA%E4%BB%80%E4%B9%88-null%E6%80%8E%E4%B9%88%E8%A7%A3%E5%86%B3"><span class="toc-number">1.0.15.</span> <span class="toc-text"> 15.在 Spring 中使用 @Value 赋值静态变量为什么 null？怎么解决？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#16%E5%A6%82%E4%BD%95%E8%87%AA%E5%B7%B1%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1"><span class="toc-number">1.0.16.</span> <span class="toc-text"> 16.如何自己实现一个定时任务？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#17%E5%A6%82%E4%BD%95%E5%AE%9A%E4%B9%89%E4%B8%80%E4%B8%AA%E4%B8%8D%E5%AE%9A%E9%95%BF%E5%BA%A6%E7%9A%84%E6%95%B0%E7%BB%84"><span class="toc-number">1.0.17.</span> <span class="toc-text"> 17.如何定义一个不定长度的数组？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#18%E5%A6%82%E4%BD%95%E4%BC%98%E9%9B%85%E7%9A%84%E6%A0%BC%E5%BC%8F%E5%8C%96%E7%99%BE%E5%88%86%E6%AF%94%E5%B0%8F%E6%95%B0"><span class="toc-number">1.0.18.</span> <span class="toc-text"> 18.如何优雅的格式化百分比小数？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19%E4%BB%80%E4%B9%88%E6%98%AF%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E4%BA%A7%E7%94%9F%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98"><span class="toc-number">1.0.19.</span> <span class="toc-text"> 19.什么是跨域问题？为什么会产生跨域问题？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#20%E8%B7%A8%E5%9F%9F%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-number">1.0.20.</span> <span class="toc-text"> 20.跨域的解决方案有哪些？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#21%E4%BB%80%E4%B9%88%E5%8E%9F%E5%9B%A0%E4%BC%9A%E5%AF%BC%E8%87%B4-nginx-%E8%BD%AC%E5%8F%91%E6%97%B6%E4%B8%A2%E5%A4%B1%E9%83%A8%E5%88%86-header-%E4%BF%A1%E6%81%AF%E8%AF%A5%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3"><span class="toc-number">1.0.21.</span> <span class="toc-text"> 21.什么原因会导致 Nginx 转发时丢失部分 header 信息？该如何解决？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#22%E5%A6%82%E4%BD%95%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E9%AB%98%E6%95%88%E7%9A%84%E7%B3%BB%E7%BB%9F"><span class="toc-number">1.0.22.</span> <span class="toc-text"> 22.如何设计一个高效的系统？</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1%E4%BC%98%E5%8C%96%E4%BB%A3%E7%A0%81"><span class="toc-number">1.0.22.1.</span> <span class="toc-text"> （1）优化代码</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2%E8%AE%BE%E8%AE%A1%E4%BC%98%E5%8C%96"><span class="toc-number">1.0.22.2.</span> <span class="toc-text"> （2）设计优化</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3%E5%8F%82%E6%95%B0%E8%B0%83%E4%BC%98"><span class="toc-number">1.0.22.3.</span> <span class="toc-text"> （3）参数调优</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4%E4%BD%BF%E7%94%A8%E7%BC%93%E5%AD%98"><span class="toc-number">1.0.22.4.</span> <span class="toc-text"> （4）使用缓存</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5%E4%BC%98%E5%8C%96%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">1.0.22.5.</span> <span class="toc-text"> （5）优化数据库</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#6%E5%B1%8F%E8%94%BD%E6%97%A0%E6%95%88%E5%92%8C%E6%81%B6%E6%84%8F%E8%AE%BF%E9%97%AE"><span class="toc-number">1.0.22.6.</span> <span class="toc-text"> （6）屏蔽无效和恶意访问</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#7%E6%90%AD%E5%BB%BA%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83%E4%BD%BF%E7%94%A8%E8%B4%9F%E8%BD%BD%E5%88%86%E5%8F%91"><span class="toc-number">1.0.22.7.</span> <span class="toc-text"> （7）搭建分布式环境，使用负载分发</span></a></li></ol></li></ol></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-interview-java-37" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      37.常见面试题翻车合集
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/10/08/interview-java-37/" class="article-date">
+	  <time datetime="2020-10-08T06:09:43.000Z" itemprop="datePublished">2020-10-08</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Java%E9%9D%A2%E8%AF%95%E5%85%A8%E8%A7%A3%E6%9E%90/">Java面试全解析</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/java/" rel="tag">java</a>, <a class="article-tag-link-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2020/10/08/interview-java-37/" class="leancloud_visitors"  data-flag-title="37.常见面试题翻车合集">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/10/08/interview-java-37/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="常见面试题翻车合集"><a class="markdownIt-Anchor" href="#常见面试题翻车合集"></a> 常见面试题翻车合集</h2>
+<h4 id="1去掉-main-方法的-static-修饰符程序会怎样"><a class="markdownIt-Anchor" href="#1去掉-main-方法的-static-修饰符程序会怎样"></a> 1.去掉 main 方法的 static 修饰符，程序会怎样？</h4>
+<p>A：程序无法编译</p>
+<p>B：程序正常编译，正常运行</p>
+<p>C：程序正常编译，正常运行一下马上退出</p>
+<p>D：程序正常编译，运行时报错</p>
+<p>答：D</p>
+<p>题目解析：运行时异常如下：</p>
+<blockquote>
+<p>错误: main 方法不是类 xxx 中的 static, 请将 main 方法定义为:</p>
+<p>public static void main(String[] args)</p>
+</blockquote>
+<h4 id="2以下程序运行的结果是"><a class="markdownIt-Anchor" href="#2以下程序运行的结果是"></a> 2.以下程序运行的结果是？</h4>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestClass</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        System.out.println(getLength());</span><br><span class="line">    &#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">getLength</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> String s = <span class="string">&quot;xyz&quot;</span>;</span><br><span class="line">        <span class="keyword">int</span> result = s.length();</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<p>A：3</p>
+<p>B：2</p>
+<p>C：4</p>
+<p>D：程序无法编译</p>
+<p>答：D</p>
+<p>题目解析：局部变量 s 不能使用任何修饰符（private/protected/public）修饰，调用的方法要加上 static，否则编译会报错。</p>
+<h4 id="3以下程序有几处错误"><a class="markdownIt-Anchor" href="#3以下程序有几处错误"></a> 3.以下程序有几处错误？</h4>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">myAbstractClass</span></span></span><br><span class="line"><span class="class">    <span class="title">private</span> <span class="title">abstract</span> <span class="title">String</span> <span class="title">method</span>()</span>&#123;&#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<p>A：1</p>
+<p>B：2</p>
+<p>C：3</p>
+<p>D：4</p>
+<p>答：C</p>
+<p>题目解析：类少一个“{”类开始标签、抽象方法不能包含方法体、抽象方法访问修饰符不能为 private，因此总共有 3 处错误。</p>
+<h4 id="4以下程序执行的结果是"><a class="markdownIt-Anchor" href="#4以下程序执行的结果是"></a> 4.以下程序执行的结果是？</h4>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> x;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        x = B.y + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> y = A.x + <span class="number">1</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        System.out.println(String.format(<span class="string">&quot;x=%d,y=%d&quot;</span>, A.x, B.y));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<p>A：程序无法编译</p>
+<p>B：程序正常编译，运行报错</p>
+<p>C：x=1,y=2</p>
+<p>D：x=0,y=1</p>
+<p>答：C</p>
+<h4 id="5switch-语法可以配合-return-一起使用吗return-和-break-在-switch-使用上有何不同"><a class="markdownIt-Anchor" href="#5switch-语法可以配合-return-一起使用吗return-和-break-在-switch-使用上有何不同"></a> 5.switch 语法可以配合 return 一起使用吗？return 和 break 在 switch 使用上有何不同？</h4>
+<p>答：switch 可以配合 return 一起使用。return 和 break 的区别在于 switch 结束之后的代码，比如以下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">String <span class="title">getColor</span><span class="params">(String color)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">switch</span> (color) &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="string">&quot;red&quot;</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;红&quot;</span>;</span><br><span class="line">        <span class="keyword">case</span> <span class="string">&quot;blue&quot;</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;蓝&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;未知&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">String <span class="title">getColor</span><span class="params">(String color)</span> </span>&#123;</span><br><span class="line">    String result = <span class="string">&quot;未知&quot;</span>;</span><br><span class="line">    <span class="keyword">switch</span> (color) &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="string">&quot;red&quot;</span>:</span><br><span class="line">            result = <span class="string">&quot;红&quot;</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> <span class="string">&quot;blue&quot;</span>:</span><br><span class="line">            result = <span class="string">&quot;蓝&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<p>对于以上这种 switch 之后没有特殊业务处理的程序来说，return 和 break 的效果是等效的。然而，对于以下这种代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">String <span class="title">getColor</span><span class="params">(String color)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">switch</span> (color) &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="string">&quot;red&quot;</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;红&quot;</span>;</span><br><span class="line">        <span class="keyword">case</span> <span class="string">&quot;blue&quot;</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;蓝&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;未知&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">String <span class="title">getColor</span><span class="params">(String color)</span> </span>&#123;</span><br><span class="line">    String result = <span class="string">&quot;未知&quot;</span>;</span><br><span class="line">    <span class="keyword">switch</span> (color) &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="string">&quot;red&quot;</span>:</span><br><span class="line">            result = <span class="string">&quot;红&quot;</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> <span class="string">&quot;blue&quot;</span>:</span><br><span class="line">            result = <span class="string">&quot;蓝&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (result.equals(<span class="string">&quot;未知&quot;</span>)) &#123;</span><br><span class="line">        result = <span class="string">&quot;透明&quot;</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        result += <span class="string">&quot;色&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<p>如果 switch 之后还有特殊的业务处理，那么 return 和 break 就有很大的区别了。</p>
+<h4 id="6一个栈的入栈顺序是-a-b-c-d-e-则出栈不可能的顺序是"><a class="markdownIt-Anchor" href="#6一个栈的入栈顺序是-a-b-c-d-e-则出栈不可能的顺序是"></a> 6.一个栈的入栈顺序是 A、B、C、D、E 则出栈不可能的顺序是？</h4>
+<p>A：E D C B A</p>
+<p>B：D E C B A</p>
+<p>C：D C E A B</p>
+<p>D：A B C D E</p>
+<p>答：C</p>
+<p>题目解析：栈是后进先出的，因此：</p>
+<ul>
+<li>A 选项：入栈顺序 A B C D E 出栈顺序就是 E D C B A 是正确的；</li>
+<li>B 选项：A B C D 先入栈，D 先出栈，这个时候 E 在入栈，E 在出栈，顺序 D E C B A 也是正确的；</li>
+<li>C 选项：D 先出栈，说明 A B C 一定已入栈，因为题目说了入栈的顺序是 A B C D E，所以出栈的顺序一定是 C B A，而 D C E A B 的顺序 A 在 B 前面是永远不可能发生的，所以选择是 C；</li>
+<li>D 选项 A B C D E 依次先入栈、出栈，顺序就是 A B C D E。</li>
+</ul>
+<h4 id="7可以在-finally-块中使用-return吗"><a class="markdownIt-Anchor" href="#7可以在-finally-块中使用-return吗"></a> 7.可以在 finally 块中使用 return吗？</h4>
+<p>答：不可以，finally 块中的 return 返回后方法结束执行，不会再执行 try 块中的 return 语句。</p>
+<h4 id="8fileinputstream-可以实现什么功能"><a class="markdownIt-Anchor" href="#8fileinputstream-可以实现什么功能"></a> 8.FileInputStream 可以实现什么功能？</h4>
+<p>A：文件夹目录获取</p>
+<p>B：文件写入</p>
+<p>C：文件读取</p>
+<p>D：文件夹目录写入</p>
+<p>答：C</p>
+<p>题目解析：FileInputStream 是文件读取，FileOutputStream 才是用来写入文件的，FileInputStream 和 FileOutputStream 很容易搞混。</p>
+<h4 id="9以下程序打印的结果是什么"><a class="markdownIt-Anchor" href="#9以下程序打印的结果是什么"></a> 9.以下程序打印的结果是什么？</h4>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Thread t1 = <span class="keyword">new</span> Thread()&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;I&#x27;m T1.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">t1.setPriority(<span class="number">3</span>);</span><br><span class="line">t1.start();</span><br><span class="line">Thread t2 = <span class="keyword">new</span> Thread()&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;I&#x27;m T2.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">t2.setPriority(<span class="number">0</span>);</span><br><span class="line">t2.start();</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<p>答：程序报错 java.lang.IllegalArgumentException，setPriority(n) 方法用于设置程序的优先级，优先级的取值为 1-10，当设置为 0 时，程序会报错。</p>
+<h4 id="10如何设置守护线程"><a class="markdownIt-Anchor" href="#10如何设置守护线程"></a> 10.如何设置守护线程？</h4>
+<p>答：设置 Thead 类的 setDaemon(true) 方法设置当前的线程为守护线程。</p>
+<p>守护线程的使用示例如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Thread daemonThread = <span class="keyword">new</span> Thread()&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.run();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 设置为守护线程</span></span><br><span class="line">daemonThread.setDaemon(<span class="keyword">true</span>);</span><br><span class="line">daemonThread.start();</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<h4 id="11以下说法中关于线程通信的说法错误的是"><a class="markdownIt-Anchor" href="#11以下说法中关于线程通信的说法错误的是"></a> 11.以下说法中关于线程通信的说法错误的是？</h4>
+<p>A：可以调用 wait()、notify()、notifyAll() 三个方法实现线程通信</p>
+<p>B：wait() 必须在 synchronized 方法或者代码块中使用</p>
+<p>C：wait() 有多个重载的方法，可以指定等待的时间</p>
+<p>D：wait()、notify()、notifyAll() 是 Object 类提供的方法，子类可以重写</p>
+<p>答：D</p>
+<p>题目解析：wait()、notify()、notifyAll() 都是被 final 修饰的方法，不能再子类中重写。选项 B，使用 wait() 方法时，必须先持有当前对象的锁，否则会抛出异常 java.lang.IllegalMonitorStateException。</p>
+<h4 id="12reentrantlock-默认创建的是公平锁还是非公平锁"><a class="markdownIt-Anchor" href="#12reentrantlock-默认创建的是公平锁还是非公平锁"></a> 12.ReentrantLock 默认创建的是公平锁还是非公平锁？</h4>
+<p>答：默认创建的是非公平锁，看以下源码可以得知：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Creates an instance of &#123;<span class="doctag">@code</span> ReentrantLock&#125;.</span></span><br><span class="line"><span class="comment"> * This is equivalent to using &#123;<span class="doctag">@code</span> ReentrantLock(false)&#125;.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ReentrantLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    sync = <span class="keyword">new</span> NonfairSync();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<p>Nonfair 为非公平的意思，ReentrantLock() 等同于代码 ReentrantLock(false)。</p>
+<h4 id="13reentrantlock-如何在一段时间内无阻塞尝试访问锁"><a class="markdownIt-Anchor" href="#13reentrantlock-如何在一段时间内无阻塞尝试访问锁"></a> 13.ReentrantLock 如何在一段时间内无阻塞尝试访问锁？</h4>
+<p>答：使用 tryLock(long timeout, TimeUnit unit) 方法，就可以在一段时间内无堵塞的访问锁。</p>
+<h4 id="14枚举比较使用-equals-还是"><a class="markdownIt-Anchor" href="#14枚举比较使用-equals-还是"></a> 14.枚举比较使用 equals 还是 ==？</h4>
+<p>答：枚举比较调用 equals 和 == 的结果是一样，查看 Enum 的源码可知 equals 其实是直接调用了 ==，源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object other)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>==other;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<h4 id="15在-spring-中使用-value-赋值静态变量为什么-null怎么解决"><a class="markdownIt-Anchor" href="#15在-spring-中使用-value-赋值静态变量为什么-null怎么解决"></a> 15.在 Spring 中使用 @Value 赋值静态变量为什么 null？怎么解决？</h4>
+<p>答：因为在 Springframework 框架中，当类加载器加载静态变量时，Spring 上下文尚未加载，因此类加载器不会在 bean 中正确注入静态类，导致了结果为 null。可使用 Setter() 方法给静态变量赋值，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConfigValue</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String accessKey;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getAccessKey</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> accessKey;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;accessKey&#125;&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAccessKey</span><span class="params">(String accessKey)</span> </span>&#123;</span><br><span class="line">        ConfigValue.accessKey = accessKey;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 调用赋值变量</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestClass</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ConfigValue configValue;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 读取配置文件</span></span><br><span class="line">        configValue.getAccessKey();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<h4 id="16如何自己实现一个定时任务"><a class="markdownIt-Anchor" href="#16如何自己实现一个定时任务"></a> 16.如何自己实现一个定时任务？</h4>
+<p>答：启动一个后台线程，循环执行任务。代码示例如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Thread getTocketThread = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 执行业务方法</span></span><br><span class="line">                TimeUnit.HOURS.sleep(<span class="number">2</span>); <span class="comment">// 每两小时执行一次</span></span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">if</span> (!getTocketThread.isAlive()) &#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;启动线程&quot;</span>);</span><br><span class="line">    getTocketThread.start();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<h4 id="17如何定义一个不定长度的数组"><a class="markdownIt-Anchor" href="#17如何定义一个不定长度的数组"></a> 17.如何定义一个不定长度的数组？</h4>
+<p>答：在 Java 中使用数组必须要指定长度，如果长度不固定可使用 ArrayList、LinkedList 等容器接收完数据，再使用 toArray() 方法转换成固定数组。</p>
+<h4 id="18如何优雅的格式化百分比小数"><a class="markdownIt-Anchor" href="#18如何优雅的格式化百分比小数"></a> 18.如何优雅的格式化百分比小数？</h4>
+<p>答：使用数字格式化类 DecimalFormat 来处理，具体实现代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">double</span> num = <span class="number">0.37500</span>;</span><br><span class="line">DecimalFormat df = <span class="keyword">new</span> DecimalFormat(<span class="string">&quot;0.0%&quot;</span>);</span><br><span class="line">System.out.println(df.format(num)); <span class="comment">// 执行结果：37.5%</span></span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<h4 id="19什么是跨域问题为什么会产生跨域问题"><a class="markdownIt-Anchor" href="#19什么是跨域问题为什么会产生跨域问题"></a> 19.什么是跨域问题？为什么会产生跨域问题？</h4>
+<p>答：跨域问题指的是不同站点直接，使用 ajax 无法相互调用的问题。跨域问题是浏览器的行为，是为了保证用户信息的安全，防止恶意网站窃取数据，所做的限制，如果没有跨域限制就会导致信息被随意篡改和提交，会导致不可预估的安全问题，所以也会造成不同站点间“正常”请求的跨域问题。</p>
+<h4 id="20跨域的解决方案有哪些"><a class="markdownIt-Anchor" href="#20跨域的解决方案有哪些"></a> 20.跨域的解决方案有哪些？</h4>
+<p>答：常见跨域问题的解决方案如下：</p>
+<ul>
+<li>jsonp（只支持 get 请求）；</li>
+<li>nginx 请求转发，把不同站点应用配置到同一个域名下；</li>
+<li>服务器端设置运行跨域访问，如果使用的是 Spring 框架可通过 @CrossOrigin 注解的方式声明某个类或方法运行跨域访问，或者配置全局跨域配置，请参考以下代码：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 单个跨域配置</span></span><br><span class="line"><span class="meta">@CrossOrigin(origins = &quot;http://xxx&quot;, maxAge = 3600)</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">testController</span></span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 全局配置</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CorsConfiguration</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> WebMvcConfigurer <span class="title">corsConfigurer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> WebMvcConfigurerAdapter() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addCorsMappings</span><span class="params">(CorsRegistry registry)</span> </span>&#123;</span><br><span class="line">                registry.addMapping(<span class="string">&quot;/api/**&quot;</span>).allowedOrigins(<span class="string">&quot;https://xxx&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">复制</span><br></pre></td></tr></table></figure>
+<h4 id="21什么原因会导致-nginx-转发时丢失部分-header-信息该如何解决"><a class="markdownIt-Anchor" href="#21什么原因会导致-nginx-转发时丢失部分-header-信息该如何解决"></a> 21.什么原因会导致 Nginx 转发时丢失部分 header 信息？该如何解决？</h4>
+<p>答：部分 header 信息丢失的原因是，丢失的 header 的 key 值中有下划线，因为 Nginx 转发时，默认会忽略带下划线的 header 信息。</p>
+<p>解决方案有两个，一是去掉 key 值中的下划线，二是在 Nginx 的配置文件 http 中添加“underscores<em>in</em>headers on;” 不忽略有下划线的 header 信息。</p>
+<h4 id="22如何设计一个高效的系统"><a class="markdownIt-Anchor" href="#22如何设计一个高效的系统"></a> 22.如何设计一个高效的系统？</h4>
+<p>答：要设计一个高效的系统，通常要包含以下几个方面。</p>
+<h5 id="1优化代码"><a class="markdownIt-Anchor" href="#1优化代码"></a> （1）优化代码</h5>
+<p>代码优化分为两种情况：</p>
+<ul>
+<li>代码问题导致系统资源消耗过多的问题，比如，某段代码导致内存溢出，往往是将 JVM 中的内存用完了，这个时候系统的内存资源消耗殆尽了，同时也会引发 JVM 频繁地发生垃圾回收，导致 CPU 100% 以上居高不下，这个时候又消耗了系统的 CPU 资源。这种情况下需要使用相应的排查工具 VisualVM 或 JConsole，找到对应的问题代码再进行优化；</li>
+<li>还有一种是非问题代码，这种代码不容易发现，比如，LinkedList 集合如果使用 for 循环遍历，则它的效率是很低的，因为 LinkedList 是链表实现的，如果使用 for 循环获取元素，在每次循环获取元素时，都会去遍历一次 List，这样会降低读的效率，这个时候应该改用 Iterator （迭代器）迭代循环该集合。</li>
+</ul>
+<h5 id="2设计优化"><a class="markdownIt-Anchor" href="#2设计优化"></a> （2）设计优化</h5>
+<p>有很多问题可以通过我们的设计优化来提高程序的执行性能，比如，使用单例模式来减少频繁地创建和销毁对象所带来的性能消耗，从而提高了程序的执行性能。</p>
+<h5 id="3参数调优"><a class="markdownIt-Anchor" href="#3参数调优"></a> （3）参数调优</h5>
+<p>JVM 和 Web 容器的参数调优，对系统的执行性能也是也很大帮助的。比如，我们的业务中会创建大量的大对象，我们可以通过设置，将这些大对象直接放进老年代，这样可以减少年轻代频繁发生小的垃圾回收（Minor GC），减少  CPU  占用时间，从而提升了程序的执行性能。Web  容器的线程池设置以及 Linux 操作系统的内核参数设置，也对程序的运行性能有着很大的影响，我们根据自己的业务场景优化这两项内容。</p>
+<h5 id="4使用缓存"><a class="markdownIt-Anchor" href="#4使用缓存"></a> （4）使用缓存</h5>
+<p>缓存的使用分为前端和后端：</p>
+<ul>
+<li>前端可使用浏览器缓存或者 CDN，CDN 的全称是 Content Delivery Network，即内容分发网络。CDN 是构建在现有网络基础之上的智能虚拟网络，依靠部署在各地的边缘服务器，通过中心平台的负载均衡、内容分发、调度等功能模块，使用户就近获取所需内容，降低网络拥塞，提高用户访问响应速度和命中率。CDN 的关键技术主要有内容存储和分发技术；</li>
+<li>后端缓存，使用第三方缓存 Redis 或 Memcache 来缓存查询结果，以提高查询的响应速度。</li>
+</ul>
+<h5 id="5优化数据库"><a class="markdownIt-Anchor" href="#5优化数据库"></a> （5）优化数据库</h5>
+<p>数据库是最宝贵的资源，通常也是影响程序响应速度的罪魁祸首，它的优化至关重要，通常分为以下六个方面：</p>
+<ul>
+<li>合理使用数据库引擎</li>
+<li>合理设置事务隔离级别，合理使用事务</li>
+<li>正确使用 SQL 语句和查询索引</li>
+<li>合理分库分表</li>
+<li>使用数据库中间件实现数据库读写分离</li>
+<li>设置数据库主从读写分离</li>
+</ul>
+<h5 id="6屏蔽无效和恶意访问"><a class="markdownIt-Anchor" href="#6屏蔽无效和恶意访问"></a> （6）屏蔽无效和恶意访问</h5>
+<p>前端禁止重复提交：用户提交之后按钮置灰，禁止重复提交；</p>
+<p>用户限流，在某一时间段内只允许用户提交一次请求，比如，采取 IP 限流。</p>
+<h5 id="7搭建分布式环境使用负载分发"><a class="markdownIt-Anchor" href="#7搭建分布式环境使用负载分发"></a> （7）搭建分布式环境，使用负载分发</h5>
+<p>可以把程序部署到多台服务器上，通过负载均衡工具，比如 Nginx，将并发请求分配到不同的服务器，从而提高了系统处理并发的能力。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2020/10/08/interview-java-37/" title="37.常见面试题翻车合集" target="_blank" rel="external">https://idea360.cn/2020/10/08/interview-java-37/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/10/11/spring-security-oauth2/" title="spring-security-oauth2"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/10/08/interview-java-36/" title="36.JVM 面试题汇总"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

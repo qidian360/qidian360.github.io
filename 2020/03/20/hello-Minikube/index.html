@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>Hello- | 当我遇上你</title>
+  <meta name="description" content="概述 基础环境mac。在mac下的docker中是自带k8s的，但是由于网络原因，安装特别慢，本文介绍社区中另一版本Minikube的安装, 仅做笔记用。 Minikube是由Kubernetes社区维护的单机版的Kubernetes集群，支持macOS, Linux, and Windows等多种操作系统平台。  安装  安装kubectl 1brew install kubectl 测试安装">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hello-">
+<meta property="og:url" content="https://idea360.cn/2020/03/20/hello-Minikube/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="概述 基础环境mac。在mac下的docker中是自带k8s的，但是由于网络原因，安装特别慢，本文介绍社区中另一版本Minikube的安装, 仅做笔记用。 Minikube是由Kubernetes社区维护的单机版的Kubernetes集群，支持macOS, Linux, and Windows等多种操作系统平台。  安装  安装kubectl 1brew install kubectl 测试安装">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/rancher-import-minikube-1.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/rancher-minikube-cluster.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/rancher-namespace-default.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/rancher-deploy-hello-node-1.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/rancher-deploy-hello-node-2.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/rancher-deploy-hello-node-3.png">
+<meta property="article:published_time" content="2020-03-20T14:00:29.000Z">
+<meta property="article:modified_time" content="2021-02-23T14:18:32.985Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="k8s">
+<meta property="article:tag" content="Minikube">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/idea360/oss/raw/master/images/rancher-import-minikube-1.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2020/03/20/hello-Minikube/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text"> 概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-number">2.</span> <span class="toc-text"> 安装</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85kubectl"><span class="toc-number">2.1.</span> <span class="toc-text"> 安装kubectl</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85minikube"><span class="toc-number">2.2.</span> <span class="toc-text"> 安装Minikube</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8minikube"><span class="toc-number">3.</span> <span class="toc-text"> 使用Minikube</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E5%BC%80%E5%A7%8B"><span class="toc-number">3.1.</span> <span class="toc-text"> 准备开始</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%93%E5%8C%85docker%E9%95%9C%E5%83%8F"><span class="toc-number">3.2.</span> <span class="toc-text"> 打包docker镜像</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAdeployment"><span class="toc-number">4.</span> <span class="toc-text"> 创建Deployment</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAservice"><span class="toc-number">5.</span> <span class="toc-text"> 创建Service</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9B%B4%E6%96%B0%E7%89%88%E6%9C%AC"><span class="toc-number">6.</span> <span class="toc-text"> 更新版本</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%89%88%E6%9C%AC%E5%9B%9E%E6%BB%9A"><span class="toc-number">7.</span> <span class="toc-text"> 版本回滚</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%90%AF%E7%94%A8%E6%8F%92%E4%BB%B6"><span class="toc-number">8.</span> <span class="toc-text"> 启用插件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B8%85%E7%90%86"><span class="toc-number">9.</span> <span class="toc-text"> 清理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#rancher"><span class="toc-number">10.</span> <span class="toc-text"> Rancher</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-hello-Minikube" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Hello-
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/03/20/hello-Minikube/" class="article-date">
+	  <time datetime="2020-03-20T14:00:29.000Z" itemprop="datePublished">2020-03-20</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/k8s/">k8s</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Minikube/" rel="tag">Minikube</a>, <a class="article-tag-link-link" href="/tags/k8s/" rel="tag">k8s</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2020/03/20/hello-Minikube/" class="leancloud_visitors"  data-flag-title="Hello-">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/03/20/hello-Minikube/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="概述"><a class="markdownIt-Anchor" href="#概述"></a> 概述</h1>
+<p>基础环境mac。在mac下的docker中是自带k8s的，但是由于网络原因，安装特别慢，本文介绍社区中另一版本Minikube的安装, 仅做笔记用。</p>
+<p>Minikube是由Kubernetes社区维护的单机版的Kubernetes集群，支持macOS, Linux, and Windows等多种操作系统平台。</p>
+<h1 id="安装"><a class="markdownIt-Anchor" href="#安装"></a> 安装</h1>
+<h2 id="安装kubectl"><a class="markdownIt-Anchor" href="#安装kubectl"></a> 安装kubectl</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install kubectl</span><br></pre></td></tr></table></figure>
+<p>测试安装的版本是最新的</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl version --client</span><br></pre></td></tr></table></figure>
+<h2 id="安装minikube"><a class="markdownIt-Anchor" href="#安装minikube"></a> 安装Minikube</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install minikube</span><br></pre></td></tr></table></figure>
+<p>启动</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">minikube start --image-repository=<span class="string">&#x27;registry.cn-hangzhou.aliyuncs.com/google_containers&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>查看状态</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">minikube status</span><br></pre></td></tr></table></figure>
+<p>启动dashboard</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">minikube dashboard</span><br></pre></td></tr></table></figure>
+<h1 id="使用minikube"><a class="markdownIt-Anchor" href="#使用minikube"></a> 使用Minikube</h1>
+<h2 id="准备开始"><a class="markdownIt-Anchor" href="#准备开始"></a> 准备开始</h2>
+<p>本教程提供了从以下文件构建的容器镜像：</p>
+<p>server.js</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> http = <span class="built_in">require</span>(<span class="string">&#x27;http&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> handleRequest = <span class="function"><span class="keyword">function</span>(<span class="params">request, response</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">&#x27;Received request for URL: &#x27;</span> + request.url);</span><br><span class="line">  response.writeHead(<span class="number">200</span>);</span><br><span class="line">  response.end(<span class="string">&#x27;Hello World!&#x27;</span>);</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> www = http.createServer(handleRequest);</span><br><span class="line">www.listen(<span class="number">8080</span>);</span><br></pre></td></tr></table></figure>
+<p>Dockerfile</p>
+<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> node:<span class="number">6.14</span>.<span class="number">2</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">8080</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> server.js .</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> node server.js</span></span><br></pre></td></tr></table></figure>
+<h2 id="打包docker镜像"><a class="markdownIt-Anchor" href="#打包docker镜像"></a> 打包docker镜像</h2>
+<ol>
+<li>打包指令，注意.</li>
+</ol>
+<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t cuishiying/hello-node:v1 .</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>本地测试镜像是否ok</li>
+</ol>
+<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="keyword">run</span><span class="bash"> -d -p 8080:8080 cuishiying/hello-node:v1</span></span><br></pre></td></tr></table></figure>
+<p>访问 <a target="_blank" rel="noopener" href="http://localhost:8080/">http://localhost:8080/</a> 返回 <code>Hello World!</code>。</p>
+<ol start="3">
+<li>login后把镜像推送到仓库</li>
+</ol>
+<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker push cuishiying/hello-node:v1</span><br></pre></td></tr></table></figure>
+<h1 id="创建deployment"><a class="markdownIt-Anchor" href="#创建deployment"></a> 创建Deployment</h1>
+<p>Kubernetes Pod 是由一个或多个为了管理和联网而绑定在一起的容器构成的组。本教程中的 Pod 只有一个容器。Kubernetes Deployment 检查 Pod 的健康状况，并在 Pod 中的容器终止的情况下重新启动新的容器。Deployment 是管理 Pod 创建和扩展的推荐方法。</p>
+<ol>
+<li>使用 kubectl create 命令创建管理 Pod 的 Deployment。该 Pod 根据提供的 Docker 镜像运行 Container。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl create deployment hello-node --image=cuishiying/hello-node:v1</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>查看 Deployment：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get deployments</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>查看 Pod：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>查看集群事件：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get events</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>查看 kubectl 配置：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl config view</span><br></pre></td></tr></table></figure>
+<h1 id="创建service"><a class="markdownIt-Anchor" href="#创建service"></a> 创建Service</h1>
+<p>默认情况下，Pod 只能通过 Kubernetes 集群中的内部 IP 地址访问。要使得 hello-node 容器可以从 Kubernetes 虚拟网络的外部访问，您必须将 Pod 暴露为 Kubernetes Service。</p>
+<ol>
+<li>使用 kubectl expose 命令将 Pod 暴露给公网：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl expose deployment hello-node --type&#x3D;LoadBalancer --port&#x3D;8080</span><br></pre></td></tr></table></figure>
+<p>The --type=LoadBalancer flag indicates that you want to expose your Service outside of the cluster.</p>
+<ol start="2">
+<li>查看您刚刚创建的服务:</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get services</span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NAME         TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE</span><br><span class="line">hello-node   LoadBalancer   10.102.110.103   &lt;pending&gt;     8080:31863&#x2F;TCP   47s</span><br><span class="line">kubernetes   ClusterIP      10.96.0.1        &lt;none&gt;        443&#x2F;TCP          4d1h</span><br></pre></td></tr></table></figure>
+<p>在支持负载均衡器的云服务提供商上，将提供一个外部 IP 来访问该服务。在 Minikube 上，LoadBalancer 使得服务可以通过命令 minikube service 访问。</p>
+<ol start="3">
+<li>运行下面的命令：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">minikube service hello-node</span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">|-----------|------------|-------------|---------------------------|</span><br><span class="line">| NAMESPACE |    NAME    | TARGET PORT |            URL            |</span><br><span class="line">|-----------|------------|-------------|---------------------------|</span><br><span class="line">| default   | hello-node |             | http:&#x2F;&#x2F;192.168.64.2:31863 |</span><br><span class="line">|-----------|------------|-------------|---------------------------|</span><br><span class="line">🎉  正通过默认浏览器打开服务 default&#x2F;hello-node...</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>显示有关 Service 的信息</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get services hello-node</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>显示有关 Service 的详细信息</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl describe services my-service</span><br></pre></td></tr></table></figure>
+<ol start="6">
+<li>如果您在 Minikube 上运行服务，您可以通过以下命令找到分配的 IP 地址和端口</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">minikube service hello-node --url</span><br></pre></td></tr></table></figure>
+<h1 id="更新版本"><a class="markdownIt-Anchor" href="#更新版本"></a> 更新版本</h1>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker build -t cuishiying&#x2F;hello-node:v2 .</span><br><span class="line">docker push cuishiying&#x2F;hello-node:v2</span><br><span class="line">kubectl set image deployment&#x2F;hello-node hello-node&#x3D;cuishiying&#x2F;hello-node:v2</span><br></pre></td></tr></table></figure>
+<h1 id="版本回滚"><a class="markdownIt-Anchor" href="#版本回滚"></a> 版本回滚</h1>
+<p>回滚到上一个版本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl rollout undo deployment&#x2F;hello-node</span><br></pre></td></tr></table></figure>
+<p>revision</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl rollout history deployment&#x2F;hello-node</span><br><span class="line">kubectl rollout undo deployment&#x2F;hello-node --to-revision&#x3D;3</span><br></pre></td></tr></table></figure>
+<h1 id="启用插件"><a class="markdownIt-Anchor" href="#启用插件"></a> 启用插件</h1>
+<p>Minikube 有一组内置的插件，可以在本地 Kubernetes 环境中启用、禁用和打开。</p>
+<ol>
+<li>列出当前支持的插件：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">minikube addons list</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>启用插件，例如 heapster</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">minikube addons enable heapster</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>查看刚才创建的 Pod 和 Service：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pod,svc -n kube-system</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>禁用 heapster：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">minikube addons disable heapster</span><br></pre></td></tr></table></figure>
+<h1 id="清理"><a class="markdownIt-Anchor" href="#清理"></a> 清理</h1>
+<p>现在可以清理您在集群中创建的资源：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl delete service hello-node</span><br><span class="line">kubectl delete deployment hello-node</span><br></pre></td></tr></table></figure>
+<p>可以停止 Minikube VM：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">minikube stop</span><br></pre></td></tr></table></figure>
+<p>或者，删除 Minikube VM：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">minikube delete</span><br></pre></td></tr></table></figure>
+<h1 id="rancher"><a class="markdownIt-Anchor" href="#rancher"></a> Rancher</h1>
+<ol>
+<li>安装</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker pull rancher&#x2F;rancher:latest</span><br><span class="line">docker run -d --restart&#x3D;unless-stopped -p 80:80 -p 443:443 rancher&#x2F;rancher:latest</span><br><span class="line">docker logs -f rancher</span><br></pre></td></tr></table></figure>
+<p>rancher自签名证书可以在hosts文件配置域名。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">create_self-signed-cert.sh --ssl-domain&#x3D;rancher.local.com --ssl-trusted-domain&#x3D;rancher.local.com \</span><br><span class="line">--ssl-trusted-ip&#x3D;192.168.124.5 --ssl-size&#x3D;2048 --ssl-date&#x3D;3650</span><br></pre></td></tr></table></figure>
+<p>具体可参考<a target="_blank" rel="noopener" href="https://docs.rancher.cn/rancher2x/install-prepare/self-signed-ssl.html#_5-%E9%AA%8C%E8%AF%81%E8%AF%81%E4%B9%A6">官方文档</a> 安装部分介绍。</p>
+<ol start="2">
+<li>rancher导入minikube</li>
+</ol>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/rancher-import-minikube-1.png" alt="" /></p>
+<p>导入后的样子是这样的，导入过程比较慢，会显示一直处于 <code>pending</code> 状态， 切莫着急。</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/rancher-minikube-cluster.png" alt="" /></p>
+<ol start="3">
+<li>用户空间</li>
+</ol>
+<p>我们关心的是用户空间，因为我们部署的应用默认在这里</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/rancher-namespace-default.png" alt="" /></p>
+<ol start="4">
+<li>rancher部署应用</li>
+</ol>
+<p>之前我们通过k8s部署的 <code>hello-node</code> 先卸载了，重新通过 <code>rancher</code> 部署下应用。 点击右上角 <code>部署服务</code>。</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/rancher-deploy-hello-node-1.png" alt="" /></p>
+<p>部署完成后如图。访问 <a target="_blank" rel="noopener" href="http://192.168.64.2:30001/">http://192.168.64.2:30001/</a> 返回 <code>Hello World!</code></p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/rancher-deploy-hello-node-2.png" alt="" /></p>
+<ol start="5">
+<li>升级应用版本</li>
+</ol>
+<p>在刚才的页面点击右边隐藏按钮 <code>升级</code>，进入升级配置页面。</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/rancher-deploy-hello-node-3.png" alt="" /></p>
+<p>升级后测试ok。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2020/03/20/hello-Minikube/" title="Hello-" target="_blank" rel="external">https://idea360.cn/2020/03/20/hello-Minikube/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/03/24/shell/" title="Shell脚本学习"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/03/19/java-queue/" title="数据结构-队列"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

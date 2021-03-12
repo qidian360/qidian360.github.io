@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>Docker实战之Zookeeper集群 | 当我遇上你</title>
+  <meta name="description" content="1. 概述 这里是Docker实战系列第四篇。主要介绍分布式系统中的元老级组件Zookeeper。 ZooKeeper 是一个开源的分布式协调服务，是Hadoop，HBase和其他分布式框架使用的有组织服务的标准。 分布式应用程序可以基于 ZooKeeper 实现诸如数据发布&#x2F;订阅、负载均衡、命名服务、分布式协调&#x2F;通知、集群管理、Master 选举、分布式锁和分布式队列等功能。 读过 Docke">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker实战之Zookeeper集群">
+<meta property="og:url" content="https://idea360.cn/2020/03/07/docker-zookeeper-cluster/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="1. 概述 这里是Docker实战系列第四篇。主要介绍分布式系统中的元老级组件Zookeeper。 ZooKeeper 是一个开源的分布式协调服务，是Hadoop，HBase和其他分布式框架使用的有组织服务的标准。 分布式应用程序可以基于 ZooKeeper 实现诸如数据发布&#x2F;订阅、负载均衡、命名服务、分布式协调&#x2F;通知、集群管理、Master 选举、分布式锁和分布式队列等功能。 读过 Docke">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/zookeeper-distributed-coordination.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/zookeeper-distributed-lock-demo.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/zookeeper-meta-data-manage.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/zookeeper-active-standby.png">
+<meta property="article:published_time" content="2020-03-06T17:40:12.000Z">
+<meta property="article:modified_time" content="2020-03-15T03:53:27.741Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="docker">
+<meta property="article:tag" content="zookeeper">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/idea360/oss/raw/master/images/zookeeper-distributed-coordination.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2020/03/07/docker-zookeeper-cluster/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text"> 1. 概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">2.</span> <span class="toc-text"> 2. 应用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#21-%E5%88%86%E5%B8%83%E5%BC%8F%E5%8D%8F%E8%B0%83"><span class="toc-number">2.1.</span> <span class="toc-text"> 2.1 分布式协调</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#22-%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="toc-number">2.2.</span> <span class="toc-text"> 2.2 分布式锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#23-%E5%85%83%E6%95%B0%E6%8D%AE%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86"><span class="toc-number">2.3.</span> <span class="toc-text"> 2.3 元数据&#x2F;配置信息管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#24-ha%E9%AB%98%E5%8F%AF%E7%94%A8%E6%80%A7"><span class="toc-number">2.4.</span> <span class="toc-text"> 2.4 HA高可用性</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-docker%E9%85%8D%E7%BD%AE"><span class="toc-number">3.</span> <span class="toc-text"> 3. Docker配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E9%9B%86%E7%BE%A4%E5%88%9D%E8%AE%A4%E8%AF%86"><span class="toc-number">4.</span> <span class="toc-text"> 4. 集群初认识</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-%E9%80%89%E4%B8%BE%E6%BC%94%E7%BB%83"><span class="toc-number">5.</span> <span class="toc-text"> 5. 选举演练</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C"><span class="toc-number">6.</span> <span class="toc-text"> 6. 常用操作</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#61-%E6%9F%A5%E7%9C%8B%E6%96%87%E4%BB%B6%E7%9B%AE%E5%BD%95"><span class="toc-number">6.1.</span> <span class="toc-text"> 6.1 查看文件目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#62-%E5%88%9B%E5%BB%BA%E9%A1%BA%E5%BA%8F%E8%8A%82%E7%82%B9"><span class="toc-number">6.2.</span> <span class="toc-text"> 6.2 创建顺序节点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#63-%E5%88%9B%E5%BB%BA%E4%B8%B4%E6%97%B6%E8%8A%82%E7%82%B9"><span class="toc-number">6.3.</span> <span class="toc-text"> 6.3 创建临时节点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#64-%E5%88%9B%E5%BB%BA%E6%B0%B8%E4%B9%85%E8%8A%82%E7%82%B9"><span class="toc-number">6.4.</span> <span class="toc-text"> 6.4 创建永久节点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#65-%E8%AF%BB%E5%8F%96%E8%8A%82%E7%82%B9"><span class="toc-number">6.5.</span> <span class="toc-text"> 6.5 读取节点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#66-%E6%9B%B4%E6%96%B0%E8%8A%82%E7%82%B9"><span class="toc-number">6.6.</span> <span class="toc-text"> 6.6 更新节点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#67-%E6%A3%80%E6%9F%A5%E7%8A%B6%E6%80%81"><span class="toc-number">6.7.</span> <span class="toc-text"> 6.7 检查状态</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#68-%E5%88%A0%E9%99%A4%E8%8A%82%E7%82%B9"><span class="toc-number">6.8.</span> <span class="toc-text"> 6.8 删除节点</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#7-ad"><span class="toc-number">7.</span> <span class="toc-text"> 7. AD</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-docker-zookeeper-cluster" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Docker实战之Zookeeper集群
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/03/07/docker-zookeeper-cluster/" class="article-date">
+	  <time datetime="2020-03-06T17:40:12.000Z" itemprop="datePublished">2020-03-07</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/docker/">docker</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/docker/" rel="tag">docker</a>, <a class="article-tag-link-link" href="/tags/zookeeper/" rel="tag">zookeeper</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2020/03/07/docker-zookeeper-cluster/" class="leancloud_visitors"  data-flag-title="Docker实战之Zookeeper集群">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/03/07/docker-zookeeper-cluster/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="1-概述"><a class="markdownIt-Anchor" href="#1-概述"></a> 1. 概述</h1>
+<p>这里是Docker实战系列第四篇。主要介绍分布式系统中的元老级组件Zookeeper。</p>
+<p>ZooKeeper 是一个开源的分布式协调服务，是Hadoop，HBase和其他分布式框架使用的有组织服务的标准。</p>
+<p>分布式应用程序可以基于 ZooKeeper 实现诸如数据发布/订阅、负载均衡、命名服务、分布式协调/通知、集群管理、Master 选举、分布式锁和分布式队列等功能。</p>
+<p>读过 <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/PKK7EsiiLQfevxaOTpfIZA">Docker实战之Consul集群</a> 的小伙伴应该有印象，里边有一张一致性算法的对比图。所有的分布式系统都面临着CAP理论的抉择，都需要一致性算法的保障。这里先放上一个简单的总结，用于大家借鉴那些顶级开源软件在分布式上的思路。</p>
+<table>
+<thead>
+<tr>
+<th>分布式组件</th>
+<th>算法/协议</th>
+<th>服务</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Redis Cluster</td>
+<td>Gossip</td>
+<td>master提供读写，slave只备份</td>
+</tr>
+<tr>
+<td>Zookeeper</td>
+<td>ZAB</td>
+<td>Leader提供读写，Follower只读，遇到写请求转发给Leader</td>
+</tr>
+<tr>
+<td>Kafka</td>
+<td>ZK临时节点</td>
+<td>只有leader提供读写服务</td>
+</tr>
+</tbody>
+</table>
+<h1 id="2-应用场景"><a class="markdownIt-Anchor" href="#2-应用场景"></a> 2. 应用场景</h1>
+<p>大致来说，zookeeper 的使用场景如下:</p>
+<ul>
+<li>分布式协调</li>
+<li>分布式锁</li>
+<li>元数据/配置信息管理</li>
+<li>HA高可用性</li>
+<li>发布/订阅</li>
+<li>负载均衡</li>
+<li>Master选举</li>
+</ul>
+<p>这里引用中华石杉老师的例子</p>
+<h2 id="21-分布式协调"><a class="markdownIt-Anchor" href="#21-分布式协调"></a> 2.1 分布式协调</h2>
+<p>这个其实是 zookeeper 很经典的一个用法，简单来说，就好比，你 A 系统发送个请求到 mq，然后 B 系统消息消费之后处理了。那 A 系统如何知道 B 系统的处理结果？用 zookeeper 就可以实现分布式系统之间的协调工作。A 系统发送请求之后可以在 zookeeper 上对某个节点的值注册个监听器，一旦 B 系统处理完了就修改 zookeeper 那个节点的值，A 系统立马就可以收到通知，完美解决。</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/zookeeper-distributed-coordination.png" alt="" /></p>
+<h2 id="22-分布式锁"><a class="markdownIt-Anchor" href="#22-分布式锁"></a> 2.2 分布式锁</h2>
+<p>举个栗子。对某一个数据连续发出两个修改操作，两台机器同时收到了请求，但是只能一台机器先执行完另外一个机器再执行。那么此时就可以使用 zookeeper 分布式锁，一个机器接收到了请求之后先获取 zookeeper 上的一把分布式锁，就是可以去创建一个 znode，接着执行操作；然后另外一个机器也尝试去创建那个 znode，结果发现自己创建不了，因为被别人创建了，那只能等着，等第一个机器执行完了自己再执行。</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/zookeeper-distributed-lock-demo.png" alt="" /></p>
+<h2 id="23-元数据配置信息管理"><a class="markdownIt-Anchor" href="#23-元数据配置信息管理"></a> 2.3 元数据/配置信息管理</h2>
+<p>zookeeper 可以用作很多系统的配置信息的管理，比如 kafka、storm 等等很多分布式系统都会选用 zookeeper 来做一些元数据、配置信息的管理，包括 dubbo 注册中心不也支持 zookeeper 么？</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/zookeeper-meta-data-manage.png" alt="" /></p>
+<h2 id="24-ha高可用性"><a class="markdownIt-Anchor" href="#24-ha高可用性"></a> 2.4 HA高可用性</h2>
+<p>这个应该是很常见的，比如 hadoop、hdfs、yarn 等很多大数据系统，都选择基于 zookeeper 来开发 HA 高可用机制，就是一个重要进程一般会做主备两个，主进程挂了立马通过 zookeeper 感知到切换到备用进程。</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/zookeeper-active-standby.png" alt="" /></p>
+<h1 id="3-docker配置"><a class="markdownIt-Anchor" href="#3-docker配置"></a> 3. Docker配置</h1>
+<p><strong>docker-compose-zookeeper-cluster.yml</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3.7&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">networks:</span></span><br><span class="line">  <span class="attr">docker_net:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">zoo1:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">zookeeper</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">hostname:</span> <span class="string">zoo1</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">zoo1</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">2182</span><span class="string">:2181</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">ZOO_MY_ID:</span> <span class="number">1</span></span><br><span class="line">      <span class="attr">ZOO_SERVERS:</span> <span class="string">server.1=0.0.0.0:2888:3888;2181</span> <span class="string">server.2=zoo2:2888:3888;2181</span> <span class="string">server.3=zoo3:2888:3888;2181</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./zookeeper/zoo1/data:/data</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./zookeeper/zoo1/datalog:/datalog</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">docker_net</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">zoo2:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">zookeeper</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">hostname:</span> <span class="string">zoo2</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">zoo2</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">2183</span><span class="string">:2181</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">ZOO_MY_ID:</span> <span class="number">2</span></span><br><span class="line">      <span class="attr">ZOO_SERVERS:</span> <span class="string">server.1=zoo1:2888:3888;2181</span> <span class="string">server.2=0.0.0.0:2888:3888;2181</span> <span class="string">server.3=zoo3:2888:3888;2181</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./zookeeper/zoo2/data:/data</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./zookeeper/zoo2/datalog:/datalog</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">docker_net</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">zoo3:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">zookeeper</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">hostname:</span> <span class="string">zoo3</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">zoo3</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">2184</span><span class="string">:2181</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">ZOO_MY_ID:</span> <span class="number">3</span></span><br><span class="line">      <span class="attr">ZOO_SERVERS:</span> <span class="string">server.1=zoo1:2888:3888;2181</span> <span class="string">server.2=zoo2:2888:3888;2181</span> <span class="string">server.3=0.0.0.0:2888:3888;2181</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./zookeeper/zoo3/data:/data</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./zookeeper/zoo3/datalog:/datalog</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">docker_net</span></span><br></pre></td></tr></table></figure>
+<p><strong>启动集群</strong></p>
+<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose -f docker-compose-zookeeper-cluster.yml up -d</span><br></pre></td></tr></table></figure>
+<h1 id="4-集群初认识"><a class="markdownIt-Anchor" href="#4-集群初认识"></a> 4. 集群初认识</h1>
+<p>在ZAB算法中，存在Leader、Follower、Observer三种角色，现在我们就来认识下它们。</p>
+<ul>
+<li>查看zoo1角色</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">➜  docker docker <span class="built_in">exec</span> -it zoo1 /bin/sh</span><br><span class="line"><span class="comment"># zkServer.sh status         </span></span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: /conf/zoo.cfg</span><br><span class="line">Client port found: 2181. Client address: localhost.</span><br><span class="line">Mode: follower</span><br></pre></td></tr></table></figure>
+<p>由上结果可知，zoo1是follower</p>
+<ul>
+<li>查看zoo2角色</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">➜  docker docker <span class="built_in">exec</span> -it zoo2 /bin/sh</span><br><span class="line"><span class="comment"># zkServer.sh status</span></span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: /conf/zoo.cfg</span><br><span class="line">Client port found: 2181. Client address: localhost.</span><br><span class="line">Mode: follower</span><br></pre></td></tr></table></figure>
+<p>由上结果可知，zoo2是follower</p>
+<ul>
+<li>查看zoo3角色</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">➜  docker docker <span class="built_in">exec</span> -it zoo3 /bin/sh</span><br><span class="line"><span class="comment"># zkServer.sh status</span></span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: /conf/zoo.cfg</span><br><span class="line">Client port found: 2181. Client address: localhost.</span><br><span class="line">Mode: leader</span><br></pre></td></tr></table></figure>
+<p>由上结果可知，zoo3是leader。负责集群的读写。</p>
+<ul>
+<li>查看zoo3选举数据</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">➜  docker <span class="built_in">echo</span> srvr | nc localhost 2184</span><br><span class="line">Zookeeper version: 3.5.6-c11b7e26bc554b8523dc929761dd28808913f091, built on 10/08/2019 20:18 GMT</span><br><span class="line">Latency min/avg/max: 0/0/0</span><br><span class="line">Received: 2</span><br><span class="line">Sent: 1</span><br><span class="line">Connections: 1</span><br><span class="line">Outstanding: 0</span><br><span class="line">Zxid: 0x100000000</span><br><span class="line">Mode: leader</span><br><span class="line">Node count: 5</span><br><span class="line">Proposal sizes last/min/max: -1/-1/-1</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查看映射数据</li>
+</ul>
+<p>如果实践了上述操作的小伙伴一定会发现，映射路径下的文件夹多了好多东西，感兴趣的小伙伴可以打开看一下，了解下ZAB的选举算法(没错，里边记录的就是选举相关的数据)。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">➜  zookeeper <span class="built_in">cd</span> zoo1</span><br><span class="line">➜  zoo1 tree</span><br><span class="line">.</span><br><span class="line">├── data</span><br><span class="line">│   ├── myid</span><br><span class="line">│   └── version-2</span><br><span class="line">│       ├── acceptedEpoch</span><br><span class="line">│       ├── currentEpoch</span><br><span class="line">│       └── snapshot.0</span><br><span class="line">└── datalog</span><br><span class="line">    └── version-2</span><br></pre></td></tr></table></figure>
+<p><em>注意：留意currentEpoch中的数值</em></p>
+<h1 id="5-选举演练"><a class="markdownIt-Anchor" href="#5-选举演练"></a> 5. 选举演练</h1>
+<p><strong>5.1 模拟Leader掉线</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  zoo1 docker stop zoo3</span><br><span class="line">zoo3</span><br></pre></td></tr></table></figure>
+<p>查看此时的选举结果(操作同查看角色操作步骤)。可以看到Zookeeper集群重新选举结果: zoo2被选为leader</p>
+<p><strong>5.2 zoo3节点重新上线</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  zoo1 docker start zoo3</span><br><span class="line">zoo3</span><br></pre></td></tr></table></figure>
+<p>查看zoo3角色，发现zoo3自动作为follower加入集群。</p>
+<p><em>注意：查看currentEpoch中的数值，存储值为2，代表经过了2次选举。第一次为刚启动时触发选举，第二次为leader宕机后重新选举</em></p>
+<h1 id="6-常用操作"><a class="markdownIt-Anchor" href="#6-常用操作"></a> 6. 常用操作</h1>
+<h2 id="61-查看文件目录"><a class="markdownIt-Anchor" href="#61-查看文件目录"></a> 6.1 查看文件目录</h2>
+<p>笔者本地有安装的Zookeeper环境，所以这里用本地的zkCli进行测试。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">zkCli -server localhost:2182,localhost:2183,localhost:2184</span><br><span class="line">Connecting to localhost:2182,localhost:2183,localhost:2184</span><br><span class="line">Welcome to ZooKeeper!</span><br><span class="line">JLine support is enabled</span><br><span class="line"></span><br><span class="line">WATCHER::</span><br><span class="line"></span><br><span class="line">WatchedEvent state:SyncConnected <span class="built_in">type</span>:None path:null</span><br><span class="line">[zk: localhost:2182,localhost:2183,localhost:2184(CONNECTED) 0] ls /</span><br><span class="line">[zookeeper]</span><br></pre></td></tr></table></figure>
+<h2 id="62-创建顺序节点"><a class="markdownIt-Anchor" href="#62-创建顺序节点"></a> 6.2 创建顺序节点</h2>
+<p>顺序节点保证znode路径将是唯一的。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2182,localhost:2183,localhost:2184(CONNECTED) 1] create -s /zk-test 123</span><br><span class="line">Created /zk-test0000000000</span><br><span class="line">[zk: localhost:2182,localhost:2183,localhost:2184(CONNECTED) 2] ls /</span><br><span class="line">[zk-test0000000000, zookeeper]</span><br></pre></td></tr></table></figure>
+<h2 id="63-创建临时节点"><a class="markdownIt-Anchor" href="#63-创建临时节点"></a> 6.3 创建临时节点</h2>
+<p>当会话过期或客户端断开连接时，临时节点将被自动删除</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2182,localhost:2183,localhost:2184(CONNECTED) 3] create -e /zk-temp 123</span><br><span class="line">Created /zk-temp</span><br><span class="line">[zk: localhost:2182,localhost:2183,localhost:2184(CONNECTED) 4] ls /</span><br><span class="line">[zk-test0000000000, zookeeper, zk-temp]</span><br></pre></td></tr></table></figure>
+<p>临时节点在客户端会话结束后就会自动删除，下面使用quit命令行退出客户端,再次连接后即可验证。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2182,localhost:2183,localhost:2184(CONNECTED) 5] quit</span><br><span class="line">Quitting...</span><br><span class="line">➜  docker zkCli -server localhost:2182,localhost:2183,localhost:2184</span><br><span class="line">Connecting to localhost:2182,localhost:2183,localhost:2184</span><br><span class="line">Welcome to ZooKeeper!</span><br><span class="line">JLine support is enabled</span><br><span class="line"></span><br><span class="line">WATCHER::</span><br><span class="line"></span><br><span class="line">WatchedEvent state:SyncConnected <span class="built_in">type</span>:None path:null</span><br><span class="line">[zk: localhost:2182,localhost:2183,localhost:2184(CONNECTED) 0] ls /</span><br><span class="line">[zk-test0000000000, zookeeper]</span><br></pre></td></tr></table></figure>
+<h2 id="64-创建永久节点"><a class="markdownIt-Anchor" href="#64-创建永久节点"></a> 6.4 创建永久节点</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2182,localhost:2183,localhost:2184(CONNECTED) 1] create /zk-permanent 123</span><br><span class="line">Created /zk-permanent</span><br><span class="line">[zk: localhost:2182,localhost:2183,localhost:2184(CONNECTED) 2] ls /</span><br><span class="line">[zk-permanent, zk-test0000000000, zookeeper]</span><br></pre></td></tr></table></figure>
+<h2 id="65-读取节点"><a class="markdownIt-Anchor" href="#65-读取节点"></a> 6.5 读取节点</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2182,localhost:2183,localhost:2184(CONNECTED) 3] get /</span><br><span class="line"></span><br><span class="line">cZxid = 0x0</span><br><span class="line">ctime = Thu Jan 01 08:00:00 CST 1970</span><br><span class="line">mZxid = 0x0</span><br><span class="line">mtime = Thu Jan 01 08:00:00 CST 1970</span><br><span class="line">pZxid = 0x400000008</span><br><span class="line">cversion = 3</span><br><span class="line">dataVersion = 0</span><br><span class="line">aclVersion = 0</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 0</span><br><span class="line">numChildren = 3</span><br><span class="line">[zk: localhost:2182,localhost:2183,localhost:2184(CONNECTED) 4] ls2 /</span><br><span class="line">[zk-permanent, zk-test0000000000, zookeeper]</span><br><span class="line">cZxid = 0x0</span><br><span class="line">ctime = Thu Jan 01 08:00:00 CST 1970</span><br><span class="line">mZxid = 0x0</span><br><span class="line">mtime = Thu Jan 01 08:00:00 CST 1970</span><br><span class="line">pZxid = 0x400000008</span><br><span class="line">cversion = 3</span><br><span class="line">dataVersion = 0</span><br><span class="line">aclVersion = 0</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 0</span><br><span class="line">numChildren = 3</span><br></pre></td></tr></table></figure>
+<p>使用 ls2 命令来查看某个目录包含的所有文件，与ls不同的是它查看到time、version等信息</p>
+<h2 id="66-更新节点"><a class="markdownIt-Anchor" href="#66-更新节点"></a> 6.6 更新节点</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2182,localhost:2183,localhost:2184(CONNECTED) 5] <span class="built_in">set</span> /zk-permanent 456</span><br><span class="line">cZxid = 0x400000008</span><br><span class="line">ctime = Tue Mar 03 21:35:20 CST 2020</span><br><span class="line">mZxid = 0x400000009</span><br><span class="line">mtime = Tue Mar 03 21:40:11 CST 2020</span><br><span class="line">pZxid = 0x400000008</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 1</span><br><span class="line">aclVersion = 0</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 3</span><br><span class="line">numChildren = 0</span><br></pre></td></tr></table></figure>
+<h2 id="67-检查状态"><a class="markdownIt-Anchor" href="#67-检查状态"></a> 6.7 检查状态</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2182,localhost:2183,localhost:2184(CONNECTED) 6] <span class="built_in">stat</span> /zk-permanent</span><br><span class="line">cZxid = 0x400000008</span><br><span class="line">ctime = Tue Mar 03 21:35:20 CST 2020</span><br><span class="line">mZxid = 0x400000009</span><br><span class="line">mtime = Tue Mar 03 21:40:11 CST 2020</span><br><span class="line">pZxid = 0x400000008</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 1</span><br><span class="line">aclVersion = 0</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 3</span><br><span class="line">numChildren = 0</span><br></pre></td></tr></table></figure>
+<h2 id="68-删除节点"><a class="markdownIt-Anchor" href="#68-删除节点"></a> 6.8 删除节点</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2182,localhost:2183,localhost:2184(CONNECTED) 7] rmr /zk-permanent</span><br><span class="line">[zk: localhost:2182,localhost:2183,localhost:2184(CONNECTED) 8] ls /</span><br><span class="line">[zk-test0000000000, zookeeper]</span><br></pre></td></tr></table></figure>
+<h1 id="7-ad"><a class="markdownIt-Anchor" href="#7-ad"></a> 7. AD</h1>
+<blockquote>
+<p>公众号【当我遇上你】, 每天带给你不一样的内容</p>
+</blockquote>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2020/03/07/docker-zookeeper-cluster/" title="Docker实战之Zookeeper集群" target="_blank" rel="external">https://idea360.cn/2020/03/07/docker-zookeeper-cluster/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/03/07/docker-kafka-cluster/" title="Docker实战之Kafka集群"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/03/07/docker-consul-cluster/" title="Docker实战之Consul集群"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

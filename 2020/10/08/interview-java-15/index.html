@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>15.数据结构之队列的使用 + 面试题 | 当我遇上你</title>
+  <meta name="description" content="数据结构之队列的使用 + 面试题 队列（Queue）：与栈相对的一种数据结构， 集合（Collection）的一个子类。队列允许在一端进行插入操作，而在另一端进行删除操作的线性表，栈的特点是后进先出，而队列的特点是先进先出。队列的用处很大，比如实现消息队列。 Queue 类关系图，如下图所示：  注：为了让读者更直观地理解，上图为精简版的 Queue 类关系图。本文如无特殊说明，内容都是基于 J">
+<meta property="og:type" content="article">
+<meta property="og:title" content="15.数据结构之队列的使用 + 面试题">
+<meta property="og:url" content="https://idea360.cn/2020/10/08/interview-java-15/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="数据结构之队列的使用 + 面试题 队列（Queue）：与栈相对的一种数据结构， 集合（Collection）的一个子类。队列允许在一端进行插入操作，而在另一端进行删除操作的线性表，栈的特点是后进先出，而队列的特点是先进先出。队列的用处很大，比如实现消息队列。 Queue 类关系图，如下图所示：  注：为了让读者更直观地理解，上图为精简版的 Queue 类关系图。本文如无特殊说明，内容都是基于 J">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images.gitbook.cn/64fedb10-cebf-11e9-956a-e59402c7f15a">
+<meta property="og:image" content="https://images.gitbook.cn/FvHJCoSqb3C3Hl9NKDYsSCDN-wvI">
+<meta property="article:published_time" content="2020-10-08T06:08:30.000Z">
+<meta property="article:modified_time" content="2020-10-08T06:21:52.731Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="面试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://images.gitbook.cn/64fedb10-cebf-11e9-956a-e59402c7f15a">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2020/10/08/interview-java-15/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97%E7%9A%84%E4%BD%BF%E7%94%A8-%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text"> 数据结构之队列的使用 + 面试题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%98%9F%E5%88%97queue"><span class="toc-number">1.1.</span> <span class="toc-text"> 队列（Queue）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1queue-%E5%88%86%E7%B1%BB"><span class="toc-number">1.1.1.</span> <span class="toc-text"> 1）Queue 分类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2queue-%E6%96%B9%E6%B3%95%E8%AF%B4%E6%98%8E"><span class="toc-number">1.1.2.</span> <span class="toc-text"> 2）Queue 方法说明</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3queue-%E4%BD%BF%E7%94%A8%E5%AE%9E%E4%BE%8B"><span class="toc-number">1.1.3.</span> <span class="toc-text"> 3）Queue 使用实例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97"><span class="toc-number">1.2.</span> <span class="toc-text"> 阻塞队列</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1blockingqueue"><span class="toc-number">1.2.1.</span> <span class="toc-text"> 1）BlockingQueue</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2linkedblockingqueue"><span class="toc-number">1.2.2.</span> <span class="toc-text"> 2）LinkedBlockingQueue</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3arrayblockingqueue"><span class="toc-number">1.2.3.</span> <span class="toc-text"> 3）ArrayBlockingQueue</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4delayqueue"><span class="toc-number">1.2.4.</span> <span class="toc-text"> 4）DelayQueue</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%9E%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97"><span class="toc-number">1.3.</span> <span class="toc-text"> 非阻塞队列</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%85%88%E7%BA%A7%E9%98%9F%E5%88%97"><span class="toc-number">1.4.</span> <span class="toc-text"> 优先级队列</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="toc-number">1.5.</span> <span class="toc-text"> 相关面试题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1arrayblockingqueue-%E5%92%8C-linkedblockingqueue-%E7%9A%84%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.5.1.</span> <span class="toc-text"> 1.ArrayBlockingQueue 和 LinkedBlockingQueue 的区别是什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2linkedlist-%E4%B8%AD-add-%E5%92%8C-offer-%E6%9C%89%E4%BB%80%E4%B9%88%E5%85%B3%E7%B3%BB"><span class="toc-number">1.5.2.</span> <span class="toc-text"> 2.LinkedList 中 add() 和 offer() 有什么关系？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3queue-%E5%92%8C-deque-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">1.5.3.</span> <span class="toc-text"> 3.Queue 和 Deque 有什么区别？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4linkedlist-%E5%B1%9E%E4%BA%8E%E4%B8%80%E8%88%AC%E9%98%9F%E5%88%97%E8%BF%98%E6%98%AF%E5%8F%8C%E7%AB%AF%E9%98%9F%E5%88%97"><span class="toc-number">1.5.4.</span> <span class="toc-text"> 4.LinkedList 属于一般队列还是双端队列？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5%E4%BB%A5%E4%B8%8B%E8%AF%B4%E6%B3%95%E9%94%99%E8%AF%AF%E7%9A%84%E6%98%AF"><span class="toc-number">1.5.5.</span> <span class="toc-text"> 5.以下说法错误的是？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6%E5%85%B3%E4%BA%8E-arrayblockingqueue-%E8%AF%B4%E6%B3%95%E4%B8%8D%E6%AD%A3%E7%A1%AE%E7%9A%84%E6%98%AF"><span class="toc-number">1.5.6.</span> <span class="toc-text"> 6.关于 ArrayBlockingQueue 说法不正确的是？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7%E4%BB%A5%E4%B8%8B%E7%A8%8B%E5%BA%8F%E6%89%A7%E8%A1%8C%E7%9A%84%E7%BB%93%E6%9E%9C%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.5.7.</span> <span class="toc-text"> 7.以下程序执行的结果是什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8java-%E4%B8%AD%E5%B8%B8%E8%A7%81%E7%9A%84%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-number">1.5.8.</span> <span class="toc-text"> 8.Java 中常见的阻塞队列有哪些？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9%E6%9C%89%E7%95%8C%E9%98%9F%E5%88%97%E5%92%8C%E6%97%A0%E7%95%8C%E9%98%9F%E5%88%97%E6%9C%89%E5%93%AA%E4%BA%9B%E5%8C%BA%E5%88%AB"><span class="toc-number">1.5.9.</span> <span class="toc-text"> 9.有界队列和无界队列有哪些区别？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10%E5%A6%82%E4%BD%95%E6%89%8B%E5%8A%A8%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E5%BB%B6%E8%BF%9F%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97"><span class="toc-number">1.5.10.</span> <span class="toc-text"> 10.如何手动实现一个延迟消息队列？</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.6.</span> <span class="toc-text"> 总结</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-interview-java-15" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      15.数据结构之队列的使用 + 面试题
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/10/08/interview-java-15/" class="article-date">
+	  <time datetime="2020-10-08T06:08:30.000Z" itemprop="datePublished">2020-10-08</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Java%E9%9D%A2%E8%AF%95%E5%85%A8%E8%A7%A3%E6%9E%90/">Java面试全解析</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/java/" rel="tag">java</a>, <a class="article-tag-link-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2020/10/08/interview-java-15/" class="leancloud_visitors"  data-flag-title="15.数据结构之队列的使用 + 面试题">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/10/08/interview-java-15/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="数据结构之队列的使用-面试题"><a class="markdownIt-Anchor" href="#数据结构之队列的使用-面试题"></a> 数据结构之队列的使用 + 面试题</h2>
+<p>队列（Queue）：与栈相对的一种数据结构， 集合（Collection）的一个子类。队列允许在一端进行插入操作，而在另一端进行删除操作的线性表，栈的特点是后进先出，而队列的特点是先进先出。队列的用处很大，比如实现消息队列。</p>
+<p>Queue 类关系图，如下图所示：</p>
+<p><img src="https://images.gitbook.cn/64fedb10-cebf-11e9-956a-e59402c7f15a" alt="enter image description here" /></p>
+<p>注：为了让读者更直观地理解，上图为精简版的 Queue 类关系图。本文如无特殊说明，内容都是基于 Java 1.8 版本。</p>
+<h3 id="队列queue"><a class="markdownIt-Anchor" href="#队列queue"></a> 队列（Queue）</h3>
+<h4 id="1queue-分类"><a class="markdownIt-Anchor" href="#1queue-分类"></a> 1）Queue 分类</h4>
+<p>从上图可以看出 Queue 大体可分为以下三类。</p>
+<ul>
+<li>双端队列：双端队列（Deque）是 Queue 的子类也是 Queue 的补充类，头部和尾部都支持元素插入和获取。</li>
+<li>阻塞队列：阻塞队列指的是在元素操作时（添加或删除），如果没有成功，会阻塞等待执行。例如，当添加元素时，如果队列元素已满，队列会阻塞等待直到有空位时再插入。</li>
+<li>非阻塞队列：非阻塞队列和阻塞队列相反，会直接返回操作的结果，而非阻塞等待。双端队列也属于非阻塞队列。</li>
+</ul>
+<h4 id="2queue-方法说明"><a class="markdownIt-Anchor" href="#2queue-方法说明"></a> 2）Queue 方法说明</h4>
+<p>Queue 方法如下图所示：</p>
+<p><img src="https://images.gitbook.cn/FvHJCoSqb3C3Hl9NKDYsSCDN-wvI" alt="avatar" /></p>
+<p>其中比较常用的方法有以下几个：</p>
+<ul>
+<li>add(E)：添加元素到队列尾部，成功返回 true，队列超出时抛出异常；</li>
+<li>offer(E)：添加元素到队列尾部，成功返回 true，队列超出时返回 false；</li>
+<li>remove(Object)：删除元素，成功返回 true，失败返回 false；</li>
+<li>poll()：获取并移除此队列的第一个元素，若队列为空，则返回 null；</li>
+<li>peek()：获取但不移除此队列的第一个元素，若队列为空，则返回 null；</li>
+<li>element()：获取但不移除此队列的第一个元素，若队列为空，则抛异常。</li>
+</ul>
+<h4 id="3queue-使用实例"><a class="markdownIt-Anchor" href="#3queue-使用实例"></a> 3）Queue 使用实例</h4>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Queue&lt;String&gt; linkedList = <span class="keyword">new</span> LinkedList&lt;&gt;();</span><br><span class="line">linkedList.add(<span class="string">&quot;Dog&quot;</span>);</span><br><span class="line">linkedList.add(<span class="string">&quot;Camel&quot;</span>);</span><br><span class="line">linkedList.add(<span class="string">&quot;Cat&quot;</span>);</span><br><span class="line"><span class="keyword">while</span> (!linkedList.isEmpty()) &#123;</span><br><span class="line">    System.out.println(linkedList.poll());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>程序执行结果：</p>
+<blockquote>
+<p>Dog</p>
+<p>Camel</p>
+<p>Cat</p>
+</blockquote>
+<h3 id="阻塞队列"><a class="markdownIt-Anchor" href="#阻塞队列"></a> 阻塞队列</h3>
+<h4 id="1blockingqueue"><a class="markdownIt-Anchor" href="#1blockingqueue"></a> 1）BlockingQueue</h4>
+<p>BlockingQueue 在 java.util.concurrent 包下，其他阻塞类都实现自 BlockingQueue 接口，BlockingQueue 提供了线程安全的队列访问方式，当向队列中插入数据时，如果队列已满，线程则会阻塞等待队列中元素被取出后再插入；当从队列中取数据时，如果队列为空，则线程会阻塞等待队列中有新元素再获取。</p>
+<p>BlockingQueue 核心方法</p>
+<p>插入方法：</p>
+<ul>
+<li>add(E)：添加元素到队列尾部，成功返回 true，队列超出时抛出异常；</li>
+<li>offer(E)：添加元素到队列尾部，成功返回 true，队列超出时返回 false ；</li>
+<li>put(E)：将元素插入到队列的尾部，如果该队列已满，则一直阻塞。 删除方法：</li>
+<li>remove(Object)：移除指定元素，成功返回 true，失败返回 false；</li>
+<li>poll()： 获取并移除队列的第一个元素，如果队列为空，则返回 null；</li>
+<li>take()：获取并移除队列第一个元素，如果没有元素则一直阻塞。 检查方法：</li>
+<li>peek()：获取但不移除队列的第一个元素，若队列为空，则返回 null。</li>
+</ul>
+<h4 id="2linkedblockingqueue"><a class="markdownIt-Anchor" href="#2linkedblockingqueue"></a> 2）LinkedBlockingQueue</h4>
+<p>LinkedBlockingQueue 是一个由链表实现的有界阻塞队列，容量默认值为 Integer.MAX_VALUE，也可以自定义容量，建议指定容量大小，默认大小在添加速度大于删除速度情况下有造成内存溢出的风险，LinkedBlockingQueue 是先进先出的方式存储元素。</p>
+<h4 id="3arrayblockingqueue"><a class="markdownIt-Anchor" href="#3arrayblockingqueue"></a> 3）ArrayBlockingQueue</h4>
+<p>ArrayBlockingQueue 是一个有边界的阻塞队列，它的内部实现是一个数组。它的容量是有限的，我们必须在其初始化的时候指定它的容量大小，容量大小一旦指定就不可改变。</p>
+<p>ArrayBlockingQueue 也是先进先出的方式存储数据，ArrayBlockingQueue 内部的阻塞队列是通过重入锁 ReenterLock 和 Condition 条件队列实现的，因此 ArrayBlockingQueue 中的元素存在公平访问与非公平访问的区别，对于公平访问队列，被阻塞的线程可以按照阻塞的先后顺序访问队列，即先阻塞的线程先访问队列。而非公平队列，当队列可用时，阻塞的线程将进入争夺访问资源的竞争中，也就是说谁先抢到谁就执行，没有固定的先后顺序。</p>
+<p>示例代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 默认非公平阻塞队列</span></span><br><span class="line">ArrayBlockingQueue queue = <span class="keyword">new</span> ArrayBlockingQueue(<span class="number">6</span>);</span><br><span class="line"><span class="comment">// 公平阻塞队列</span></span><br><span class="line">ArrayBlockingQueue queue2 = <span class="keyword">new</span> ArrayBlockingQueue(<span class="number">6</span>,<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// ArrayBlockingQueue 源码展示</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ArrayBlockingQueue</span><span class="params">(<span class="keyword">int</span> capacity)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>(capacity, <span class="keyword">false</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ArrayBlockingQueue</span><span class="params">(<span class="keyword">int</span> capacity, <span class="keyword">boolean</span> fair)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (capacity &lt;= <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException();</span><br><span class="line">    <span class="keyword">this</span>.items = <span class="keyword">new</span> Object[capacity];</span><br><span class="line">    lock = <span class="keyword">new</span> ReentrantLock(fair);</span><br><span class="line">    notEmpty = lock.newCondition();</span><br><span class="line">    notFull =  lock.newCondition();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="4delayqueue"><a class="markdownIt-Anchor" href="#4delayqueue"></a> 4）DelayQueue</h4>
+<p>DelayQueue 是一个支持延时获取元素的无界阻塞队列，队列中的元素必须实现 Delayed 接口，在创建元素时可以指定延迟时间，只有到达了延迟的时间之后，才能获取到该元素。</p>
+<p>实现了 Delayed 接口必须重写两个方法 ，getDelay(TimeUnit) 和 compareTo(Delayed)，如下代码所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DelayElement</span> <span class="keyword">implements</span> <span class="title">Delayed</span> </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="comment">// 获取剩余时间</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">getDelay</span><span class="params">(TimeUnit unit)</span> </span>&#123;</span><br><span class="line">            <span class="comment">// do something</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="comment">// 队列里元素的排序依据</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(Delayed o)</span> </span>&#123;</span><br><span class="line">            <span class="comment">// do something</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>DelayQueue 使用的完整示例</strong>，请参考以下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DelayTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        DelayQueue delayQueue = <span class="keyword">new</span> DelayQueue();</span><br><span class="line">        delayQueue.put(<span class="keyword">new</span> DelayElement(<span class="number">1000</span>));</span><br><span class="line">        delayQueue.put(<span class="keyword">new</span> DelayElement(<span class="number">3000</span>));</span><br><span class="line">        delayQueue.put(<span class="keyword">new</span> DelayElement(<span class="number">5000</span>));</span><br><span class="line">        System.out.println(<span class="string">&quot;开始时间：&quot;</span> +  DateFormat.getDateTimeInstance().format(<span class="keyword">new</span> Date()));</span><br><span class="line">        <span class="keyword">while</span> (!delayQueue.isEmpty())&#123;</span><br><span class="line">            System.out.println(delayQueue.take());</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;结束时间：&quot;</span> +  DateFormat.getDateTimeInstance().format(<span class="keyword">new</span> Date()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">DelayElement</span> <span class="keyword">implements</span> <span class="title">Delayed</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 延迟截止时间（单面：毫秒）</span></span><br><span class="line">        <span class="keyword">long</span> delayTime = System.currentTimeMillis();</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">DelayElement</span><span class="params">(<span class="keyword">long</span> delayTime)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.delayTime = (<span class="keyword">this</span>.delayTime + delayTime);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="comment">// 获取剩余时间</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">getDelay</span><span class="params">(TimeUnit unit)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> unit.convert(delayTime - System.currentTimeMillis(), TimeUnit.MILLISECONDS);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="comment">// 队列里元素的排序依据</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(Delayed o)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">this</span>.getDelay(TimeUnit.MILLISECONDS) &gt; o.getDelay(TimeUnit.MILLISECONDS)) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">this</span>.getDelay(TimeUnit.MILLISECONDS) &lt; o.getDelay(TimeUnit.MILLISECONDS)) &#123;</span><br><span class="line">                <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> DateFormat.getDateTimeInstance().format(<span class="keyword">new</span> Date(delayTime));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>程序执行结果：</p>
+<blockquote>
+<p>开始时间：2019-6-13 20:40:38</p>
+<p>2019-6-13 20:40:39</p>
+<p>2019-6-13 20:40:41</p>
+<p>2019-6-13 20:40:43</p>
+<p>结束时间：2019-6-13 20:40:43</p>
+</blockquote>
+<h3 id="非阻塞队列"><a class="markdownIt-Anchor" href="#非阻塞队列"></a> 非阻塞队列</h3>
+<p><strong>ConcurrentLinkedQueue</strong> 是一个基于链接节点的无界线程安全队列，它采用先进先出的规则对节点进行排序，当我们添加一个元素的时候，它会添加到队列的尾部；当我们获取一个元素时，它会返回队列头部的元素。</p>
+<p>它的入队和出队操作均利用 CAS（Compare And Set）更新，这样允许多个线程并发执行，并且不会因为加锁而阻塞线程，使得并发性能更好。</p>
+<p>ConcurrentLinkedQueue 使用示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ConcurrentLinkedQueue concurrentLinkedQueue = <span class="keyword">new</span> ConcurrentLinkedQueue();</span><br><span class="line">concurrentLinkedQueue.add(<span class="string">&quot;Dog&quot;</span>);</span><br><span class="line">concurrentLinkedQueue.add(<span class="string">&quot;Cat&quot;</span>);</span><br><span class="line"><span class="keyword">while</span> (!concurrentLinkedQueue.isEmpty()) &#123;</span><br><span class="line">    System.out.println(concurrentLinkedQueue.poll());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行结果：</p>
+<blockquote>
+<p>Dog</p>
+<p>Cat</p>
+</blockquote>
+<p>可以看出不管是阻塞队列还是非阻塞队列，使用方法都是类似的，区别是底层的实现方式。</p>
+<h3 id="优先级队列"><a class="markdownIt-Anchor" href="#优先级队列"></a> 优先级队列</h3>
+<p><strong>PriorityQueue</strong> 一个基于优先级堆的无界优先级队列。优先级队列的元素按照其自然顺序进行排序，或者根据构造队列时提供的 Comparator 进行排序，具体取决于所使用的构造方法。优先级队列不允许使用 null 元素。</p>
+<p><strong>PriorityQueue 代码使用示例</strong>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Queue&lt;Integer&gt; priorityQueue = <span class="keyword">new</span> PriorityQueue(<span class="keyword">new</span> Comparator&lt;Integer&gt;() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(Integer o1, Integer o2)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 非自然排序，数字倒序</span></span><br><span class="line">        <span class="keyword">return</span> o2 - o1;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">priorityQueue.add(<span class="number">3</span>);</span><br><span class="line">priorityQueue.add(<span class="number">1</span>);</span><br><span class="line">priorityQueue.add(<span class="number">2</span>);</span><br><span class="line"><span class="keyword">while</span> (!priorityQueue.isEmpty()) &#123;</span><br><span class="line">    Integer i = priorityQueue.poll();</span><br><span class="line">    System.out.println(i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>程序执行的结果是：</p>
+<blockquote>
+<p>3</p>
+<p>2</p>
+<p>1</p>
+</blockquote>
+<p><strong>PriorityQueue 注意的点</strong>：</p>
+<ul>
+<li>PriorityQueue 是非线程安全的，在多线程情况下可使用 PriorityBlockingQueue 类替代；</li>
+<li>PriorityQueue 不允许插入 null 元素。</li>
+</ul>
+<h3 id="相关面试题"><a class="markdownIt-Anchor" href="#相关面试题"></a> 相关面试题</h3>
+<h4 id="1arrayblockingqueue-和-linkedblockingqueue-的区别是什么"><a class="markdownIt-Anchor" href="#1arrayblockingqueue-和-linkedblockingqueue-的区别是什么"></a> 1.ArrayBlockingQueue 和 LinkedBlockingQueue 的区别是什么？</h4>
+<p>答：ArrayBlockingQueue 和 LinkedBlockingQueue 都实现自阻塞队列 BlockingQueue，它们的区别主要体现在以下几个方面：</p>
+<ul>
+<li>ArrayBlockingQueue 使用时必须指定容量值，LinkedBlockingQueue 可以不用指定；</li>
+<li>ArrayBlockingQueue 的最大容量值是使用时指定的，并且指定之后就不允许修改；而 LinkedBlockingQueue 最大的容量为 Integer.MAX_VALUE；</li>
+<li>ArrayBlockingQueue 数据存储容器是采用数组存储的；而 LinkedBlockingQueue 采用的是 Node 节点存储的。</li>
+</ul>
+<h4 id="2linkedlist-中-add-和-offer-有什么关系"><a class="markdownIt-Anchor" href="#2linkedlist-中-add-和-offer-有什么关系"></a> 2.LinkedList 中 add() 和 offer() 有什么关系？</h4>
+<p>答：add() 和 offer() 都是添加元素到队列尾部。offer 方法是基于 add 方法实现的，Offer 的源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">offer</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> add(e);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="3queue-和-deque-有什么区别"><a class="markdownIt-Anchor" href="#3queue-和-deque-有什么区别"></a> 3.Queue 和 Deque 有什么区别？</h4>
+<p>答：Queue 属于一般队列，Deque 属于双端队列。一般队列是先进先出，也就是只有先进的才能先出；而双端队列则是两端都能插入和删除元素。</p>
+<h4 id="4linkedlist-属于一般队列还是双端队列"><a class="markdownIt-Anchor" href="#4linkedlist-属于一般队列还是双端队列"></a> 4.LinkedList 属于一般队列还是双端队列？</h4>
+<p>答：LinkedList 实现了 Deque 属于双端队列，因此拥有 addFirst(E)、addLast(E)、getFirst()、getLast() 等方法。</p>
+<h4 id="5以下说法错误的是"><a class="markdownIt-Anchor" href="#5以下说法错误的是"></a> 5.以下说法错误的是？</h4>
+<p>A：DelayQueue 内部是基于 PriorityQueue 实现的<br />
+B：PriorityBlockingQueue 不是先进先出的数据存储方式<br />
+C：LinkedBlockingQueue 默认容量是无限大的<br />
+D：ArrayBlockingQueue 内部的存储单元是数组，初始化时必须指定队列容量</p>
+<p>答：C</p>
+<p>题目解析：LinkedBlockingQueue 默认容量是 Integer.MAX_VALUE，并不是无限大的。</p>
+<h4 id="6关于-arrayblockingqueue-说法不正确的是"><a class="markdownIt-Anchor" href="#6关于-arrayblockingqueue-说法不正确的是"></a> 6.关于 ArrayBlockingQueue 说法不正确的是？</h4>
+<p>A：ArrayBlockingQueue 是线程安全的<br />
+B：ArrayBlockingQueue 元素允许为 null<br />
+C：ArrayBlockingQueue 主要应用场景是“生产者-消费者”模型<br />
+D：ArrayBlockingQueue 必须显示地设置容量</p>
+<p>答：B</p>
+<p>题目解析：ArrayBlockingQueue 不允许元素为 null，如果添加一个 null 元素，会抛 NullPointerException 异常。</p>
+<h4 id="7以下程序执行的结果是什么"><a class="markdownIt-Anchor" href="#7以下程序执行的结果是什么"></a> 7.以下程序执行的结果是什么？</h4>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">PriorityQueue priorityQueue = <span class="keyword">new</span> PriorityQueue();</span><br><span class="line">priorityQueue.add(<span class="keyword">null</span>);</span><br><span class="line">System.out.println(priorityQueue.size());</span><br></pre></td></tr></table></figure>
+<p>答：程序执行报错，PriorityQueue 不能插入 null。</p>
+<h4 id="8java-中常见的阻塞队列有哪些"><a class="markdownIt-Anchor" href="#8java-中常见的阻塞队列有哪些"></a> 8.Java 中常见的阻塞队列有哪些？</h4>
+<p>答：Java 中常见的阻塞队列如下：</p>
+<ul>
+<li>ArrayBlockingQueue，由数组结构组成的有界阻塞队列；</li>
+<li>PriorityBlockingQueue，支持优先级排序的无界阻塞队列；</li>
+<li>SynchronousQueue，是一个不存储元素的阻塞队列，会直接将任务交给消费者，必须等队列中的添加元素被消费后才能继续添加新的元素；</li>
+<li>LinkedBlockingQueue，由链表结构组成的阻塞队列；</li>
+<li>DelayQueue，支持延时获取元素的无界阻塞队列。</li>
+</ul>
+<h4 id="9有界队列和无界队列有哪些区别"><a class="markdownIt-Anchor" href="#9有界队列和无界队列有哪些区别"></a> 9.有界队列和无界队列有哪些区别？</h4>
+<p>答：有界队列和无界队列的区别如下。</p>
+<ul>
+<li>有界队列：有固定大小的队列叫做有界队列，比如：new ArrayBlockingQueue(6)，6 就是队列的大小。</li>
+<li>无界队列：指的是没有设置固定大小的队列，这些队列的特点是可以直接入列，直到溢出。它们并不是真的无界，它们最大值通常为 Integer.MAX_VALUE，只是平常很少能用到这么大的容量（超过 Integer.MAX_VALUE），因此从使用者的体验上，就相当于 “无界”。</li>
+</ul>
+<h4 id="10如何手动实现一个延迟消息队列"><a class="markdownIt-Anchor" href="#10如何手动实现一个延迟消息队列"></a> 10.如何手动实现一个延迟消息队列？</h4>
+<p>答：说到延迟消息队列，我们应该可以第一时间想到要使用 DelayQueue 延迟队列来解决这个问题。实现思路，消息队列分为生产者和消费者，生产者用于增加消息，消费者用于获取并消费消息，我们只需要生产者把消息放入到 DelayQueue 队列并设置延迟时间，消费者循环使用 take() 阻塞获取消息即可。完整的实现代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomDelayQueue</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 消息编号</span></span><br><span class="line">    <span class="keyword">static</span> AtomicInteger MESSAGENO = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        DelayQueue&lt;DelayedElement&gt; delayQueue = <span class="keyword">new</span> DelayQueue&lt;&gt;();</span><br><span class="line">        <span class="comment">// 生产者1</span></span><br><span class="line">        producer(delayQueue, <span class="string">&quot;生产者1&quot;</span>);</span><br><span class="line">        <span class="comment">// 生产者2</span></span><br><span class="line">        producer(delayQueue, <span class="string">&quot;生产者2&quot;</span>);</span><br><span class="line">        <span class="comment">// 消费者</span></span><br><span class="line">        consumer(delayQueue);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//生产者</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">producer</span><span class="params">(DelayQueue&lt;DelayedElement&gt; delayQueue, String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                    <span class="comment">// 产生 1~5 秒的随机数</span></span><br><span class="line">                    <span class="keyword">long</span> time = <span class="number">1000L</span> * (<span class="keyword">new</span> Random().nextInt(<span class="number">5</span>) + <span class="number">1</span>);</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        Thread.sleep(time);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="comment">// 组合消息体</span></span><br><span class="line">                    String message = String.format(<span class="string">&quot;%s，消息编号：%s 发送时间：%s 延迟：%s 秒&quot;</span>,</span><br><span class="line">                            name, MESSAGENO.getAndIncrement(), DateFormat.getDateTimeInstance().format(<span class="keyword">new</span> Date()), time / <span class="number">1000</span>);</span><br><span class="line">                    <span class="comment">// 生产消息</span></span><br><span class="line">                    delayQueue.put(<span class="keyword">new</span> DelayedElement(message, time));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;).start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//消费者</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">consumer</span><span class="params">(DelayQueue&lt;DelayedElement&gt; delayQueue)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                    DelayedElement element = <span class="keyword">null</span>;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        <span class="comment">// 消费消息</span></span><br><span class="line">                        element = delayQueue.take();</span><br><span class="line">                        System.out.println(element);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;).start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 延迟队列对象</span></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">DelayedElement</span> <span class="keyword">implements</span> <span class="title">Delayed</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 过期时间（单位：毫秒）</span></span><br><span class="line">        <span class="keyword">long</span> time = System.currentTimeMillis();</span><br><span class="line">        <span class="comment">// 消息体</span></span><br><span class="line">        String message;</span><br><span class="line">        <span class="comment">// 参数：delayTime 延迟时间（单位毫秒）</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">DelayedElement</span><span class="params">(String message, <span class="keyword">long</span> delayTime)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.time += delayTime;</span><br><span class="line">            <span class="keyword">this</span>.message = message;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="comment">// 获取过期时间</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">getDelay</span><span class="params">(TimeUnit unit)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> unit.convert(time - System.currentTimeMillis(), TimeUnit.MILLISECONDS);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="comment">// 队列元素排序</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(Delayed o)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">this</span>.getDelay(TimeUnit.MILLISECONDS) &gt; o.getDelay(TimeUnit.MILLISECONDS))</span><br><span class="line">                <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">this</span>.getDelay(TimeUnit.MILLISECONDS) &lt; o.getDelay(TimeUnit.MILLISECONDS))</span><br><span class="line">                <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="comment">// 打印消息</span></span><br><span class="line">            <span class="keyword">return</span> message + <span class="string">&quot; |执行时间：&quot;</span> + DateFormat.getDateTimeInstance().format(<span class="keyword">new</span> Date());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上程序支持多生产者，执行的结果如下：</p>
+<blockquote>
+<p>生产者1，消息编号：1 发送时间：2019-6-12 20:38:37 延迟：2 秒 |执行时间：2019-6-12 20:38:39</p>
+<p>生产者2，消息编号：2 发送时间：2019-6-12 20:38:37 延迟：2 秒 |执行时间：2019-6-12 20:38:39</p>
+<p>生产者1，消息编号：3 发送时间：2019-6-12 20:38:41 延迟：4 秒 |执行时间：2019-6-12 20:38:45</p>
+<p>生产者1，消息编号：5 发送时间：2019-6-12 20:38:43 延迟：2 秒 |执行时间：2019-6-12 20:38:45</p>
+<p>……</p>
+</blockquote>
+<h3 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h3>
+<p>队列（Queue）按照是否阻塞可分为：阻塞队列 BlockingQueue 和 非阻塞队列。其中，双端队列 Deque 也属于非阻塞队列，双端队列除了拥有队列的先进先出的方法之外，还拥有自己独有的方法，如 addFirst()、addLast()、getFirst()、getLast() 等，支持首未插入和删除元素。队列中比较常用的两个队列还有 PriorityQueue（优先级队列）和 DelayQueue（延迟队列），可使用延迟队列来实现延迟消息队列，这也是面试中比较常考的问题之一。需要面试朋友对延迟队列一定要做到心中有数，动手写一个消息队列也是非常有必要的。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2020/10/08/interview-java-15/" title="15.数据结构之队列的使用 + 面试题" target="_blank" rel="external">https://idea360.cn/2020/10/08/interview-java-15/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/10/08/interview-java-16/" title="16.java.io 包下的类有哪些 + 面试题"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/10/08/interview-java-14/" title="14.为什么要使用泛型和迭代器 + 面试题"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

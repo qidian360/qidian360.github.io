@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>17.JDK 原生动态代理是怎么实现的 + 面试题 | 当我遇上你</title>
+  <meta name="description" content="JDK 原生动态代理是怎么实现的 + 面试题  反射 反射机制是 Java 语言提供的一种基础功能，赋予程序在运行时自省（introspect）的能力。简单来说就是通过反射，可以在运行期间获取、检测和调用对象的属性和方法。  反射的使用场景 在现实中反射的使用场景有很多，比如以下几个。 使用场景一：编程工具 IDEA 或 Eclipse 等，在写代码时会有代码（属性或方法名）提示，就是因为使用了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="17.JDK 原生动态代理是怎么实现的 + 面试题">
+<meta property="og:url" content="https://idea360.cn/2020/10/08/interview-java-17/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="JDK 原生动态代理是怎么实现的 + 面试题  反射 反射机制是 Java 语言提供的一种基础功能，赋予程序在运行时自省（introspect）的能力。简单来说就是通过反射，可以在运行期间获取、检测和调用对象的属性和方法。  反射的使用场景 在现实中反射的使用场景有很多，比如以下几个。 使用场景一：编程工具 IDEA 或 Eclipse 等，在写代码时会有代码（属性或方法名）提示，就是因为使用了">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-10-08T06:08:37.000Z">
+<meta property="article:modified_time" content="2020-10-08T06:22:11.556Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="面试">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2020/10/08/interview-java-17/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#jdk-%E5%8E%9F%E7%94%9F%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%98%AF%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E7%9A%84-%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text"> JDK 原生动态代理是怎么实现的 + 面试题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84"><span class="toc-number">1.1.</span> <span class="toc-text"> 反射</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.1.1.</span> <span class="toc-text"> 反射的使用场景</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="toc-number">1.1.2.</span> <span class="toc-text"> 反射的基本使用</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-%E5%8F%8D%E5%B0%84%E8%B0%83%E7%94%A8%E9%9D%99%E6%80%81%E6%96%B9%E6%B3%95"><span class="toc-number">1.1.2.1.</span> <span class="toc-text"> ① 反射调用静态方法</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-%E5%8F%8D%E5%B0%84%E8%B0%83%E7%94%A8%E5%85%AC%E5%85%B1%E6%96%B9%E6%B3%95"><span class="toc-number">1.1.2.2.</span> <span class="toc-text"> ② 反射调用公共方法</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-%E5%8F%8D%E5%B0%84%E8%B0%83%E7%94%A8%E7%A7%81%E6%9C%89%E6%96%B9%E6%B3%95"><span class="toc-number">1.1.2.3.</span> <span class="toc-text"> ③ 反射调用私有方法</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93"><span class="toc-number">1.1.3.</span> <span class="toc-text"> 反射使用总结</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86"><span class="toc-number">1.2.</span> <span class="toc-text"> 动态代理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.2.1.</span> <span class="toc-text"> 动态代理的使用场景</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E5%92%8C%E5%8F%8D%E5%B0%84%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">1.2.2.</span> <span class="toc-text"> 动态代理和反射的关系</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1jdk-%E5%8E%9F%E7%94%9F%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86"><span class="toc-number">1.2.3.</span> <span class="toc-text"> 1）JDK 原生动态代理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2cglib-%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86"><span class="toc-number">1.2.4.</span> <span class="toc-text"> 2）cglib 动态代理</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="toc-number">1.3.</span> <span class="toc-text"> 相关面试题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E8%A7%A3%E5%86%B3%E4%BA%86%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="toc-number">1.3.1.</span> <span class="toc-text"> 1.动态代理解决了什么问题？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E5%92%8C%E5%8F%8D%E5%B0%84%E7%9A%84%E5%85%B3%E7%B3%BB%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.3.2.</span> <span class="toc-text"> 2.动态代理和反射的关系是什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E4%BB%A5%E4%B8%8B%E6%8F%8F%E8%BF%B0%E9%94%99%E8%AF%AF%E7%9A%84%E6%98%AF"><span class="toc-number">1.3.3.</span> <span class="toc-text"> 3.以下描述错误的是？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%E8%AF%B7%E8%A1%A5%E5%85%A8%E4%BB%A5%E4%B8%8B%E4%BB%A3%E7%A0%81"><span class="toc-number">1.3.4.</span> <span class="toc-text"> 4.请补全以下代码？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5cglib-%E5%8F%AF%E4%BB%A5%E4%BB%A3%E7%90%86%E4%BB%BB%E4%BD%95%E7%B1%BB%E8%BF%99%E5%8F%A5%E8%AF%9D%E5%AF%B9%E5%90%97%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="toc-number">1.3.5.</span> <span class="toc-text"> 5.cglib 可以代理任何类这句话对吗？为什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6jdk-%E5%8E%9F%E7%94%9F%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E5%92%8C-cglib-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">1.3.6.</span> <span class="toc-text"> 6.JDK 原生动态代理和 cglib 有什么区别？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7%E4%B8%BA%E4%BB%80%E4%B9%88-jdk-%E5%8E%9F%E7%94%9F%E7%9A%84%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E5%BF%85%E9%A1%BB%E8%A6%81%E9%80%9A%E8%BF%87%E6%8E%A5%E5%8F%A3%E6%9D%A5%E5%AE%8C%E6%88%90"><span class="toc-number">1.3.7.</span> <span class="toc-text"> 7.为什么 JDK 原生的动态代理必须要通过接口来完成？</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.4.</span> <span class="toc-text"> 总结</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-interview-java-17" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      17.JDK 原生动态代理是怎么实现的 + 面试题
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/10/08/interview-java-17/" class="article-date">
+	  <time datetime="2020-10-08T06:08:37.000Z" itemprop="datePublished">2020-10-08</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Java%E9%9D%A2%E8%AF%95%E5%85%A8%E8%A7%A3%E6%9E%90/">Java面试全解析</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/java/" rel="tag">java</a>, <a class="article-tag-link-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2020/10/08/interview-java-17/" class="leancloud_visitors"  data-flag-title="17.JDK 原生动态代理是怎么实现的 + 面试题">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/10/08/interview-java-17/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="jdk-原生动态代理是怎么实现的-面试题"><a class="markdownIt-Anchor" href="#jdk-原生动态代理是怎么实现的-面试题"></a> JDK 原生动态代理是怎么实现的 + 面试题</h2>
+<h3 id="反射"><a class="markdownIt-Anchor" href="#反射"></a> 反射</h3>
+<p>反射机制是 Java 语言提供的一种基础功能，赋予程序在运行时自省（introspect）的能力。简单来说就是通过反射，可以在运行期间获取、检测和调用对象的属性和方法。</p>
+<h4 id="反射的使用场景"><a class="markdownIt-Anchor" href="#反射的使用场景"></a> 反射的使用场景</h4>
+<p>在现实中反射的使用场景有很多，比如以下几个。</p>
+<p><strong>使用场景一</strong>：编程工具 IDEA 或 Eclipse 等，在写代码时会有代码（属性或方法名）提示，就是因为使用了反射。</p>
+<p><strong>使用场景二</strong>：很多知名的框架，为了让程序更优雅更简洁，也会使用到反射。</p>
+<p>例如，<strong>Spring</strong> 可以通过配置来加载不同的类，调用不同的方法，代码如下所示：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean id=<span class="string">&quot;person&quot;</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;com.spring.beans.Person&quot;</span> init-method=<span class="string">&quot;initPerson&quot;</span>&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure>
+<p>例如，<strong>MyBatis</strong> 在 Mapper 使用外部类的 SQL 构建查询时，代码如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SelectProvider(type = PersonSql.class, method = &quot;getListSql&quot;)</span></span><br><span class="line"><span class="function">List&lt;Person&gt; <span class="title">getList</span><span class="params">()</span></span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PersonSql</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getListSql</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        String sql = <span class="keyword">new</span> SQL() &#123;&#123;</span><br><span class="line">            SELECT(<span class="string">&quot;*&quot;</span>);</span><br><span class="line">            FROM(<span class="string">&quot;person&quot;</span>);</span><br><span class="line">        &#125;&#125;.toString();</span><br><span class="line">        <span class="keyword">return</span> sql;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>使用场景三</strong>：数据库连接池，也会使用反射调用不同类型的数据库驱动，代码如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String url = <span class="string">&quot;jdbc:mysql://127.0.0.1:3306/mydb&quot;</span>;</span><br><span class="line">String username = <span class="string">&quot;root&quot;</span>;</span><br><span class="line">String password = <span class="string">&quot;root&quot;</span>;</span><br><span class="line">Class.forName(<span class="string">&quot;com.mysql.jdbc.Driver&quot;</span>);</span><br><span class="line">Connection connection = DriverManager.getConnection(url, username, password);</span><br></pre></td></tr></table></figure>
+<p>当然反射还有其他很多类似的使用场景，这里就不一一列举，读者可以举一反三，想想在平常的开发中，还有哪些使用了反射功能的场景。</p>
+<h4 id="反射的基本使用"><a class="markdownIt-Anchor" href="#反射的基本使用"></a> 反射的基本使用</h4>
+<p>下来我们通过反射调用类中的某个方法，来学习反射的基本使用。</p>
+<p>使用反射调用类中的方法，分为三种情况：</p>
+<ul>
+<li>调用静态方法</li>
+<li>调用公共方法</li>
+<li>调用私有方法</li>
+</ul>
+<p>假设有一个实体类 MyReflect 包含了以上三种方法，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.interview.chapter4;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyReflect</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 静态方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">staticMd</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Static Method&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 公共方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">publicMd</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Public Method&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 私有方法</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">privateMd</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Private Method&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面分别来看，使用反射如何调用以上三种类型的方法。</p>
+<h5 id="1-反射调用静态方法"><a class="markdownIt-Anchor" href="#1-反射调用静态方法"></a> ① <strong>反射调用静态方法</strong></h5>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Class myClass = Class.forName(<span class="string">&quot;com.interview.chapter4.MyReflect&quot;</span>);</span><br><span class="line">Method method = myClass.getMethod(<span class="string">&quot;staticMd&quot;</span>);</span><br><span class="line">method.invoke(myClass);</span><br></pre></td></tr></table></figure>
+<h5 id="2-反射调用公共方法"><a class="markdownIt-Anchor" href="#2-反射调用公共方法"></a> ② <strong>反射调用公共方法</strong></h5>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Class myClass = Class.forName(<span class="string">&quot;com.interview.chapter4.MyReflect&quot;</span>);</span><br><span class="line"><span class="comment">// 创建实例对象（相当于 new ）</span></span><br><span class="line">Object instance = myClass.newInstance();</span><br><span class="line">Method method2 = myClass.getMethod(<span class="string">&quot;publicMd&quot;</span>);</span><br><span class="line">method2.invoke(instance);</span><br></pre></td></tr></table></figure>
+<h5 id="3-反射调用私有方法"><a class="markdownIt-Anchor" href="#3-反射调用私有方法"></a> ③ <strong>反射调用私有方法</strong></h5>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Class myClass = Class.forName(<span class="string">&quot;com.interview.chapter4.MyReflect&quot;</span>);</span><br><span class="line"><span class="comment">// 创建实例对象（相当于 new ）</span></span><br><span class="line">Object object = myClass.newInstance();</span><br><span class="line">Method method3 = myClass.getDeclaredMethod(<span class="string">&quot;privateMd&quot;</span>);</span><br><span class="line">method3.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">method3.invoke(object);</span><br></pre></td></tr></table></figure>
+<h4 id="反射使用总结"><a class="markdownIt-Anchor" href="#反射使用总结"></a> 反射使用总结</h4>
+<p>反射获取调用类可以通过 Class.forName()，反射获取类实例要通过 newInstance()，相当于 new 一个新对象，反射获取方法要通过 getMethod()，获取到类方法之后使用 invoke() 对类方法进行调用。如果是类方法为私有方法的话，则需要通过 setAccessible(true) 来修改方法的访问限制，以上的这些操作就是反射的基本使用。</p>
+<h3 id="动态代理"><a class="markdownIt-Anchor" href="#动态代理"></a> 动态代理</h3>
+<p>动态代理可以理解为，本来应该自己做的事情，却交给别人代为处理，这个过程就叫做动态代理。</p>
+<h4 id="动态代理的使用场景"><a class="markdownIt-Anchor" href="#动态代理的使用场景"></a> 动态代理的使用场景</h4>
+<p>动态代理被广为人知的使用场景是 Spring 中的面向切面编程（AOP）。例如，依赖注入 @Autowired 和事务注解 @Transactional 等，都是利用动态代理实现的。</p>
+<p>动态代理还可以封装一些 RPC 调用，也可以通过代理实现一个全局拦截器等。</p>
+<h4 id="动态代理和反射的关系"><a class="markdownIt-Anchor" href="#动态代理和反射的关系"></a> 动态代理和反射的关系</h4>
+<p>JDK 原生提供的动态代理就是通过反射实现的，但动态代理的实现方式还可以是 ASM（一个短小精悍的字节码操作框架）、cglib（基于 ASM）等，并不局限于反射。</p>
+<p>下面我们分别来看：JDK 原生动态代理和 cglib 的实现。</p>
+<h4 id="1jdk-原生动态代理"><a class="markdownIt-Anchor" href="#1jdk-原生动态代理"></a> 1）JDK 原生动态代理</h4>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span> <span class="keyword">implements</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;The dog is eating&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cat</span> <span class="keyword">implements</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;The cat is eating&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// JDK 代理类</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AnimalProxy</span> <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Object target; <span class="comment">// 代理对象</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">getInstance</span><span class="params">(Object target)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.target = target;</span><br><span class="line">        <span class="comment">// 取得代理对象</span></span><br><span class="line">        <span class="keyword">return</span> Proxy.newProxyInstance(target.getClass().getClassLoader(), target.getClass().getInterfaces(), <span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;调用前&quot;</span>);</span><br><span class="line">        Object result = method.invoke(target, args); <span class="comment">// 方法调用</span></span><br><span class="line">        System.out.println(<span class="string">&quot;调用后&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// JDK 动态代理调用</span></span><br><span class="line">    AnimalProxy proxy = <span class="keyword">new</span> AnimalProxy();</span><br><span class="line">    Animal dogProxy = (Animal) proxy.getInstance(<span class="keyword">new</span> Dog());</span><br><span class="line">    dogProxy.eat();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上代码，我们实现了通过动态代理，在所有请求前、后都打印了一个简单的信息。</p>
+<p><strong>注意：</strong> JDK Proxy 只能代理实现接口的类（即使是 extends 继承类也是不可以代理的）。</p>
+<h4 id="2cglib-动态代理"><a class="markdownIt-Anchor" href="#2cglib-动态代理"></a> 2）cglib 动态代理</h4>
+<p>要是用 cglib 实现要添加对 cglib 的引用，如果是 maven 项目的话，直接添加以下代码：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;cglib&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;cglib&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;3.2.12&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<p>cglib 的具体实现，请参考以下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Panda</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;The panda is eating&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CglibProxy</span> <span class="keyword">implements</span> <span class="title">MethodInterceptor</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Object target; <span class="comment">// 代理对象</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">getInstance</span><span class="params">(Object target)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.target = target;</span><br><span class="line">        Enhancer enhancer = <span class="keyword">new</span> Enhancer();</span><br><span class="line">        <span class="comment">// 设置父类为实例类</span></span><br><span class="line">        enhancer.setSuperclass(<span class="keyword">this</span>.target.getClass());</span><br><span class="line">        <span class="comment">// 回调方法</span></span><br><span class="line">        enhancer.setCallback(<span class="keyword">this</span>);</span><br><span class="line">        <span class="comment">// 创建代理对象</span></span><br><span class="line">        <span class="keyword">return</span> enhancer.create();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">intercept</span><span class="params">(Object o, Method method, Object[] objects, MethodProxy methodProxy)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;调用前&quot;</span>);</span><br><span class="line">        Object result = methodProxy.invokeSuper(o, objects); <span class="comment">// 执行方法调用</span></span><br><span class="line">        System.out.println(<span class="string">&quot;调用后&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// cglib 动态代理调用</span></span><br><span class="line">    CglibProxy proxy = <span class="keyword">new</span> CglibProxy();</span><br><span class="line">    Panda panda = (Panda)proxy.getInstance(<span class="keyword">new</span> Panda());</span><br><span class="line">    panda.eat();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上程序执行的结果：</p>
+<blockquote>
+<p>调用前</p>
+<p>The panda is eating</p>
+<p>调用后</p>
+</blockquote>
+<p>由以上代码可以知道，cglib 的调用通过实现 MethodInterceptor 接口的 intercept 方法，调用 invokeSuper 进行动态代理的。它可以直接对普通类进行动态代理，并不需要像 JDK 代理那样，需要通过接口来完成，值得一提的是 Spring 的动态代理也是通过 cglib 实现的。</p>
+<p><strong>注意</strong>：cglib 底层是通过子类继承被代理对象的方式实现动态代理的，因此代理类不能是最终类（final），否则就会报错 java.lang.IllegalArgumentException: Cannot subclass final class xxx。</p>
+<h3 id="相关面试题"><a class="markdownIt-Anchor" href="#相关面试题"></a> 相关面试题</h3>
+<h4 id="1动态代理解决了什么问题"><a class="markdownIt-Anchor" href="#1动态代理解决了什么问题"></a> 1.动态代理解决了什么问题？</h4>
+<p>答：首先它是一个代理机制，如果熟悉设计模式中的代理模式，我们会知道，代理可以看作是对调用目标的一个包装，这样我们对目标代码的调用不是直接发生的，而是通过代理完成，通过代理可以让调用者与实现者之间解耦。比如进行 RPC 调用，通过代理，可以提供更加友善的界面；还可以通过代理，做一个全局的拦截器。</p>
+<h4 id="2动态代理和反射的关系是什么"><a class="markdownIt-Anchor" href="#2动态代理和反射的关系是什么"></a> 2.动态代理和反射的关系是什么？</h4>
+<p>答：反射可以用来实现动态代理，但动态代理还有其他的实现方式，比如 ASM（一个短小精悍的字节码操作框架）、cglib 等。</p>
+<h4 id="3以下描述错误的是"><a class="markdownIt-Anchor" href="#3以下描述错误的是"></a> 3.以下描述错误的是？</h4>
+<p>A：cglib 的性能更高<br />
+B：Spring 中有使用 cglib 来实现动态代理<br />
+C：Spring 中有使用 JDK 原生的动态代理<br />
+D：JDK 原生动态代理性能更高</p>
+<p>答：D</p>
+<p>题目解析：Spring 动态代理的实现方式有两种：cglib 和 JDK 原生动态代理。</p>
+<h4 id="4请补全以下代码"><a class="markdownIt-Anchor" href="#4请补全以下代码"></a> 4.请补全以下代码？</h4>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyReflect</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 私有方法</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">privateMd</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Private Method&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ReflectTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException </span>&#123;</span><br><span class="line">        Class myClass = Class.forName(<span class="string">&quot;MyReflect&quot;</span>);</span><br><span class="line">        Object object = myClass.newInstance();</span><br><span class="line">        <span class="comment">// 补充此行代码</span></span><br><span class="line">        method.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">        method.invoke(object);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>答：Method method = myClass.getDeclaredMethod(“privateMd”);</p>
+<p>题目解析：此题主要考的是私有方法的获取，私有方法的获取并不是通过 getMethod() 方式，而是通过 getDeclaredMethod() 获取的。</p>
+<h4 id="5cglib-可以代理任何类这句话对吗为什么"><a class="markdownIt-Anchor" href="#5cglib-可以代理任何类这句话对吗为什么"></a> 5.cglib 可以代理任何类这句话对吗？为什么？</h4>
+<p>答：这句话不完全对，因为 cglib 只能代理可以有子类的普通类，对于像最终类（final），cglib 是不能实现动态代理的，因为 cglib 的底层是通过继承代理类的子类来实现动态代理的，所以不能被继承类无法使用 cglib。</p>
+<h4 id="6jdk-原生动态代理和-cglib-有什么区别"><a class="markdownIt-Anchor" href="#6jdk-原生动态代理和-cglib-有什么区别"></a> 6.JDK 原生动态代理和 cglib 有什么区别？</h4>
+<p>答：JDK 原生动态代理和 cglib 区别如下：</p>
+<ul>
+<li>JDK 原生动态代理是基于接口实现的，不需要添加任何依赖，可以平滑的支持 JDK 版本的升级；</li>
+<li>cglib 不需要实现接口，可以直接代理普通类，需要添加依赖包，性能更高。</li>
+</ul>
+<h4 id="7为什么-jdk-原生的动态代理必须要通过接口来完成"><a class="markdownIt-Anchor" href="#7为什么-jdk-原生的动态代理必须要通过接口来完成"></a> 7.为什么 JDK 原生的动态代理必须要通过接口来完成？</h4>
+<p>答：这是由于 JDK 原生设计的原因，来看动态代理的实现方法 newProxyInstance() 的源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * ......</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span>   loader the class loader to define the proxy class</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span>   interfaces the list of interfaces for the proxy class to implement</span></span><br><span class="line"><span class="comment"> * ......</span></span><br><span class="line"><span class="comment"> */</span> </span><br><span class="line"><span class="meta">@CallerSensitive</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">newProxyInstance</span><span class="params">(ClassLoader loader,</span></span></span><br><span class="line"><span class="function"><span class="params">                                      Class&lt;?&gt;[] interfaces,</span></span></span><br><span class="line"><span class="function"><span class="params">                                      InvocationHandler h)</span></span></span><br><span class="line"><span class="function">    <span class="keyword">throws</span> IllegalArgumentException</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="comment">// 省略其他代码</span></span><br></pre></td></tr></table></figure>
+<p>来看前两个参数的声明：</p>
+<ul>
+<li>loader：为类加载器，也就是 target.getClass().getClassLoader()</li>
+<li>interfaces：接口代理类的接口实现列表</li>
+</ul>
+<p>看了上面的参数说明，我们就明白了，要使用 JDK 原生的动态只能通过实现接口来完成。</p>
+<h3 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h3>
+<p>通过本文可以知道 JDK 原生动态代理是使用反射实现的，但动态代理的实现方式不止有反射，还可以是 ASM（一个短小精悍的字节码操作框架）、cglib（基于 ASM）等。其中 JDK 原生的动态代理是通过接口实现的，而 cglib 是通过子类实现的，因此 cglib 不能代理最终类（final）。而反射不但可以反射调用静态方法，还可以反射调用普通方法和私有方法，其中调用私有方法时要设置 setAccessible 为 true。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2020/10/08/interview-java-17/" title="17.JDK 原生动态代理是怎么实现的 + 面试题" target="_blank" rel="external">https://idea360.cn/2020/10/08/interview-java-17/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/10/08/interview-java-18/" title="18.为什么需要线程 + 面试题"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/10/08/interview-java-16/" title="16.java.io 包下的类有哪些 + 面试题"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

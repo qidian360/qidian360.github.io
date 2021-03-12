@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>spring-cloud-gateway过滤器实践 | 当我遇上你</title>
+  <meta name="description" content="概述 这里是 SpringCloud Gateway 实践的第一篇，主要讲过滤器的相关实现。Spring-Cloud-Gateway是以 WebFlux 为基础的响应式架构设计, 是异步非阻塞式的，它能够充分利用多核 CPU 的硬件资源去处理大量的并发请求。 本篇将基于 spring-cloud-gateway简介 基础环境进行改造。  工作原理 Spring-Cloud-Gateway基于过滤">
+<meta property="og:type" content="article">
+<meta property="og:title" content="spring-cloud-gateway过滤器实践">
+<meta property="og:url" content="https://idea360.cn/2020/03/29/spring-cloud-gateway-filter/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="概述 这里是 SpringCloud Gateway 实践的第一篇，主要讲过滤器的相关实现。Spring-Cloud-Gateway是以 WebFlux 为基础的响应式架构设计, 是异步非阻塞式的，它能够充分利用多核 CPU 的硬件资源去处理大量的并发请求。 本篇将基于 spring-cloud-gateway简介 基础环境进行改造。  工作原理 Spring-Cloud-Gateway基于过滤">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/spring-cloud-gateway-fliter-order.png">
+<meta property="article:published_time" content="2020-03-29T07:17:16.000Z">
+<meta property="article:modified_time" content="2021-02-23T14:42:58.259Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="spring">
+<meta property="article:tag" content="过滤器">
+<meta property="article:tag" content="SpringCloud">
+<meta property="article:tag" content="gateway">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/idea360/oss/raw/master/images/spring-cloud-gateway-fliter-order.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2020/03/29/spring-cloud-gateway-filter/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text"> 概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text"> 工作原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="toc-number">3.</span> <span class="toc-text"> 自定义过滤器</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E5%85%A8%E5%B1%80%E8%BF%87%E6%BB%A4%E5%99%A8%E5%AE%9E%E7%8E%B0%E5%AE%A1%E8%AE%A1%E5%8A%9F%E8%83%BD"><span class="toc-number">4.</span> <span class="toc-text"> 基于全局过滤器实现审计功能</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BF%87%E6%BB%A4%E5%99%A8%E5%B7%A5%E5%8E%82"><span class="toc-number">5.</span> <span class="toc-text"> 自定义过滤器工厂</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BB%93%E8%AF%AD"><span class="toc-number">6.</span> <span class="toc-text"> 结语</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">7.</span> <span class="toc-text"> 参考</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-spring-cloud-gateway-filter" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      spring-cloud-gateway过滤器实践
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/03/29/spring-cloud-gateway-filter/" class="article-date">
+	  <time datetime="2020-03-29T07:17:16.000Z" itemprop="datePublished">2020-03-29</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/spring/">spring</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/SpringCloud/" rel="tag">SpringCloud</a>, <a class="article-tag-link-link" href="/tags/gateway/" rel="tag">gateway</a>, <a class="article-tag-link-link" href="/tags/spring/" rel="tag">spring</a>, <a class="article-tag-link-link" href="/tags/%E8%BF%87%E6%BB%A4%E5%99%A8/" rel="tag">过滤器</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2020/03/29/spring-cloud-gateway-filter/" class="leancloud_visitors"  data-flag-title="spring-cloud-gateway过滤器实践">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/03/29/spring-cloud-gateway-filter/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="概述"><a class="markdownIt-Anchor" href="#概述"></a> 概述</h1>
+<p>这里是 <code>SpringCloud Gateway</code> 实践的第一篇，主要讲过滤器的相关实现。Spring-Cloud-Gateway是以 <code>WebFlux</code> 为基础的响应式架构设计, 是异步非阻塞式的，它能够充分利用多核 CPU 的硬件资源去处理大量的并发请求。</p>
+<p>本篇将基于 <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/nGlIREVZ13qQ3CvaftmYaA">spring-cloud-gateway简介</a> 基础环境进行改造。</p>
+<h1 id="工作原理"><a class="markdownIt-Anchor" href="#工作原理"></a> 工作原理</h1>
+<p>Spring-Cloud-Gateway基于过滤器实现，同zuul类似，有<strong>pre</strong>和<strong>post</strong>两种方式的filter,分别处理<strong>前置逻辑</strong>和<strong>后置逻辑</strong>。客户端的请求先经过<strong>pre</strong>类型的filter，然后将请求转发到具体的业务服务，收到业务服务的响应之后，再经过<strong>post</strong>类型的filter处理，最后返回响应到客户端。</p>
+<p>过滤器执行流程如下，<strong>order越大，优先级越低</strong></p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/spring-cloud-gateway-fliter-order.png" alt="" /></p>
+<p>接下来我们来验证下 <code>filter</code> 执行顺序。</p>
+<p>这里创建3个过滤器，分别配置不同的优先级</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AFilter</span> <span class="keyword">implements</span> <span class="title">GlobalFilter</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Mono&lt;Void&gt; <span class="title">filter</span><span class="params">(ServerWebExchange exchange, GatewayFilterChain chain)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;AFilter前置逻辑&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> chain.filter(exchange).then(Mono.fromRunnable(() -&gt; &#123;</span><br><span class="line">            log.info(<span class="string">&quot;AFilter后置逻辑&quot;</span>);</span><br><span class="line">        &#125;));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BFilter</span> <span class="keyword">implements</span> <span class="title">GlobalFilter</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Mono&lt;Void&gt; <span class="title">filter</span><span class="params">(ServerWebExchange exchange, GatewayFilterChain chain)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;BFilter前置逻辑&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> chain.filter(exchange).then(Mono.fromRunnable(() -&gt; &#123;</span><br><span class="line">            log.info(<span class="string">&quot;BFilter后置逻辑&quot;</span>);</span><br><span class="line">        &#125;));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CFilter</span> <span class="keyword">implements</span> <span class="title">GlobalFilter</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Mono&lt;Void&gt; <span class="title">filter</span><span class="params">(ServerWebExchange exchange, GatewayFilterChain chain)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;CFilter前置逻辑&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> chain.filter(exchange).then(Mono.fromRunnable(() -&gt; &#123;</span><br><span class="line">            log.info(<span class="string">&quot;CFilter后置逻辑&quot;</span>);</span><br><span class="line">        &#125;));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FilterConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@Order(-1)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> GlobalFilter <span class="title">a</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> AFilter();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@Order(0)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> GlobalFilter <span class="title">b</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> BFilter();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@Order(1)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> GlobalFilter <span class="title">c</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> CFilter();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -X POST -H <span class="string">&quot;Content-Type:application/json&quot;</span> -d <span class="string">&#x27;&#123;&quot;name&quot;: &quot;admin&quot;&#125;&#x27;</span> http://192.168.124.5:2000/p/provider1</span><br><span class="line"></span><br><span class="line">curl -X GET -G -d <span class="string">&quot;username=admin&quot;</span> http://192.168.124.5:2000/p/provider1/1</span><br></pre></td></tr></table></figure>
+<p>查看网关输出日志</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">2020-03-29 16:23:22.832  INFO 59326 --- [ctor-http-nio-6] cn.idea360.gateway.filter1.AFilter       : AFilter前置逻辑</span><br><span class="line">2020-03-29 16:23:22.832  INFO 59326 --- [ctor-http-nio-6] cn.idea360.gateway.filter1.BFilter       : BFilter前置逻辑</span><br><span class="line">2020-03-29 16:23:22.832  INFO 59326 --- [ctor-http-nio-6] cn.idea360.gateway.filter1.CFilter       : CFilter前置逻辑</span><br><span class="line"></span><br><span class="line">2020-03-29 16:23:22.836  INFO 59326 --- [ctor-http-nio-6] cn.idea360.gateway.filter1.CFilter       : CFilter后置逻辑</span><br><span class="line">2020-03-29 16:23:22.836  INFO 59326 --- [ctor-http-nio-6] cn.idea360.gateway.filter1.BFilter       : BFilter后置逻辑</span><br><span class="line">2020-03-29 16:23:22.836  INFO 59326 --- [ctor-http-nio-6] cn.idea360.gateway.filter1.AFilter       : AFilter后置逻辑</span><br></pre></td></tr></table></figure>
+<h1 id="自定义过滤器"><a class="markdownIt-Anchor" href="#自定义过滤器"></a> 自定义过滤器</h1>
+<p>现在假设我们要统计某个服务的响应时间，我们可以在代码中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">long</span> beginTime = System.currentTimeMillis();</span><br><span class="line"><span class="comment">// do something...</span></span><br><span class="line"><span class="keyword">long</span> elapsed = System.currentTimeMillis() - beginTime;</span><br><span class="line">log.info(<span class="string">&quot;elapsed: &#123;&#125;ms&quot;</span>, elapsed);</span><br></pre></td></tr></table></figure>
+<p>每次都要这么写是不是很烦？Spring 告诉我们有个东西叫 AOP。但是我们是微服务啊，在每个服务里都写也很烦。这时候就该网关的过滤器登台表演了。</p>
+<p>自定义过滤器需要实现 <code>GatewayFilter</code> 和 <code>Ordered</code> 。其中 <code>GatewayFilter</code> 中的这个方法就是用来实现你的自定义的逻辑的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Mono&lt;Void&gt; <span class="title">filter</span><span class="params">(ServerWebExchange exchange, GatewayFilterChain chain)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>而 <code>Ordered</code> 中的 <code>int getOrder()</code> 方法是来给过滤器设定优先级别的，值越大则优先级越低。</p>
+<p>好了，让我们来撸代码吧.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 此过滤器功能为计算请求完成时间</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ElapsedFilter</span> <span class="keyword">implements</span> <span class="title">GatewayFilter</span>, <span class="title">Ordered</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String ELAPSED_TIME_BEGIN = <span class="string">&quot;elapsedTimeBegin&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Mono&lt;Void&gt; <span class="title">filter</span><span class="params">(ServerWebExchange exchange, GatewayFilterChain chain)</span> </span>&#123;</span><br><span class="line">        exchange.getAttributes().put(ELAPSED_TIME_BEGIN, System.currentTimeMillis());</span><br><span class="line">        <span class="keyword">return</span> chain.filter(exchange).then(</span><br><span class="line">                Mono.fromRunnable(() -&gt; &#123;</span><br><span class="line">                    Long startTime = exchange.getAttribute(ELAPSED_TIME_BEGIN);</span><br><span class="line">                    <span class="keyword">if</span> (startTime != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        System.out.println(exchange.getRequest().getURI().getRawPath() + <span class="string">&quot;: &quot;</span> + (System.currentTimeMillis() - startTime) + <span class="string">&quot;ms&quot;</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;)</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     *过滤器存在优先级，order越大，优先级越低</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getOrder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Ordered.LOWEST_PRECEDENCE;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>我们在请求刚刚到达时，往 <code>ServerWebExchange</code> 中放入了一个属性 <code>elapsedTimeBegin</code>，属性值为当时的毫秒级时间戳。然后在请求执行结束后，又从中取出我们之前放进去的那个时间戳，与当前时间的差值即为该请求的耗时。因为这是与业务无关的日志所以将 <code>Ordered</code> 设为 <code>Integer.MAX_VALUE</code> 以降低优先级。</p>
+<p>现在再来看我们之前的问题：怎么来区分是 “pre” 还是 “post” 呢？其实就是 <code>chain.filter(exchange)</code> 之前的就是 “pre” 部分，之后的也就是 <code>then</code> 里边的是 “post” 部分。</p>
+<p>创建好 Filter 之后我们将它添加到我们的 Filter Chain 里边</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FilterConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * http://localhost:8100/filter/provider</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> builder</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RouteLocator <span class="title">customerRouteLocator</span><span class="params">(RouteLocatorBuilder builder)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// @formatter:off</span></span><br><span class="line">        <span class="comment">// 可以对比application.yml中关于路由转发的配置</span></span><br><span class="line">        <span class="keyword">return</span> builder.routes()</span><br><span class="line">                .route(r -&gt; r.path(<span class="string">&quot;/filter/**&quot;</span>)</span><br><span class="line">                        .filters(f -&gt; f.stripPrefix(<span class="number">1</span>)</span><br><span class="line">                                .filter(<span class="keyword">new</span> ElapsedFilter()))</span><br><span class="line">                        .uri(<span class="string">&quot;lb://idc-cloud-provider&quot;</span>)</span><br><span class="line">                        .order(<span class="number">0</span>)</span><br><span class="line">                        .id(<span class="string">&quot;filter&quot;</span>)</span><br><span class="line">                )</span><br><span class="line">                .build();</span><br><span class="line">        <span class="comment">// @formatter:on</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="基于全局过滤器实现审计功能"><a class="markdownIt-Anchor" href="#基于全局过滤器实现审计功能"></a> 基于全局过滤器实现审计功能</h1>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// AdaptCachedBodyGlobalFilter</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LogFilter</span> <span class="keyword">implements</span> <span class="title">GlobalFilter</span>, <span class="title">Ordered</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Logger log = LoggerFactory.getLogger(LogFilter.class);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ObjectMapper objectMapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String START_TIME = <span class="string">&quot;startTime&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> List&lt;HttpMessageReader&lt;?&gt;&gt; messageReaders = HandlerStrategies.withDefaults().messageReaders();</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Mono&lt;Void&gt; <span class="title">filter</span><span class="params">(ServerWebExchange exchange, GatewayFilterChain chain)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        ServerHttpRequest request = exchange.getRequest();</span><br><span class="line">        <span class="comment">// 请求路径</span></span><br><span class="line">        String path = request.getPath().pathWithinApplication().value();</span><br><span class="line">        <span class="comment">// 请求schema: http/https</span></span><br><span class="line">        String scheme = request.getURI().getScheme();</span><br><span class="line">        <span class="comment">// 请求方法</span></span><br><span class="line">        HttpMethod method = request.getMethod();</span><br><span class="line">        <span class="comment">// 路由服务地址</span></span><br><span class="line">        URI targetUri = exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR);</span><br><span class="line">        <span class="comment">// 请求头</span></span><br><span class="line">        HttpHeaders headers = request.getHeaders();</span><br><span class="line">        <span class="comment">// 设置startTime</span></span><br><span class="line">        exchange.getAttributes().put(START_TIME, System.currentTimeMillis());</span><br><span class="line">        <span class="comment">// 获取请求地址</span></span><br><span class="line">        InetSocketAddress remoteAddress = request.getRemoteAddress();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        MultiValueMap&lt;String, String&gt; formData = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        AccessRecord accessRecord = <span class="keyword">new</span> AccessRecord();</span><br><span class="line">        accessRecord.setPath(path);</span><br><span class="line">        accessRecord.setSchema(scheme);</span><br><span class="line">        accessRecord.setMethod(method.name());</span><br><span class="line">        accessRecord.setTargetUri(targetUri.toString());</span><br><span class="line">        accessRecord.setRemoteAddress(remoteAddress.toString());</span><br><span class="line">        accessRecord.setHeaders(headers);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (method == HttpMethod.GET) &#123;</span><br><span class="line">            formData = request.getQueryParams();</span><br><span class="line">            accessRecord.setFormData(formData);</span><br><span class="line">            writeAccessRecord(accessRecord);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (method == HttpMethod.POST) &#123;</span><br><span class="line">            Mono&lt;Void&gt; voidMono = <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">if</span> (headers.getContentType().equals(MediaType.APPLICATION_JSON)) &#123;</span><br><span class="line">                <span class="comment">// JSON</span></span><br><span class="line">                voidMono = readBody(exchange, chain, accessRecord);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (headers.getContentType().equals(MediaType.APPLICATION_FORM_URLENCODED)) &#123;</span><br><span class="line">                <span class="comment">// x-www-form-urlencoded</span></span><br><span class="line">                voidMono = readFormData(exchange, chain, accessRecord);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (voidMono != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> voidMono;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> chain.filter(exchange);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> Mono&lt;Void&gt; <span class="title">readFormData</span><span class="params">(ServerWebExchange exchange, GatewayFilterChain chain, AccessRecord accessRecord)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> Mono&lt;Void&gt; <span class="title">readBody</span><span class="params">(ServerWebExchange exchange, GatewayFilterChain chain, AccessRecord accessRecord)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> DataBufferUtils.join(exchange.getRequest().getBody()).flatMap(dataBuffer -&gt; &#123;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">byte</span>[] bytes = <span class="keyword">new</span> <span class="keyword">byte</span>[dataBuffer.readableByteCount()];</span><br><span class="line">            dataBuffer.read(bytes);</span><br><span class="line">            DataBufferUtils.release(dataBuffer);</span><br><span class="line">            Flux&lt;DataBuffer&gt; cachedFlux = Flux.defer(() -&gt; &#123;</span><br><span class="line">                DataBuffer buffer = exchange.getResponse().bufferFactory().wrap(bytes);</span><br><span class="line">                DataBufferUtils.retain(buffer);</span><br><span class="line">                <span class="keyword">return</span> Mono.just(buffer);</span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 重写请求体,因为请求体数据只能被消费一次</span></span><br><span class="line">            ServerHttpRequest mutatedRequest = <span class="keyword">new</span> ServerHttpRequestDecorator(exchange.getRequest()) &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> Flux&lt;DataBuffer&gt; <span class="title">getBody</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                    <span class="keyword">return</span> cachedFlux;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;;</span><br><span class="line"></span><br><span class="line">            ServerWebExchange mutatedExchange = exchange.mutate().request(mutatedRequest).build();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> ServerRequest.create(mutatedExchange, messageReaders)</span><br><span class="line">                    .bodyToMono(String.class)</span><br><span class="line">                    .doOnNext(objectValue -&gt; &#123;</span><br><span class="line">                        accessRecord.setBody(objectValue);</span><br><span class="line">                        writeAccessRecord(accessRecord);</span><br><span class="line">                    &#125;).then(chain.filter(mutatedExchange));</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getOrder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Ordered.LOWEST_PRECEDENCE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * TODO 异步日志</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> accessRecord</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">writeAccessRecord</span><span class="params">(AccessRecord accessRecord)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        log.info(<span class="string">&quot;\n\n start------------------------------------------------- \n &quot;</span> +</span><br><span class="line">                        <span class="string">&quot;请求路径:&#123;&#125;\n &quot;</span> +</span><br><span class="line">                        <span class="string">&quot;scheme:&#123;&#125;\n &quot;</span> +</span><br><span class="line">                        <span class="string">&quot;请求方法:&#123;&#125;\n &quot;</span> +</span><br><span class="line">                        <span class="string">&quot;目标服务:&#123;&#125;\n &quot;</span> +</span><br><span class="line">                        <span class="string">&quot;请求头:&#123;&#125;\n &quot;</span> +</span><br><span class="line">                        <span class="string">&quot;远程IP地址:&#123;&#125;\n &quot;</span> +</span><br><span class="line">                        <span class="string">&quot;表单参数:&#123;&#125;\n &quot;</span> +</span><br><span class="line">                        <span class="string">&quot;请求体:&#123;&#125;\n &quot;</span> +</span><br><span class="line">                        <span class="string">&quot;end------------------------------------------------- \n &quot;</span>,</span><br><span class="line">                accessRecord.getPath(), accessRecord.getSchema(), accessRecord.getMethod(), accessRecord.getTargetUri(), accessRecord.getHeaders(), accessRecord.getRemoteAddress(), accessRecord.getFormData(), accessRecord.getBody());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -X POST -H <span class="string">&quot;Content-Type:application/json&quot;</span> -d <span class="string">&#x27;&#123;&quot;name&quot;: &quot;admin&quot;&#125;&#x27;</span> http://192.168.124.5:2000/p/provider1</span><br><span class="line"></span><br><span class="line">curl -X GET -G -d <span class="string">&quot;username=admin&quot;</span> http://192.168.124.5:2000/p/provider1/1</span><br></pre></td></tr></table></figure>
+<p>输出结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">start------------------------------------------------- </span><br><span class="line">请求路径:&#x2F;provider1</span><br><span class="line">scheme:http</span><br><span class="line">请求方法:POST</span><br><span class="line">目标服务:http:&#x2F;&#x2F;192.168.124.5:2001&#x2F;provider1</span><br><span class="line">请求头:[Content-Type:&quot;application&#x2F;json&quot;, User-Agent:&quot;PostmanRuntime&#x2F;7.22.0&quot;, Accept:&quot;*&#x2F;*&quot;, Cache-Control:&quot;no-cache&quot;, Postman-Token:&quot;2a4ce04d-8449-411d-abd8-247d20421dc2&quot;, Host:&quot;192.168.124.5:2000&quot;, Accept-Encoding:&quot;gzip, deflate, br&quot;, Content-Length:&quot;16&quot;, Connection:&quot;keep-alive&quot;]</span><br><span class="line">远程IP地址:&#x2F;192.168.124.5:49969</span><br><span class="line">表单参数:null</span><br><span class="line">请求体:&#123;&quot;name&quot;:&quot;admin&quot;&#125;</span><br><span class="line">end------------------------------------------------- </span><br></pre></td></tr></table></figure>
+<p>接下来，我们来配置日志，方便日志系统提取日志。SpringBoot默认的日志为logback。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;LOGS&quot;</span> <span class="attr">value</span>=<span class="string">&quot;/Users/cuishiying/Documents/spring-cloud-learning/logs&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">&quot;Console&quot;</span> <span class="attr">class</span>=<span class="string">&quot;ch.qos.logback.core.ConsoleAppender&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">layout</span> <span class="attr">class</span>=<span class="string">&quot;ch.qos.logback.classic.PatternLayout&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">Pattern</span>&gt;</span></span><br><span class="line">                %black(%d&#123;ISO8601&#125;) %highlight(%-5level) [%blue(%t)] %yellow(%C&#123;1.&#125;): %msg%n%throwable</span><br><span class="line">            <span class="tag">&lt;/<span class="name">Pattern</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">layout</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">&quot;RollingFile&quot;</span> <span class="attr">class</span>=<span class="string">&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">file</span>&gt;</span>$&#123;LOGS&#125;/spring-boot-logger.log<span class="tag">&lt;/<span class="name">file</span>&gt;</span></span><br><span class="line">        &lt;encoder</span><br><span class="line">                class=&quot;ch.qos.logback.classic.encoder.PatternLayoutEncoder&quot;&gt;</span><br><span class="line">            <span class="tag">&lt;<span class="name">Pattern</span>&gt;</span>%d %p %C&#123;1.&#125; [%t] %m%n<span class="tag">&lt;/<span class="name">Pattern</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        &lt;rollingPolicy</span><br><span class="line">                class=&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&gt;</span><br><span class="line">            <span class="comment">&lt;!-- rollover daily and when the file reaches 10 MegaBytes --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">fileNamePattern</span>&gt;</span>$&#123;LOGS&#125;/archived/spring-boot-logger-%d&#123;yyyy-MM-dd&#125;.%i.log</span><br><span class="line">            <span class="tag">&lt;/<span class="name">fileNamePattern</span>&gt;</span></span><br><span class="line">            &lt;timeBasedFileNamingAndTriggeringPolicy</span><br><span class="line">                    class=&quot;ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP&quot;&gt;</span><br><span class="line">                <span class="tag">&lt;<span class="name">maxFileSize</span>&gt;</span>10MB<span class="tag">&lt;/<span class="name">maxFileSize</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">timeBasedFileNamingAndTriggeringPolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">rollingPolicy</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- LOG everything at INFO level --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">root</span> <span class="attr">level</span>=<span class="string">&quot;info&quot;</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--&lt;appender-ref ref=&quot;RollingFile&quot; /&gt;--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">&quot;Console&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">root</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- LOG &quot;cn.idea360*&quot; at TRACE level additivity:是否向上级loger传递打印信息。默认是true--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">logger</span> <span class="attr">name</span>=<span class="string">&quot;cn.idea360.gateway&quot;</span> <span class="attr">level</span>=<span class="string">&quot;info&quot;</span> <span class="attr">additivity</span>=<span class="string">&quot;false&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">&quot;RollingFile&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">&quot;Console&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">logger</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这样console和日志目录下就都有日志了。</p>
+<h1 id="自定义过滤器工厂"><a class="markdownIt-Anchor" href="#自定义过滤器工厂"></a> 自定义过滤器工厂</h1>
+<p>如果你看过静态路由的配置，你应该对如下配置有印象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">filters:</span><br><span class="line">  - StripPrefix&#x3D;1</span><br><span class="line">  - AddResponseHeader&#x3D;X-Response-Default-Foo, Default-Bar</span><br></pre></td></tr></table></figure>
+<p><code>StripPrefix</code>、<code>AddResponseHeader</code> 这两个实际上是两个过滤器工厂（GatewayFilterFactory），用这种配置的方式更灵活方便。</p>
+<p>我们就将之前的那个 <code>ElapsedFilter</code> 改造一下，让它能接收一个 <code>boolean</code> 类型的参数，来决定是否将请求参数也打印出来。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ElapsedGatewayFilterFactory</span> <span class="keyword">extends</span> <span class="title">AbstractGatewayFilterFactory</span>&lt;<span class="title">ElapsedGatewayFilterFactory</span>.<span class="title">Config</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Log log = LogFactory.getLog(GatewayFilter.class);</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String ELAPSED_TIME_BEGIN = <span class="string">&quot;elapsedTimeBegin&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String KEY = <span class="string">&quot;withParams&quot;</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;String&gt; <span class="title">shortcutFieldOrder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Arrays.asList(KEY);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ElapsedGatewayFilterFactory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(Config.class);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> GatewayFilter <span class="title">apply</span><span class="params">(Config config)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (exchange, chain) -&gt; &#123;</span><br><span class="line">            exchange.getAttributes().put(ELAPSED_TIME_BEGIN, System.currentTimeMillis());</span><br><span class="line">            <span class="keyword">return</span> chain.filter(exchange).then(</span><br><span class="line">                    Mono.fromRunnable(() -&gt; &#123;</span><br><span class="line">                        Long startTime = exchange.getAttribute(ELAPSED_TIME_BEGIN);</span><br><span class="line">                        <span class="keyword">if</span> (startTime != <span class="keyword">null</span>) &#123;</span><br><span class="line">                            StringBuilder sb = <span class="keyword">new</span> StringBuilder(exchange.getRequest().getURI().getRawPath())</span><br><span class="line">                                    .append(<span class="string">&quot;: &quot;</span>)</span><br><span class="line">                                    .append(System.currentTimeMillis() - startTime)</span><br><span class="line">                                    .append(<span class="string">&quot;ms&quot;</span>);</span><br><span class="line">                            <span class="keyword">if</span> (config.isWithParams()) &#123;</span><br><span class="line">                                sb.append(<span class="string">&quot; params:&quot;</span>).append(exchange.getRequest().getQueryParams());</span><br><span class="line">                            &#125;</span><br><span class="line">                            log.info(sb.toString());</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;)</span><br><span class="line">            );</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Config</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">boolean</span> withParams;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isWithParams</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> withParams;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setWithParams</span><span class="params">(<span class="keyword">boolean</span> withParams)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.withParams = withParams;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>过滤器工厂的顶级接口是 <code>GatewayFilterFactory</code>，我们可以直接继承它的两个抽象类来简化开发 <code>AbstractGatewayFilterFactory</code> 和 <code>AbstractNameValueGatewayFilterFactory</code>，这两个抽象类的区别就是前者接收一个参数（像 <code>StripPrefix</code> 和我们创建的这种），后者接收两个参数（像 <code>AddResponseHeader</code>）。</p>
+<p><code>GatewayFilter apply(Config config)</code> 方法内部实际上是创建了一个 <code>GatewayFilter</code> 的匿名类，具体实现和之前的几乎一样，就不解释了。</p>
+<p>静态内部类 <code>Config</code> 就是为了接收那个 <code>boolean</code> 类型的参数服务的，里边的变量名可以随意写，但是要重写 <code>List shortcutFieldOrder()</code> 这个方法。</p>
+<p>这里注意一下，一定要调用一下父类的构造器把 <code>Config</code> 类型传过去，否则会报 <code>ClassCastException</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public ElapsedGatewayFilterFactory() &#123;</span><br><span class="line">    super(Config.class);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>工厂类我们有了，再把它注册到 Spring 当中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@Bean</span><br><span class="line">public ElapsedGatewayFilterFactory elapsedGatewayFilterFactory() &#123;</span><br><span class="line">    return new ElapsedGatewayFilterFactory();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后添加配置（主要改动在 <code>default-filters</code> 配置）</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">2000</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">idc-gateway</span></span><br><span class="line">  <span class="attr">redis:</span></span><br><span class="line">    <span class="attr">host:</span> <span class="string">localhost</span></span><br><span class="line">    <span class="attr">port:</span> <span class="number">6379</span></span><br><span class="line">    <span class="attr">timeout:</span> <span class="string">6000ms</span>  <span class="comment"># 连接超时时长（毫秒）</span></span><br><span class="line">    <span class="attr">jedis:</span></span><br><span class="line">      <span class="attr">pool:</span></span><br><span class="line">        <span class="attr">max-active:</span> <span class="number">1000</span>  <span class="comment"># 连接池最大连接数（使用负值表示没有限制）</span></span><br><span class="line">        <span class="attr">max-wait:</span> <span class="string">-1ms</span>      <span class="comment"># 连接池最大阻塞等待时间（使用负值表示没有限制）</span></span><br><span class="line">        <span class="attr">max-idle:</span> <span class="number">10</span>      <span class="comment"># 连接池中的最大空闲连接</span></span><br><span class="line">        <span class="attr">min-idle:</span> <span class="number">5</span>       <span class="comment"># 连接池中的最小空闲连接</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">consul:</span></span><br><span class="line">      <span class="attr">host:</span> <span class="string">localhost</span></span><br><span class="line">      <span class="attr">port:</span> <span class="number">8500</span></span><br><span class="line">    <span class="attr">gateway:</span></span><br><span class="line">      <span class="attr">discovery:</span></span><br><span class="line">        <span class="attr">locator:</span></span><br><span class="line">          <span class="attr">enabled:</span> <span class="literal">true</span> </span><br><span class="line">          <span class="comment"># 修改在这里。gateway可以通过开启以下配置来打开根据服务的serviceId来匹配路由,默认是大写</span></span><br><span class="line">      <span class="attr">default-filters:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">Elapsed=true</span></span><br><span class="line">      <span class="attr">routes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">provider</span>  <span class="comment"># 路由 ID，保持唯一</span></span><br><span class="line">          <span class="attr">uri:</span> <span class="string">lb://idc-provider1</span> <span class="comment"># uri指目标服务地址，lb代表从注册中心获取服务</span></span><br><span class="line">          <span class="attr">predicates:</span> <span class="comment"># 路由条件。Predicate 接受一个输入参数，返回一个布尔值结果。该接口包含多种默认方法来将 Predicate 组合成其他复杂的逻辑（比如：与，或，非）</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">Path=/p/**</span></span><br><span class="line">          <span class="attr">filters:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">StripPrefix=1</span> <span class="comment"># 过滤器StripPrefix，作用是去掉请求路径的最前面n个部分截取掉。StripPrefix=1就代表截取路径的个数为1，比如前端过来请求/test/good/1/view，匹配成功后，路由到后端的请求路径就会变成http://localhost:8888/good/1/view</span></span><br></pre></td></tr></table></figure>
+<h1 id="结语"><a class="markdownIt-Anchor" href="#结语"></a> 结语</h1>
+<p>本文到此结束。关于 <code>Webflux</code> 的学习刚入门，觉得可以像 <code>Rxjava</code> 那样在 <code>onNext</code> 中拿到异步数据，然而在 <code>post</code> 获取body中没生效。经测试可知 <code>getBody</code> 获得的数据输出为null，而自己通过 <code>Flux.create</code> 创建的数据可以在订阅者中获取到。此处还有待研究，希望抛砖引玉，大家有研究出来的不吝赐教。同时，希望大家关注公众号【当我遇上你】。</p>
+<h1 id="参考"><a class="markdownIt-Anchor" href="#参考"></a> 参考</h1>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://programming.vip/docs/spring-cloud-gateway-intercepts-request-body.html">https://programming.vip/docs/spring-cloud-gateway-intercepts-request-body.html</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.throwable.club/2019/05/05/spring-cloud-gateway-custom-global-filter/">http://www.throwable.club/2019/05/05/spring-cloud-gateway-custom-global-filter/</a></li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2020/03/29/spring-cloud-gateway-filter/" title="spring-cloud-gateway过滤器实践" target="_blank" rel="external">https://idea360.cn/2020/03/29/spring-cloud-gateway-filter/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/03/29/curl-study/" title="curl用法指南"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/03/29/spring-cloud-gateway-introduce/" title="spring-cloud-gateway简介"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>秒杀方案 | 当我遇上你</title>
+  <meta name="description" content="秒杀方案 （1）尽量将请求拦截在系统上游（越上游越好）； （2）读多写少的常用多使用缓存（缓存抗读压力）； 第一层，客户端怎么优化（浏览器层，APP层） 问大家一个问题，大家都玩过微信的摇一摇抢红包对吧，每次摇一摇，就会往后端发送请求么？回顾我们下单抢票的场景，点击了“查询”按钮之后，系统那个卡呀，进度条涨的慢呀，作为用户，我会不自觉的再去点击“查询”，对么？继续点，继续点，点点点。。。有用么？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="秒杀方案">
+<meta property="og:url" content="https://idea360.cn/2020/09/01/java-seckill/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="秒杀方案 （1）尽量将请求拦截在系统上游（越上游越好）； （2）读多写少的常用多使用缓存（缓存抗读压力）； 第一层，客户端怎么优化（浏览器层，APP层） 问大家一个问题，大家都玩过微信的摇一摇抢红包对吧，每次摇一摇，就会往后端发送请求么？回顾我们下单抢票的场景，点击了“查询”按钮之后，系统那个卡呀，进度条涨的慢呀，作为用户，我会不自觉的再去点击“查询”，对么？继续点，继续点，点点点。。。有用么？">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/java-seckill.png">
+<meta property="article:published_time" content="2020-09-01T15:37:45.000Z">
+<meta property="article:modified_time" content="2021-02-23T14:27:11.195Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="秒杀">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/idea360/oss/raw/master/images/java-seckill.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2020/09/01/java-seckill/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%A7%92%E6%9D%80%E6%96%B9%E6%A1%88"><span class="toc-number">1.</span> <span class="toc-text"> 秒杀方案</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%A1%88%E4%B8%80"><span class="toc-number">1.1.</span> <span class="toc-text"> 方案一</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%A1%88%E4%BA%8C"><span class="toc-number">1.2.</span> <span class="toc-text"> 方案二</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-number">1.2.1.</span> <span class="toc-text"> 思路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E7%A0%81"><span class="toc-number">1.2.2.</span> <span class="toc-text"> 编码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E9%80%9A%E8%BF%87cpu%E6%A0%B8%E5%BF%83%E6%95%B0%E5%8E%BB%E6%8E%A7%E5%88%B6%E5%B9%B6%E5%8F%91%E7%9A%84%E7%BA%BF%E7%A8%8B%E6%8F%90%E9%AB%98qps"><span class="toc-number">1.2.3.</span> <span class="toc-text"> 测试，通过CPU核心数，去控制并发的线程，提高QPS</span></a></li></ol></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-java-seckill" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      秒杀方案
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/09/01/java-seckill/" class="article-date">
+	  <time datetime="2020-09-01T15:37:45.000Z" itemprop="datePublished">2020-09-01</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/java/" rel="tag">java</a>, <a class="article-tag-link-link" href="/tags/%E7%A7%92%E6%9D%80/" rel="tag">秒杀</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2020/09/01/java-seckill/" class="leancloud_visitors"  data-flag-title="秒杀方案">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/09/01/java-seckill/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="秒杀方案"><a class="markdownIt-Anchor" href="#秒杀方案"></a> 秒杀方案</h1>
+<p>（1）<strong>尽量将请求拦截在系统上游</strong>（越上游越好）；</p>
+<p>（2）<strong>读多写少的常用多使用缓存</strong>（缓存抗读压力）；</p>
+<p><strong>第一层，客户端怎么优化（浏览器层，APP层）</strong></p>
+<p>问大家一个问题，大家都玩过微信的摇一摇抢红包对吧，每次摇一摇，就会往后端发送请求么？回顾我们下单抢票的场景，点击了“查询”按钮之后，系统那个卡呀，进度条涨的慢呀，作为用户，我会不自觉的再去点击“查询”，对么？继续点，继续点，点点点。。。有用么？平白无故的增加了系统负载，一个用户点5次，80%的请求是这么多出来的，怎么整？</p>
+<p>（a）<strong>产品层面</strong>，用户点击“查询”或者“购票”后，按钮置灰，禁止用户重复提交请求；</p>
+<p>（b）<strong>JS层面</strong>，限制用户在x秒之内只能提交一次请求；</p>
+<p>APP层面，可以做类似的事情，虽然你疯狂的在摇微信，其实x秒才向后端发起一次请求。这就是所谓的“将请求尽量拦截在系统上游”，越上游越好，浏览器层，APP层就给拦住，这样就能挡住80%+的请求，这种办法只能拦住普通用户（但99%的用户是普通用户）对于群内的高端程序员是拦不住的。firebug一抓包，http长啥样都知道，js是万万拦不住程序员写for循环，调用http接口的，这部分请求怎么处理？</p>
+<p><strong>第二层，站点层面的请求拦截</strong></p>
+<p>怎么拦截？怎么防止程序员写for循环调用，有去重依据么？ip？cookie-id？…想复杂了，这类业务都需要登录，用uid即可。在站点层面，对uid进行请求计数和去重，甚至不需要统一存储计数，直接站点层内存存储（这样计数会不准，但最简单）。一个uid，5秒只准透过1个请求，这样又能拦住99%的for循环请求。</p>
+<p>5s只透过一个请求，其余的请求怎么办？缓存，页面缓存，同一个uid，限制访问频度，做页面缓存，x秒内到达站点层的请求，均返回同一页面。同一个item的查询，例如车次，做页面缓存，x秒内到达站点层的请求，均返回同一页面。如此限流，既能保证用户有良好的用户体验（没有返回404）又能保证系统的健壮性（利用页面缓存，把请求拦截在站点层了）。</p>
+<p>页面缓存不一定要保证所有站点返回一致的页面，直接放在每个站点的内存也是可以的。优点是简单，坏处是http请求落到不同的站点，返回的车票数据可能不一样，这是站点层的请求拦截与缓存优化。</p>
+<p>好，这个方式拦住了写for循环发http请求的程序员，有些高端程序员（黑客）控制了10w个肉鸡，手里有10w个uid，同时发请求（先不考虑实名制的问题，小米抢手机不需要实名制），这下怎么办，站点层按照uid限流拦不住了。</p>
+<p><strong>第三层 服务层来拦截（反正就是不要让请求落到数据库上去）</strong></p>
+<p>服务层怎么拦截？大哥，我是服务层，我清楚的知道小米只有1万部手机，我清楚的知道一列火车只有2000张车票，我透10w个请求去数据库有什么意义呢？没错，<strong>请求队列！</strong></p>
+<p>对于写请求，做请求队列，每次只透有限的写请求去数据层（下订单，支付这样的写业务）</p>
+<p>1w部手机，只透1w个下单请求去db</p>
+<p>3k张火车票，只透3k个下单请求去db</p>
+<p>如果均成功再放下一批，如果库存不够则队列里的写请求全部返回“已售完”。</p>
+<p>对于读请求，怎么优化？cache抗，不管是memcached还是redis，单机抗个每秒10w应该都是没什么问题的。如此限流，只有非常少的写请求，和非常少的读缓存mis的请求会透到数据层去，又有99.9%的请求被拦住了。</p>
+<p>当然，还有业务规则上的一些优化。回想12306所做的，分时分段售票，原来统一10点卖票，现在8点，8点半，9点，…每隔半个小时放出一批：将流量摊匀。</p>
+<p>其次，数据粒度的优化：你去购票，对于余票查询这个业务，票剩了58张，还是26张，你真的关注么，其实我们只关心有票和无票？流量大的时候，做一个粗粒度的“有票”“无票”缓存即可。</p>
+<p>第三，一些业务逻辑的异步：例如下单业务与 支付业务的分离。这些优化都是结合 业务 来的，我之前分享过一个观点“<strong>一切脱离业务的架构设计都是耍流氓</strong>”架构的优化也要针对业务。</p>
+<p><strong>第四层 最后是数据库层</strong></p>
+<p>浏览器拦截了80%，站点层拦截了99.9%并做了页面缓存，服务层又做了写请求队列与数据缓存，每次透到数据库层的请求都是可控的。db基本就没什么压力了，闲庭信步，单机也能扛得住，还是那句话，库存是有限的，小米的产能有限，透这么多请求来数据库没有意义。</p>
+<p>全部透到数据库，100w个下单，0个成功，请求有效率0%。透3k个到数据，全部成功，请求有效率100%。</p>
+<h2 id="方案一"><a class="markdownIt-Anchor" href="#方案一"></a> 方案一</h2>
+<p>Redis预减库存+RabbitMQ异步下单。</p>
+<p>具体流程:</p>
+<ol>
+<li>系统初始化，加载库存到redis</li>
+<li>收到请求，预减库存</li>
+<li>判断库存，若剩余，则入队列，否则秒杀失败</li>
+<li>出队下单</li>
+</ol>
+<p>分析：</p>
+<p>一、通过将库存加载到redis中，使得每次判断、减少库存直接从内存中读取，无需访问数据库</p>
+<p>二、收到请求预见库存，然后判断</p>
+<p><strong>注意这一顺序非常重要，保证了线程安全</strong></p>
+<p>分析：因为redis封装的decr()等函数是线程安全的，无需外加同步，所以你通过decr()减少库存后获取到的库存永远都是你刚刚减少后得到的库存，本身就是个原子操作，不会存在线程安全问题，然后根据这个库存来入队，不符合条件的秒杀请求直接返回失败，极大地减少了服务器的压力，而且整个后台逻辑中，需要保证原子性的也仅仅是decr()这一个操作，并且由于redis经过了乐观锁优化，所以整个系统的并发性相对于自己首先同步代码而言，并发性得到了极大的提高。</p>
+<p>三、完成了上述的操作，再去实现接下来的逻辑就很简单了，唯一需要注意的是，从队列中出来的请求执行秒杀过程是一个事务，需完整执行，否则回滚。 同时，订单的详情页面做一个静态化优化，前端轮询秒杀结果，得到结果后进行渲染即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * GET POST</span><br><span class="line"> * 1、GET幂等,服务端获取数据，无论调用多少次结果都一样</span><br><span class="line"> * 2、POST，向服务端提交数据，不是幂等</span><br><span class="line"> * &lt;p&gt;</span><br><span class="line"> * 将同步下单改为异步下单</span><br><span class="line"> *</span><br><span class="line"> * @param model</span><br><span class="line"> * @param user</span><br><span class="line"> * @param goodsId</span><br><span class="line"> * @return</span><br><span class="line"> *&#x2F;</span><br><span class="line">@RequestMapping(value &#x3D; &quot;&#x2F;do_seckill&quot;, method &#x3D; RequestMethod.POST)</span><br><span class="line">@ResponseBody</span><br><span class="line">public Result&lt;Integer&gt; list(Model model, User user, @RequestParam(&quot;goodsId&quot;) long goodsId) &#123;</span><br><span class="line"></span><br><span class="line">    if (!rateLimiter.tryAcquire(1000, TimeUnit.MILLISECONDS)) &#123;</span><br><span class="line">        return  Result.error(CodeMsg.ACCESS_LIMIT_REACHED);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (user &#x3D;&#x3D; null) &#123;</span><br><span class="line">        return Result.error(CodeMsg.SESSION_ERROR);</span><br><span class="line">    &#125;</span><br><span class="line">    model.addAttribute(&quot;user&quot;, user);</span><br><span class="line">    &#x2F;&#x2F;内存标记，减少redis访问</span><br><span class="line">    boolean over &#x3D; localOverMap.get(goodsId);</span><br><span class="line">    if (over) &#123;</span><br><span class="line">        return Result.error(CodeMsg.SECKILL_OVER);</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;预减库存</span><br><span class="line">    long stock &#x3D; redisService.decr(GoodsKey.getGoodsStock, &quot;&quot; + goodsId);&#x2F;&#x2F;10</span><br><span class="line">    if (stock &lt; 0) &#123;</span><br><span class="line">        afterPropertiesSet();</span><br><span class="line">        long stock2 &#x3D; redisService.decr(GoodsKey.getGoodsStock, &quot;&quot; + goodsId);&#x2F;&#x2F;10</span><br><span class="line">        if(stock2 &lt; 0)&#123;</span><br><span class="line">            localOverMap.put(goodsId, true);</span><br><span class="line">            return Result.error(CodeMsg.SECKILL_OVER);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;判断重复秒杀</span><br><span class="line">    SeckillOrder order &#x3D; orderService.getOrderByUserIdGoodsId(user.getId(), goodsId);</span><br><span class="line">    if (order !&#x3D; null) &#123;</span><br><span class="line">        return Result.error(CodeMsg.REPEATE_SECKILL);</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;入队</span><br><span class="line">    SeckillMessage message &#x3D; new SeckillMessage();</span><br><span class="line">    message.setUser(user);</span><br><span class="line">    message.setGoodsId(goodsId);</span><br><span class="line">    sender.sendSeckillMessage(message);</span><br><span class="line">    return Result.success(0);&#x2F;&#x2F;排队中</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line"> * 系统初始化,将商品信息加载到redis和本地内存</span><br><span class="line"> *&#x2F;</span><br><span class="line">@Override</span><br><span class="line">public void afterPropertiesSet() &#123;</span><br><span class="line">    List&lt;GoodsVo&gt; goodsVoList &#x3D; goodsService.listGoodsVo();</span><br><span class="line">    if (goodsVoList &#x3D;&#x3D; null) &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    for (GoodsVo goods : goodsVoList) &#123;</span><br><span class="line">        redisService.set(GoodsKey.getGoodsStock, &quot;&quot; + goods.getId(), goods.getStockCount());</span><br><span class="line">        &#x2F;&#x2F;初始化商品都是没有处理过的</span><br><span class="line">        localOverMap.put(goods.getId(), false);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="方案二"><a class="markdownIt-Anchor" href="#方案二"></a> 方案二</h2>
+<h3 id="思路"><a class="markdownIt-Anchor" href="#思路"></a> 思路</h3>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/java-seckill.png" alt="" /></p>
+<ul>
+<li><strong>对每个秒杀请求入队操作</strong></li>
+<li><strong>当库存为N时，队列的长度超过N时，可以考虑拒绝后续请求，直接响应客户端秒杀结束</strong></li>
+<li><strong>为了减轻库存处理的压力，验证并发量，这里通过信号量来控制线程安全。</strong></li>
+</ul>
+<h3 id="编码"><a class="markdownIt-Anchor" href="#编码"></a> 编码</h3>
+<ul>
+<li><strong>通过Semaphore来控制并发量</strong></li>
+<li><strong>通过CAS来控制更新库存，保证线程安全</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;***</span><br><span class="line"> * 模拟秒杀</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class Knock &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * CAS操作的类</span><br><span class="line">      *&#x2F;</span><br><span class="line">    private static final Unsafe unsafe;</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * total的偏移量</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private static final long totalOffset;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 单实例</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private static volatile Knock knock;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 总数量</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private volatile int total;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 信号量</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private Semaphore semaphore;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 初始化UnSafe</span><br><span class="line">     * 只能通过反射实例化</span><br><span class="line">     * 在catch出只能抛出Error，unsafe只能初始化一次</span><br><span class="line">     *&#x2F;</span><br><span class="line">    static &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            Field field &#x3D; Unsafe.class.getDeclaredField(&quot;theUnsafe&quot;);</span><br><span class="line">            field.setAccessible(true);</span><br><span class="line">            unsafe &#x3D; (Unsafe) field.get(null);</span><br><span class="line">            totalOffset &#x3D; unsafe.objectFieldOffset(Knock.class.getDeclaredField(&quot;total&quot;));</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            throw new Error(e);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 初始化公平的信号量</span><br><span class="line">     *</span><br><span class="line">     * @param total          总数</span><br><span class="line">     * @param threadsPerTime 线程所需要的信号,控制并发量</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private Knock(int total, int threadsPerTime) &#123;</span><br><span class="line">        this.total &#x3D; total;</span><br><span class="line">        semaphore &#x3D; new Semaphore(threadsPerTime, true);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 单例 lazy</span><br><span class="line">     *</span><br><span class="line">     * @param total</span><br><span class="line">     * @param threadsPerTime</span><br><span class="line">     * @return</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public static Knock getInstance(int total, int threadsPerTime) &#123;</span><br><span class="line">        &#x2F;&#x2F;one check</span><br><span class="line">        if (null !&#x3D; knock) &#123;</span><br><span class="line">            return knock;</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;double check</span><br><span class="line">        synchronized (Knock.class) &#123;</span><br><span class="line">            if (null &#x3D;&#x3D; knock) &#123;</span><br><span class="line">                &#x2F;&#x2F;knock需要加上volatile关键字，1.禁止重排序 2.线程间可见</span><br><span class="line">                knock &#x3D; new Knock(total, threadsPerTime);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return knock;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int getTotal() &#123;</span><br><span class="line">        return total;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * CAS 减法</span><br><span class="line">     * 死循环退出的条件</span><br><span class="line">     * 1. 总数大于0的情况下，去做一次CAS操作，操作成功，则返回，失败则循环</span><br><span class="line">     * 2. 如果total&#x3D;&#x3D;0的情况下，直接返回false，终止抢购</span><br><span class="line">     * @return</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public boolean casTotal(int except) &#123;</span><br><span class="line">        for (; ; ) &#123;</span><br><span class="line">            if (total &gt; 0) &#123;</span><br><span class="line">                int update &#x3D; total - 1;</span><br><span class="line">                if (unsafe.compareAndSwapInt(this, totalOffset, except, update)) &#123;</span><br><span class="line">                    return true;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                return false;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 抢购</span><br><span class="line">     *</span><br><span class="line">     * @param need</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public void doKnock(int need) &#123;</span><br><span class="line">        &#x2F;&#x2F;当队列的长度时商品总量的两倍就返回，抢购失败</span><br><span class="line">        &#x2F;&#x2F;当total&#x3D;&#x3D;0的时候，抢购失败</span><br><span class="line">        if (semaphore.getQueueLength() &gt; (total &lt;&lt; 1) || total &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            System.out.println(Thread.currentThread().getId() + &quot;：已售罄！&quot;);</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;抢购</span><br><span class="line">        try &#123;</span><br><span class="line">            &#x2F;&#x2F;获取资源</span><br><span class="line">            semaphore.acquire(need);</span><br><span class="line">            &#x2F;&#x2F;这里要check total的值，不符合就直接返回</span><br><span class="line">            if (total &#x3D;&#x3D; 0) &#123;</span><br><span class="line">                System.out.println(Thread.currentThread().getId() + &quot;已售罄！&quot;);</span><br><span class="line">                return;</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F;这里必须通过局部变量接收，因为信号量模式，同一时间有多个线程在同时执行，是线程不安全的</span><br><span class="line">            int expect &#x3D; total;</span><br><span class="line">            &#x2F;&#x2F;CAS修改当前库存</span><br><span class="line">            if (casTotal(expect)) &#123;</span><br><span class="line">                &#x2F;&#x2F;current是当前线程消费过后的库存</span><br><span class="line">                int current &#x3D; expect - 1;</span><br><span class="line">                System.out.println(Thread.currentThread().getId() + &quot;当前剩余:&quot; + current);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            &#x2F;&#x2F;释放资源</span><br><span class="line">            semaphore.release(need);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="测试通过cpu核心数去控制并发的线程提高qps"><a class="markdownIt-Anchor" href="#测试通过cpu核心数去控制并发的线程提高qps"></a> 测试，通过CPU核心数，去控制并发的线程，提高QPS</h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">public class KTest &#123;</span><br><span class="line"></span><br><span class="line">    static class T extends Thread &#123;</span><br><span class="line">        private Knock knock;</span><br><span class="line">        private int need;</span><br><span class="line"></span><br><span class="line">        public T(Knock knock, int need) &#123;</span><br><span class="line">            this.knock &#x3D; knock;</span><br><span class="line">            this.need &#x3D; need;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public void run() &#123;</span><br><span class="line">            knock.doKnock(need);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;获取可用CPU核心数</span><br><span class="line">        int availableProcessors &#x3D; Runtime.getRuntime().availableProcessors();</span><br><span class="line">        long s &#x3D; System.currentTimeMillis();</span><br><span class="line">        Knock knock &#x3D; Knock.getInstance(1100, availableProcessors*2);</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 2000; i++) &#123;</span><br><span class="line">            T t &#x3D; new T(knock, 1);</span><br><span class="line">            try &#123;</span><br><span class="line">                t.start();</span><br><span class="line">                t.join();</span><br><span class="line">            &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        long e &#x3D; System.currentTimeMillis();</span><br><span class="line">        System.out.println(knock.getTotal() + &quot;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&quot;+(e-s));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://juejin.im/post/5dbeb66f51882524a33b9135">https://juejin.im/post/5dbeb66f51882524a33b9135</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/RLeujAj5rwZGNYMD0uLbrg">https://mp.weixin.qq.com/s/RLeujAj5rwZGNYMD0uLbrg</a></li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2020/09/01/java-seckill/" title="秒杀方案" target="_blank" rel="external">https://idea360.cn/2020/09/01/java-seckill/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/09/01/idea-keyboard-shortcut/" title="idea快捷键"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/09/01/java-rate-limit/" title="Java限流算法"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

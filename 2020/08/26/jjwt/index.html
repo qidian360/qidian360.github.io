@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>JJWT | 当我遇上你</title>
+  <meta name="description" content="概述 jjwt基本使用示例  读取公钥文件 123456789101112131415161718192021&#x2F;** * 读取公钥 *&#x2F;@Testvoid pem() &amp;#123;    String resourceKey &#x3D; readResourceKey(&quot;E:\\example\\spring-cloud-learning\\idc-sso\\public.pem&quot;)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JJWT">
+<meta property="og:url" content="https://idea360.cn/2020/08/26/jjwt/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="概述 jjwt基本使用示例  读取公钥文件 123456789101112131415161718192021&#x2F;** * 读取公钥 *&#x2F;@Testvoid pem() &amp;#123;    String resourceKey &#x3D; readResourceKey(&quot;E:\\example\\spring-cloud-learning\\idc-sso\\public.pem&quot;)">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-08-26T10:24:25.000Z">
+<meta property="article:modified_time" content="2021-02-23T14:34:48.393Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="jwt">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2020/08/26/jjwt/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text"> 概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AF%BB%E5%8F%96%E5%85%AC%E9%92%A5%E6%96%87%E4%BB%B6"><span class="toc-number">2.</span> <span class="toc-text"> 读取公钥文件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#jks"><span class="toc-number">3.</span> <span class="toc-text"> JKS</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#pem"><span class="toc-number">4.</span> <span class="toc-text"> PEM</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B%E4%B8%80"><span class="toc-number">5.</span> <span class="toc-text"> 示例一</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#maven%E4%BE%9D%E8%B5%96"><span class="toc-number">5.1.</span> <span class="toc-text"> maven依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#java%E7%A4%BA%E4%BE%8B"><span class="toc-number">5.2.</span> <span class="toc-text"> Java示例</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B%E4%BA%8C"><span class="toc-number">6.</span> <span class="toc-text"> 示例二</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#maven%E4%BE%9D%E8%B5%96-2"><span class="toc-number">6.1.</span> <span class="toc-text"> maven依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#java%E7%A4%BA%E4%BE%8B-2"><span class="toc-number">6.2.</span> <span class="toc-text"> Java示例</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">7.</span> <span class="toc-text"> 最后</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-jjwt" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      JJWT
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/08/26/jjwt/" class="article-date">
+	  <time datetime="2020-08-26T10:24:25.000Z" itemprop="datePublished">2020-08-26</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/java/" rel="tag">java</a>, <a class="article-tag-link-link" href="/tags/jwt/" rel="tag">jwt</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2020/08/26/jjwt/" class="leancloud_visitors"  data-flag-title="JJWT">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/08/26/jjwt/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="概述"><a class="markdownIt-Anchor" href="#概述"></a> 概述</h1>
+<p>jjwt基本使用示例</p>
+<h1 id="读取公钥文件"><a class="markdownIt-Anchor" href="#读取公钥文件"></a> 读取公钥文件</h1>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 读取公钥</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">pem</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    String resourceKey = readResourceKey(<span class="string">&quot;E:\\example\\spring-cloud-learning\\idc-sso\\public.pem&quot;</span>);</span><br><span class="line">    System.out.println(resourceKey);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">readResourceKey</span><span class="params">(String fileName)</span> </span>&#123;</span><br><span class="line">    String key = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        File file = <span class="keyword">new</span> File(fileName);</span><br><span class="line">        List&lt;String&gt; lines = FileUtils.readLines(file, Charset.defaultCharset());</span><br><span class="line">        lines = lines.subList(<span class="number">1</span>, lines.size() - <span class="number">1</span>);</span><br><span class="line">        key = lines.stream().collect(Collectors.joining());</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> key;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="jks"><a class="markdownIt-Anchor" href="#jks"></a> JKS</h1>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 参考：https://www.codeproject.com/Articles/1253786/Java-JWT-Token-Tutorial-using-JJWT-Library</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Create Java KeyStore：</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * keytool -genkey -alias idea360 -keyalg RSA -keystore idea360.jks -keysize 2048</span></span><br><span class="line"><span class="comment"> * 输入密钥库口令:</span></span><br><span class="line"><span class="comment"> * 再次输入新口令:</span></span><br><span class="line"><span class="comment"> * 您的名字与姓氏是什么?</span></span><br><span class="line"><span class="comment"> *   [Unknown]:  cui</span></span><br><span class="line"><span class="comment"> * 您的组织单位名称是什么?</span></span><br><span class="line"><span class="comment"> *   [Unknown]:  easyliao</span></span><br><span class="line"><span class="comment"> * 您的组织名称是什么?</span></span><br><span class="line"><span class="comment"> *   [Unknown]:  idea360</span></span><br><span class="line"><span class="comment"> * 您所在的城市或区域名称是什么?</span></span><br><span class="line"><span class="comment"> *   [Unknown]:  bj</span></span><br><span class="line"><span class="comment"> * 您所在的省/市/自治区名称是什么?</span></span><br><span class="line"><span class="comment"> *   [Unknown]:  bj</span></span><br><span class="line"><span class="comment"> * 该单位的双字母国家/地区代码是什么?</span></span><br><span class="line"><span class="comment"> *   [Unknown]:  cn</span></span><br><span class="line"><span class="comment"> * CN=cui, OU=easyliao, O=idea360, L=bj, ST=bj, C=cn是否正确?</span></span><br><span class="line"><span class="comment"> *   [否]:  是</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Export the Public Key/Certificate:</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * keytool -export -keystore idea360.jks -alias idea360 -file idea360.cer</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">jks</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">    String jksPassword = <span class="string">&quot;abc123&quot;</span>;</span><br><span class="line"></span><br><span class="line">    KeyStore ks  = KeyStore.getInstance(KeyStore.getDefaultType());</span><br><span class="line">    ks.load(<span class="keyword">new</span> FileInputStream(<span class="string">&quot;E:\\example\\spring-cloud-learning\\idc-sso\\idea360.jks&quot;</span>), jksPassword.toCharArray());</span><br><span class="line">    Key key = ks.getKey(<span class="string">&quot;idea360&quot;</span>, jksPassword.toCharArray());</span><br><span class="line"></span><br><span class="line">    String encodedPublicKey = Base64.getEncoder().encodeToString(key.getEncoded());</span><br><span class="line">    System.out.println(<span class="string">&quot;jks:&quot;</span>);</span><br><span class="line">    System.out.println(encodedPublicKey);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">cer</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">    CertificateFactory cf = CertificateFactory.getInstance(<span class="string">&quot;X.509&quot;</span>);</span><br><span class="line">    Certificate cert = cf.generateCertificate(<span class="keyword">new</span> FileInputStream(<span class="string">&quot;E:\\example\\spring-cloud-learning\\idc-sso\\idea360.cer&quot;</span>));</span><br><span class="line">    PublicKey publicKey = cert.getPublicKey();</span><br><span class="line">    <span class="comment">// 将公钥对象转为字符串</span></span><br><span class="line">    String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey.getEncoded());</span><br><span class="line">    System.out.println(<span class="string">&quot;Public Key:&quot;</span>);</span><br><span class="line">    System.out.println(encodedPublicKey);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="pem"><a class="markdownIt-Anchor" href="#pem"></a> PEM</h1>
+<p><strong>生成私钥</strong></p>
+<blockquote>
+<p>PKCS1的文件头格式 -----BEGIN RSA PRIVATE KEY-----<br />
+PKCS8的文件头格式 -----BEGIN PRIVATE KEY-----</p>
+</blockquote>
+<p>生成RSA私钥, size 1024, 并输出到 private.pem 文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -out rsa_private_key.pem 1024</span><br><span class="line">openssl pkcs8 -topk8 -inform PEM -outform PEM -<span class="keyword">in</span> rsa_private_key.pem -out private.pem -nocrypt</span><br></pre></td></tr></table></figure>
+<p>私钥内容</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">-----BEGIN PRIVATE KEY-----</span><br><span class="line">MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAK1al6EzuB5AIbk3</span><br><span class="line">gXF4XQ9SJfqyRC/A935E7Kt48teEzwarorVO7oy4Hww6Meyu0mIgLgtTckCeE50u</span><br><span class="line">/S7G1ocCYwyUXoet2leEXMLgePsUnB75JjGGCgwl2e+GG1SaCmmrHBURd6tMzsJk</span><br><span class="line">dDTgE7yux8xQKk8TY+wCTaI+on1zAgMBAAECgYA11L7nOQdApYuTV3Ajy0uimVDf</span><br><span class="line">44GXDqYMGN0hdkJ6uGwNVzkEcklTe01w35VnOPZtsC58J+J/vFa85b2LTAWLjlDY</span><br><span class="line">/T3AulYDmT3ihPKIU401uRriMluIipyL7HNppxy2E85iRMfOiPnZgzF1EvCG36Uu</span><br><span class="line">dHfyEtPLRYz1Y4FnwQJBANY3wCaxffN+rv11o+lSU5Dca8dOjwZPI7vF5kILMkAL</span><br><span class="line">wZffZkpRIPTAg22lT3PwVov93+PHTPHWAleBsas5ghMCQQDPKnB3gOkSNvPy5uw1</span><br><span class="line">2GIGoQdB/IaezeDtivDjKTQLPoGgYgEembY/i+TO5QhDDAQ6w5uEpaVzO6Sw3phz</span><br><span class="line">04MhAkAGBi1WKTmkhlR/djZ00kbdVQWG5lOpVsJnfmo6QzxXhr0b+0FSJ7Pojh1k</span><br><span class="line">EPkKBqE4cJxCOJGWX3FTaqdHbGeXAkBhiMKQkOGqkLLDzpKxOyHTqyamm4Sp6ZYX</span><br><span class="line">YE3PNUvqa1BOOTX7uTTDsFJWUiBUqKipHgTvK6m8mf0MxJAUICXhAkEA1NOaPevO</span><br><span class="line">qoTLx+gdiIG2fNmaC/aT9tWr87jqigKkLNee2NEsDrWxaEAVJSQ0F5fpZtcqvvu7</span><br><span class="line">5TyPm1Ca649LUw==</span><br><span class="line">-----END PRIVATE KEY-----</span><br></pre></td></tr></table></figure>
+<p><strong>生成公钥</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl rsa -<span class="keyword">in</span> rsa_private_key.pem  -outform PEM -pubout -out public.pem</span><br></pre></td></tr></table></figure>
+<p>公钥内容</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-----BEGIN PUBLIC KEY-----</span><br><span class="line">MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCtWpehM7geQCG5N4FxeF0PUiX6</span><br><span class="line">skQvwPd+ROyrePLXhM8Gq6K1Tu6MuB8MOjHsrtJiIC4LU3JAnhOdLv0uxtaHAmMM</span><br><span class="line">lF6HrdpXhFzC4Hj7FJwe+SYxhgoMJdnvhhtUmgppqxwVEXerTM7CZHQ04BO8rsfM</span><br><span class="line">UCpPE2PsAk2iPqJ9cwIDAQAB</span><br><span class="line">-----END PUBLIC KEY-----</span><br></pre></td></tr></table></figure>
+<h1 id="示例一"><a class="markdownIt-Anchor" href="#示例一"></a> 示例一</h1>
+<h2 id="maven依赖"><a class="markdownIt-Anchor" href="#maven依赖"></a> maven依赖</h2>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.jsonwebtoken<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jjwt-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.11.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.jsonwebtoken<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jjwt-impl<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.11.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.jsonwebtoken<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jjwt-jackson<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span> <span class="comment">&lt;!-- or jjwt-gson if Gson is preferred --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.11.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="java示例"><a class="markdownIt-Anchor" href="#java示例"></a> Java示例</h2>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.idea360.idc;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.jsonwebtoken.*;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.junit.jupiter.api.Test;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.test.context.SpringBootTest;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.security.KeyPair;</span><br><span class="line"><span class="keyword">import</span> java.security.PrivateKey;</span><br><span class="line"><span class="keyword">import</span> java.security.PublicKey;</span><br><span class="line"><span class="keyword">import</span> java.text.SimpleDateFormat;</span><br><span class="line"><span class="keyword">import</span> java.util.Date;</span><br><span class="line"><span class="keyword">import</span> java.util.UUID;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.jsonwebtoken.security.Keys;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">IdcSsoApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span> 当我遇上你</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@email</span> idea360@foxmail.com</span></span><br><span class="line"><span class="comment">     * @公众号 当我遇上你</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 参考</span></span><br><span class="line"><span class="comment">     * https://github.com/jwtk/jjwt</span></span><br><span class="line"><span class="comment">     * https://www.viralpatel.net/java-create-validate-jwt-token/</span></span><br><span class="line"><span class="comment">     * http://www.ruanyifeng.com/blog/2018/07/json_web_token-tutorial.html</span></span><br><span class="line"><span class="comment">     * http://andaily.com/blog/?p=956</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 日志</span></span><br><span class="line"><span class="comment">     * 2020-08-26 18:32:30.863  INFO 14272 --- [           main] cn.idea360.idc.IdcSsoApplicationTests    : token:[eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiLlvZPmiJHpgYfkuIrkvaAiLCJzdWIiOiJpZGVhMzYwIiwiYXVkIjoiYXBwIiwiaWF0IjoxNTk4NDM3OTUwLCJleHAiOjE1OTg0MzgwNzAsIm5iZiI6MTU5ODQzNzk1MCwidXNlcklkIjoiYWRtaW4iLCJjb21wYW55SWQiOjEsImp0aSI6ImFlZjJmOWY0LTVhMjYtNGI2ZS05YjRjLThjODE4MDMzYWVkNiJ9.Tpixe02lbHajDHoFvVMeSLneaQpDXgovu6K0CGzdLHZU5haS7k77WK6pKZ_LqAa3QOJ1ICFat3p5SDwtW22kmp0ATMLV33M96359ds6yD1nPPXs10Hurdzo83P1OmrMgzZXuskvc1w6EmfUw0vL6XSPdlGRQqgAhQerRUTJYlPvREoFH3G1AxZEhljpLkwfLX6VNpif3h4_4TKiEu9TMlP4Ol1Iou87nGqJA0YKIpvT2fAZDH4RjBqoi7BsRvmo6MYsmSkfpYy6cONVY_VhJ2HqLclEvWgZX_sNmTeGfgxNd0D_g7J3jduqTo0mkeO50_9gmmvF6w9yt_D10G1tFDw]</span></span><br><span class="line"><span class="comment">     * 2020-08-26 18:32:30.902  INFO 14272 --- [           main] cn.idea360.idc.IdcSsoApplicationTests    : id:[aef2f9f4-5a26-4b6e-9b4c-8c818033aed6]</span></span><br><span class="line"><span class="comment">     * 2020-08-26 18:32:30.902  INFO 14272 --- [           main] cn.idea360.idc.IdcSsoApplicationTests    : subject:[idea360]</span></span><br><span class="line"><span class="comment">     * 2020-08-26 18:32:30.902  INFO 14272 --- [           main] cn.idea360.idc.IdcSsoApplicationTests    : userId:[admin]</span></span><br><span class="line"><span class="comment">     * 2020-08-26 18:32:30.902  INFO 14272 --- [           main] cn.idea360.idc.IdcSsoApplicationTests    : companyId:[1]</span></span><br><span class="line"><span class="comment">     * 2020-08-26 18:32:30.902  INFO 14272 --- [           main] cn.idea360.idc.IdcSsoApplicationTests    : 签发者:[当我遇上你]</span></span><br><span class="line"><span class="comment">     * 2020-08-26 18:32:30.902  INFO 14272 --- [           main] cn.idea360.idc.IdcSsoApplicationTests    : 签发时间:[2020‐08‐26 18:32:30]</span></span><br><span class="line"><span class="comment">     * 2020-08-26 18:32:30.903  INFO 14272 --- [           main] cn.idea360.idc.IdcSsoApplicationTests    : 过期时间:[2020‐08‐26 18:34:30]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">createJwt</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 非对称秘钥</span></span><br><span class="line">        KeyPair keyPair = Keys.keyPairFor(SignatureAlgorithm.RS256); <span class="comment">//or RS384, RS512, PS256, PS384, PS512, ES256, ES384, ES512</span></span><br><span class="line">        PrivateKey privateKey = keyPair.getPrivate();</span><br><span class="line">        PublicKey publicKey = keyPair.getPublic();</span><br><span class="line"></span><br><span class="line">        String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey.getEncoded());</span><br><span class="line">        String encodedPrivateKey = Base64.getEncoder().encodeToString(privateKey.getEncoded());</span><br><span class="line"></span><br><span class="line">        log.info(<span class="string">&quot;公钥:\n &#123;&#125;&quot;</span>, convertToPublicKey(encodedPublicKey));</span><br><span class="line">        log.info(<span class="string">&quot;私钥:\n &#123;&#125;&quot;</span>, convertToPrivateKey(encodedPrivateKey));</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 签名</span></span><br><span class="line">        String token = Jwts.builder()</span><br><span class="line">                .setIssuer(<span class="string">&quot;当我遇上你&quot;</span>) <span class="comment">// jwt签发人</span></span><br><span class="line">                .setSubject(<span class="string">&quot;idea360&quot;</span>) <span class="comment">// 代表这个JWT的主体，即它的所有人，这个是一个json格式的字符串，可以存放什么userid，roldid之类的，作为什么用户的唯一标志。</span></span><br><span class="line">                .setAudience(<span class="string">&quot;app&quot;</span>) <span class="comment">// jwt的接受者</span></span><br><span class="line">                .setIssuedAt(<span class="keyword">new</span> Date()) <span class="comment">//jwt的签发时间</span></span><br><span class="line">                .signWith(privateKey) <span class="comment">// 密钥</span></span><br><span class="line">                .setExpiration(<span class="keyword">new</span> Date(System.currentTimeMillis() + <span class="number">2</span> * <span class="number">1000</span> * <span class="number">60</span>))<span class="comment">// 设置过期时间</span></span><br><span class="line">                .setNotBefore(<span class="keyword">new</span> Date()) <span class="comment">//生效时间</span></span><br><span class="line">                .claim(<span class="string">&quot;userId&quot;</span>, <span class="string">&quot;admin&quot;</span>) <span class="comment">// 自定义属性</span></span><br><span class="line">                .claim(<span class="string">&quot;companyId&quot;</span>, <span class="number">1</span>)</span><br><span class="line">                .setId(UUID.randomUUID().toString()) <span class="comment">// 设置jti(JWT ID)：是JWT的唯一标识，根据业务需要，这个可以设置为一个不重复的值，主要用来作为一次性token,从而回避重放攻击。</span></span><br><span class="line">                .compact();</span><br><span class="line">        log.info(<span class="string">&quot;token:[&#123;&#125;]&quot;</span>, token);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 验签</span></span><br><span class="line">        Jws&lt;Claims&gt; jws = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            jws = Jwts.parserBuilder()</span><br><span class="line">                    .setSigningKey(publicKey)</span><br><span class="line">                    .build()</span><br><span class="line">                    .parseClaimsJws(token);</span><br><span class="line">            <span class="comment">// we can safely trust the JWT</span></span><br><span class="line">        &#125;<span class="keyword">catch</span> (JwtException ex) &#123;</span><br><span class="line">            ex.printStackTrace();</span><br><span class="line">            <span class="comment">// we *cannot* use the JWT as intended by its creator</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">assert</span> jws != <span class="keyword">null</span>;</span><br><span class="line">        Claims claims = jws.getBody();</span><br><span class="line"></span><br><span class="line">        log.info(<span class="string">&quot;id:[&#123;&#125;]&quot;</span>, claims.getId());</span><br><span class="line">        log.info(<span class="string">&quot;subject:[&#123;&#125;]&quot;</span>, claims.getSubject());</span><br><span class="line">        log.info(<span class="string">&quot;userId:[&#123;&#125;]&quot;</span>, claims.get(<span class="string">&quot;userId&quot;</span>));</span><br><span class="line">        log.info(<span class="string">&quot;companyId:[&#123;&#125;]&quot;</span>, claims.get(<span class="string">&quot;companyId&quot;</span>));</span><br><span class="line">        log.info(<span class="string">&quot;签发者:[&#123;&#125;]&quot;</span>, claims.getIssuer());</span><br><span class="line"></span><br><span class="line">        SimpleDateFormat sdf=<span class="keyword">new</span> SimpleDateFormat(<span class="string">&quot;yyyy‐MM‐dd HH:mm:ss&quot;</span>);</span><br><span class="line">        log.info(<span class="string">&quot;签发时间:[&#123;&#125;]&quot;</span>, sdf.format(claims.getIssuedAt()));</span><br><span class="line">        log.info(<span class="string">&quot;过期时间:[&#123;&#125;]&quot;</span>, sdf.format(claims.getExpiration()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Add BEGIN and END comments</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">convertToPublicKey</span><span class="params">(String key)</span></span>&#123;</span><br><span class="line">        StringBuilder result = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">        result.append(<span class="string">&quot;-----BEGIN PUBLIC KEY-----\n&quot;</span>);</span><br><span class="line">        result.append(key);</span><br><span class="line">        result.append(<span class="string">&quot;\n-----END PUBLIC KEY-----&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> result.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Add BEGIN and END comments</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">convertToPrivateKey</span><span class="params">(String key)</span></span>&#123;</span><br><span class="line">        StringBuilder result = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">        result.append(<span class="string">&quot;-----BEGIN PRIVATE KEY-----\n&quot;</span>);</span><br><span class="line">        result.append(key);</span><br><span class="line">        result.append(<span class="string">&quot;\n-----END PRIVATE KEY-----&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> result.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="示例二"><a class="markdownIt-Anchor" href="#示例二"></a> 示例二</h1>
+<h2 id="maven依赖-2"><a class="markdownIt-Anchor" href="#maven依赖-2"></a> maven依赖</h2>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.jsonwebtoken<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jjwt<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.9.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="java示例-2"><a class="markdownIt-Anchor" href="#java示例-2"></a> Java示例</h2>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.idea360.idc;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.jsonwebtoken.*;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.junit.jupiter.api.Test;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.test.context.SpringBootTest;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.security.*;</span><br><span class="line"><span class="keyword">import</span> java.security.spec.InvalidKeySpecException;</span><br><span class="line"><span class="keyword">import</span> java.security.spec.PKCS8EncodedKeySpec;</span><br><span class="line"><span class="keyword">import</span> java.security.spec.X509EncodedKeySpec;</span><br><span class="line"><span class="keyword">import</span> java.time.Instant;</span><br><span class="line"><span class="keyword">import</span> java.time.temporal.ChronoUnit;</span><br><span class="line"><span class="keyword">import</span> java.util.Base64;</span><br><span class="line"><span class="keyword">import</span> java.util.Date;</span><br><span class="line"><span class="keyword">import</span> java.util.UUID;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">IdcSsoApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span> 当我遇上你</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@email</span> idea360@foxmail.com</span></span><br><span class="line"><span class="comment">     * @公众号 当我遇上你</span></span><br><span class="line"><span class="comment">     * Header     : &#123;alg=RS256&#125;</span></span><br><span class="line"><span class="comment">     * Body       : &#123;sub=adam, exp=1598447507, iss=info@wstutorial.com, groups=[user, admin]&#125;</span></span><br><span class="line"><span class="comment">     * Signature  : FRRtPf6tTyr1FMYAA-vsmjSd58px1-staXWQlzwUOpeMxOn0o9vMAmcXkosvs7z-8oQ4ZlojdQkRwlm2QjGQGcU5l5dnlhYaaGhfAGUySvXL5YXcRwz5Amc9dGsA14G-JlD4b9zWo1euyKJN8g3nsZByx1a_w-iA_bLe81WCiMs</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> NoSuchAlgorithmException</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testJWTWithRsa</span><span class="params">()</span> <span class="keyword">throws</span> NoSuchAlgorithmException, InvalidKeySpecException </span>&#123;</span><br><span class="line">        KeyPairGenerator keyGenerator = KeyPairGenerator.getInstance(<span class="string">&quot;RSA&quot;</span>);</span><br><span class="line">        keyGenerator.initialize(<span class="number">1024</span>);</span><br><span class="line"></span><br><span class="line">        KeyPair kp = keyGenerator.genKeyPair();</span><br><span class="line">        PublicKey publicKey = kp.getPublic();</span><br><span class="line">        PrivateKey privateKey = kp.getPrivate();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将公钥对象转为字符串</span></span><br><span class="line">        String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey.getEncoded());</span><br><span class="line">        System.out.println(<span class="string">&quot;Public Key:&quot;</span>);</span><br><span class="line">        System.out.println(convertToPublicKey(encodedPublicKey));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将私钥对象转为字符串</span></span><br><span class="line">        String encodedPrivateKey = Base64.getEncoder().encodeToString(privateKey.getEncoded());</span><br><span class="line">        System.out.println(<span class="string">&quot;Private Key:&quot;</span>);</span><br><span class="line">        System.out.println(convertToPrivateKey(encodedPrivateKey));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将字符串转为私钥对象</span></span><br><span class="line">        privateKey = getPrivateKey(encodedPrivateKey);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 获取token</span></span><br><span class="line">        String token = generateJwtToken(privateKey);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将字符串类型转为公钥对象</span></span><br><span class="line">        publicKey = getPublicKey(encodedPublicKey);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// token解析</span></span><br><span class="line">        printStructure(token, publicKey);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@SuppressWarnings(&quot;deprecation&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">generateJwtToken</span><span class="params">(PrivateKey privateKey)</span> </span>&#123;</span><br><span class="line">        String token = Jwts.builder().setSubject(<span class="string">&quot;adam&quot;</span>)</span><br><span class="line">                .setIssuedAt(Date.from(Instant.now()))</span><br><span class="line">                .setExpiration(Date.from(Instant.now().plus(<span class="number">5l</span>, ChronoUnit.MINUTES)))</span><br><span class="line">                .setIssuer(<span class="string">&quot;info@wstutorial.com&quot;</span>)</span><br><span class="line">                .claim(<span class="string">&quot;groups&quot;</span>, <span class="keyword">new</span> String[] &#123; <span class="string">&quot;user&quot;</span>, <span class="string">&quot;admin&quot;</span> &#125;)</span><br><span class="line">                .signWith(SignatureAlgorithm.RS256, privateKey) <span class="comment">// RS256 with privateKey</span></span><br><span class="line">                .compact();</span><br><span class="line">        <span class="keyword">return</span> token;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">//Print structure of JWT</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">printStructure</span><span class="params">(String token, PublicKey publicKey)</span> </span>&#123;</span><br><span class="line">        Jws parseClaimsJws = Jwts.parser()</span><br><span class="line">                .setSigningKey(publicKey)</span><br><span class="line">                .parseClaimsJws(token);</span><br><span class="line">        System.out.println(<span class="string">&quot;Header     : &quot;</span> + parseClaimsJws.getHeader());</span><br><span class="line">        System.out.println(<span class="string">&quot;Body       : &quot;</span> + parseClaimsJws.getBody());</span><br><span class="line">        System.out.println(<span class="string">&quot;Signature  : &quot;</span> + parseClaimsJws.getSignature());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Add BEGIN and END comments</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">convertToPublicKey</span><span class="params">(String key)</span></span>&#123;</span><br><span class="line">        StringBuilder result = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">        result.append(<span class="string">&quot;-----BEGIN PUBLIC KEY-----\n&quot;</span>);</span><br><span class="line">        result.append(key);</span><br><span class="line">        result.append(<span class="string">&quot;\n-----END PUBLIC KEY-----&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> result.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Add BEGIN and END comments</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">convertToPrivateKey</span><span class="params">(String key)</span></span>&#123;</span><br><span class="line">        StringBuilder result = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">        result.append(<span class="string">&quot;-----BEGIN PRIVATE KEY-----\n&quot;</span>);</span><br><span class="line">        result.append(key);</span><br><span class="line">        result.append(<span class="string">&quot;\n-----END PRIVATE KEY-----&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> result.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// replace BEGIN and END comments</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> PrivateKey <span class="title">getPrivateKey</span><span class="params">(String rsaPrivateKey)</span> <span class="keyword">throws</span> NoSuchAlgorithmException, InvalidKeySpecException </span>&#123;</span><br><span class="line">        rsaPrivateKey = rsaPrivateKey.replace(<span class="string">&quot;-----BEGIN PRIVATE KEY-----&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line">        rsaPrivateKey = rsaPrivateKey.replace(<span class="string">&quot;-----END PRIVATE KEY-----&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line"></span><br><span class="line">        PKCS8EncodedKeySpec keySpec = <span class="keyword">new</span> PKCS8EncodedKeySpec(Base64.getDecoder().decode(rsaPrivateKey));</span><br><span class="line">        KeyFactory kf = KeyFactory.getInstance(<span class="string">&quot;RSA&quot;</span>);</span><br><span class="line">        PrivateKey privateKey = kf.generatePrivate(keySpec);</span><br><span class="line">        <span class="keyword">return</span> privateKey;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// replace BEGIN and END comments</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> PublicKey <span class="title">getPublicKey</span><span class="params">(String rsaPublicKey)</span> <span class="keyword">throws</span> NoSuchAlgorithmException, InvalidKeySpecException </span>&#123;</span><br><span class="line">        rsaPublicKey = rsaPublicKey.replace(<span class="string">&quot;-----BEGIN PUBLIC KEY-----&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line">        rsaPublicKey = rsaPublicKey.replace(<span class="string">&quot;-----END PUBLIC KEY-----&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line">        X509EncodedKeySpec keySpec = <span class="keyword">new</span> X509EncodedKeySpec(Base64.getDecoder().decode(rsaPublicKey));</span><br><span class="line">        KeyFactory kf = KeyFactory.getInstance(<span class="string">&quot;RSA&quot;</span>);</span><br><span class="line">        PublicKey publicKey = kf.generatePublic(keySpec);</span><br><span class="line">        <span class="keyword">return</span> publicKey;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="最后"><a class="markdownIt-Anchor" href="#最后"></a> 最后</h1>
+<p>本文到此结束，感谢阅读。如果您觉得不错，请关注公众号【当我遇上你】，您的支持是我写作的最大动力。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2020/08/26/jjwt/" title="JJWT" target="_blank" rel="external">https://idea360.cn/2020/08/26/jjwt/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/08/27/cookie/" title="Cookie简单使用"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/07/28/spring-aop-invalid/" title="SpringAOP失效问题"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

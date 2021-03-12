@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>微信公众号接口学习 | 当我遇上你</title>
+  <meta name="description" content="概述 微信公众号的集成现在在很多业务上都需要。看着官方一大堆的 文档，大家可能不知道如何下手。本篇从 api 入手和大家一起了解下公众号在业务上如何集成。  基础环境 公众号的开发需要认证的服务号，不过官方也提供了 测试帐号 供开发测试。 开发过程中需要的环境如下:  测试号 公网   内网穿透 公网主要用于接收微信推送消息，比方有新用户关注、取消关注等事件。 如果大家没有公网，可以通过内网穿透">
+<meta property="og:type" content="article">
+<meta property="og:title" content="微信公众号接口学习">
+<meta property="og:url" content="https://idea360.cn/2020/04/18/wechat-api-learning/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="概述 微信公众号的集成现在在很多业务上都需要。看着官方一大堆的 文档，大家可能不知道如何下手。本篇从 api 入手和大家一起了解下公众号在业务上如何集成。  基础环境 公众号的开发需要认证的服务号，不过官方也提供了 测试帐号 供开发测试。 开发过程中需要的环境如下:  测试号 公网   内网穿透 公网主要用于接收微信推送消息，比方有新用户关注、取消关注等事件。 如果大家没有公网，可以通过内网穿透">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/sunny-ngrok.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/wechat-api-config.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/wechat-callback-url.png">
+<meta property="article:published_time" content="2020-04-18T03:38:09.000Z">
+<meta property="article:modified_time" content="2021-02-23T14:49:34.435Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="微信">
+<meta property="article:tag" content="公众号">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/idea360/oss/raw/master/images/sunny-ngrok.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2020/04/18/wechat-api-learning/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text"> 概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E7%8E%AF%E5%A2%83"><span class="toc-number">2.</span> <span class="toc-text"> 基础环境</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F"><span class="toc-number">2.1.</span> <span class="toc-text"> 内网穿透</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E5%8F%B7"><span class="toc-number">2.2.</span> <span class="toc-text"> 测试号</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E8%B0%83%E9%AA%8C%E8%AF%81"><span class="toc-number">2.3.</span> <span class="toc-text"> 回调验证</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text"> 接口分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96-access_token"><span class="toc-number">3.1.</span> <span class="toc-text"> 获取 access_token</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E7%94%A8%E6%88%B7%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF"><span class="toc-number">3.2.</span> <span class="toc-text"> 获取用户基本信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E-oauth2-%E8%8E%B7%E5%BE%97%E6%8E%88%E6%9D%83%E7%A0%81%E9%9C%80%E8%A6%81%E5%9C%A8%E5%BE%AE%E4%BF%A1%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%89%93%E5%BC%80"><span class="toc-number">3.3.</span> <span class="toc-text"> 基于 Oauth2 获得授权码，需要在微信客户端打开</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96-openid"><span class="toc-number">3.4.</span> <span class="toc-text"> 获取 OpenId</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E7%94%A8%E6%88%B7%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AFunionid%E6%9C%BA%E5%88%B6-%E7%BD%91%E9%A1%B5%E5%BC%80%E5%8F%91%E8%8E%B7%E5%8F%96%E7%94%A8%E6%88%B7%E4%BF%A1%E6%81%AF-%E6%AD%A4%E5%A4%84%E7%9A%84token%E5%92%8C%E5%85%AC%E4%BC%97%E5%8F%B7token%E4%B8%8D%E6%98%AF%E4%B8%80%E4%B8%AAtoken"><span class="toc-number">3.5.</span> <span class="toc-text"> 获取用户基本信息(UnionID机制-网页开发获取用户信息， 此处的token和公众号token不是一个token)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E7%94%A8%E6%88%B7%E5%88%97%E8%A1%A8"><span class="toc-number">3.6.</span> <span class="toc-text"> 获取用户列表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E5%B8%A6%E5%8F%82%E6%95%B0%E7%9A%84%E4%BA%8C%E7%BB%B4%E7%A0%81"><span class="toc-number">3.7.</span> <span class="toc-text"> 生成带参数的二维码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%9A%E8%BF%87ticket%E6%8D%A2%E5%8F%96%E4%BA%8C%E7%BB%B4%E7%A0%81"><span class="toc-number">3.8.</span> <span class="toc-text"> 通过ticket换取二维码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B0%E5%A2%9E%E4%B8%B4%E6%97%B6%E7%B4%A0%E6%9D%90"><span class="toc-number">3.9.</span> <span class="toc-text"> 新增临时素材</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E4%B8%B4%E6%97%B6%E7%B4%A0%E6%9D%90"><span class="toc-number">3.10.</span> <span class="toc-text"> 获取临时素材</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E6%A8%A1%E6%9D%BF%E5%88%97%E8%A1%A8"><span class="toc-number">3.11.</span> <span class="toc-text"> 获取模板列表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%91%E9%80%81%E6%A8%A1%E6%9D%BF%E6%B6%88%E6%81%AF"><span class="toc-number">3.12.</span> <span class="toc-text"> 发送模板消息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%91%E9%80%81%E5%AE%A2%E6%9C%8D%E6%B6%88%E6%81%AF"><span class="toc-number">3.13.</span> <span class="toc-text"> 发送客服消息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%91%E6%B5%8Btoken%E6%98%AF%E5%90%A6%E5%A4%B1%E6%95%88"><span class="toc-number">3.14.</span> <span class="toc-text"> 监测token是否失效</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%B7%E6%96%B0%E6%A8%A1%E6%9D%BF%E6%B6%88%E6%81%AF10w%E6%97%A5%E9%99%90%E9%A2%9D"><span class="toc-number">3.15.</span> <span class="toc-text"> 刷新模板消息10W&#x2F;日限额</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">4.</span> <span class="toc-text"> 最后</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-wechat-api-learning" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      微信公众号接口学习
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/04/18/wechat-api-learning/" class="article-date">
+	  <time datetime="2020-04-18T03:38:09.000Z" itemprop="datePublished">2020-04-18</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%85%AC%E4%BC%97%E5%8F%B7/">公众号</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/%E5%85%AC%E4%BC%97%E5%8F%B7/" rel="tag">公众号</a>, <a class="article-tag-link-link" href="/tags/%E5%BE%AE%E4%BF%A1/" rel="tag">微信</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2020/04/18/wechat-api-learning/" class="leancloud_visitors"  data-flag-title="微信公众号接口学习">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/04/18/wechat-api-learning/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="概述"><a class="markdownIt-Anchor" href="#概述"></a> 概述</h1>
+<p>微信公众号的集成现在在很多业务上都需要。看着官方一大堆的 <a target="_blank" rel="noopener" href="https://developers.weixin.qq.com/doc/offiaccount/Getting_Started/Overview.html">文档</a>，大家可能不知道如何下手。本篇从 <code>api</code> 入手和大家一起了解下公众号在业务上如何集成。</p>
+<h1 id="基础环境"><a class="markdownIt-Anchor" href="#基础环境"></a> 基础环境</h1>
+<p>公众号的开发需要认证的服务号，不过官方也提供了 <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=sandbox/login&amp;token=1886453737&amp;lang=zh_CN">测试帐号</a> 供开发测试。</p>
+<p>开发过程中需要的环境如下:</p>
+<ul>
+<li>测试号</li>
+<li>公网</li>
+</ul>
+<h2 id="内网穿透"><a class="markdownIt-Anchor" href="#内网穿透"></a> 内网穿透</h2>
+<p>公网主要用于接收微信推送消息，比方有新用户关注、取消关注等事件。<br />
+如果大家没有公网，可以通过内网穿透来本机调试。比较常用的有 <code>ngrok</code>、<code>Sunny-Ngrok</code>、<code>natapp</code>、<code>花生壳</code>、<code>钉钉</code> 等。</p>
+<p>笔者这里用的 <code>Sunny-Ngrok</code> 免费版，不过网络不稳定，经常断开。</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/sunny-ngrok.png" alt="" /></p>
+<h2 id="测试号"><a class="markdownIt-Anchor" href="#测试号"></a> 测试号</h2>
+<p>验证 <code>接口配置信息</code>, 需要启动程序响应公众平台验证。验证通过即可响应公众平台事件消息, 比方说 <code>关注事件</code>, 然后将微信用户与平台用户进行 <code>绑定</code>。</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-api-config.png" alt="" /></p>
+<p>回调域名配置。编辑网页服务-网页帐号，配置如下:</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-callback-url.png" alt="" /></p>
+<h2 id="回调验证"><a class="markdownIt-Anchor" href="#回调验证"></a> 回调验证</h2>
+<p>这里基于 <code>Java</code> 实现，笔者采用的 <code>SpringBoot</code>。</p>
+<p><strong>application.properties</strong></p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">server.port</span>=<span class="string">80</span></span><br><span class="line"></span><br><span class="line"><span class="meta">wx.appID</span>=<span class="string">wx3f2f5354f615c639</span></span><br><span class="line"><span class="meta">wx.appsecret</span>=<span class="string">80ae2299328c6c8f6ae0c774a69b08b0</span></span><br><span class="line"><span class="meta">wx.token</span>=<span class="string">123456</span></span><br></pre></td></tr></table></figure>
+<p><strong>工具类</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.security.MessageDigest;</span><br><span class="line"><span class="keyword">import</span> java.security.NoSuchAlgorithmException;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SHA1</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">gen</span><span class="params">(String... arr)</span> </span>&#123;</span><br><span class="line">        Arrays.sort(arr);</span><br><span class="line">        StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">        String[] parr = arr;</span><br><span class="line">        <span class="keyword">int</span> size = arr.length;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; ++i) &#123;</span><br><span class="line">            String a = parr[i];</span><br><span class="line">            sb.append(a);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> sha1(sb.toString());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">sha1</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            MessageDigest digest = MessageDigest.getInstance(<span class="string">&quot;SHA-1&quot;</span>);</span><br><span class="line">            digest.update(str.getBytes());</span><br><span class="line">            <span class="keyword">byte</span>[] messageDigest = digest.digest();</span><br><span class="line">            <span class="comment">// Create Hex String</span></span><br><span class="line">            StringBuffer hexString = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">            <span class="comment">// 字节数组转换为 十六进制 数</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; messageDigest.length; i++) &#123;</span><br><span class="line">                String shaHex = Integer.toHexString(messageDigest[i] &amp; <span class="number">0xFF</span>);</span><br><span class="line">                <span class="keyword">if</span> (shaHex.length() &lt; <span class="number">2</span>) &#123;</span><br><span class="line">                    hexString.append(<span class="number">0</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                hexString.append(shaHex);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> hexString.toString();</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 签名校验</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> timestamp</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> nonce</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> signature</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">checkSignature</span><span class="params">(String timestamp, String nonce, String signature)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> SHA1.gen(<span class="keyword">new</span> String[]&#123;wxConfig.getToken(), timestamp, nonce&#125;).equals(signature);</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line"></span><br><span class="line">        logger.error(<span class="string">&quot;签名校验失败: &#123;&#125;&quot;</span>, e.getMessage());</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>签名校验与回调消息接收</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/weixin/sign&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WxPortalController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger logger = LoggerFactory.getLogger(WxPortalController.class);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> WxService wxService;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> signature 微信加密签名</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> timestamp 时间戳</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> nonce 随机数</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> echostr 随机字符串</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@GetMapping(produces = &quot;text/plain;charset=utf-8&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">authGet</span><span class="params">(<span class="meta">@RequestParam(name = &quot;signature&quot;, required = false)</span> String signature,</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="meta">@RequestParam(name = &quot;timestamp&quot;, required = false)</span> String timestamp,</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="meta">@RequestParam(name = &quot;nonce&quot;, required = false)</span> String nonce,</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="meta">@RequestParam(name = &quot;echostr&quot;, required = false)</span> String echostr)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        logger.info(<span class="string">&quot;\n接收到来自微信服务器的认证消息：[&#123;&#125;, &#123;&#125;, &#123;&#125;, &#123;&#125;]&quot;</span>, signature,</span><br><span class="line">                timestamp, nonce, echostr);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (wxService.checkSignature(timestamp, nonce, signature)) &#123;</span><br><span class="line">            <span class="keyword">return</span> echostr;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;非法请求&quot;</span>;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> requestBody 回调消息</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> signature</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> timestamp</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> nonce</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> openid</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> encType</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> msgSignature</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@PostMapping(produces = &quot;application/xml; charset=UTF-8&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">post</span><span class="params">(<span class="meta">@RequestBody</span> String requestBody,</span></span></span><br><span class="line"><span class="function"><span class="params">                       <span class="meta">@RequestParam(&quot;signature&quot;)</span> String signature,</span></span></span><br><span class="line"><span class="function"><span class="params">                       <span class="meta">@RequestParam(&quot;timestamp&quot;)</span> String timestamp,</span></span></span><br><span class="line"><span class="function"><span class="params">                       <span class="meta">@RequestParam(&quot;nonce&quot;)</span> String nonce,</span></span></span><br><span class="line"><span class="function"><span class="params">                       <span class="meta">@RequestParam(&quot;openid&quot;)</span> String openid,</span></span></span><br><span class="line"><span class="function"><span class="params">                       <span class="meta">@RequestParam(name = &quot;encrypt_type&quot;, required = false)</span> String encType,</span></span></span><br><span class="line"><span class="function"><span class="params">                       <span class="meta">@RequestParam(name = &quot;msg_signature&quot;, required = false)</span> String msgSignature)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 获取到openId</span></span><br><span class="line">        logger.info(<span class="string">&quot;\n接收微信请求：[openid=[&#123;&#125;], [signature=[&#123;&#125;], encType=[&#123;&#125;], msgSignature=[&#123;&#125;],&quot;</span></span><br><span class="line">                        + <span class="string">&quot; timestamp=[&#123;&#125;], nonce=[&#123;&#125;], requestBody=[\n&#123;&#125;\n] &quot;</span>,</span><br><span class="line">                openid, signature, encType, msgSignature, timestamp, nonce, requestBody);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            wxService.handleEvent(requestBody);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>至此，微信的基本开发就ok了。大家可以根据回调事件的消息做相应的业务处理。</p>
+<h1 id="接口分析"><a class="markdownIt-Anchor" href="#接口分析"></a> 接口分析</h1>
+<h2 id="获取-access_token"><a class="markdownIt-Anchor" href="#获取-access_token"></a> 获取 access_token</h2>
+<p>基本所有的接口调用都需要 <code>access_token</code>。</p>
+<p><strong>GET</strong></p>
+<p><a target="_blank" rel="noopener" href="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&amp;appid=wx3f2f5354f615c639&amp;secret=80ae2299328c6c8f6ae0c774a69b08b0">https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&amp;appid=wx3f2f5354f615c639&amp;secret=80ae2299328c6c8f6ae0c774a69b08b0</a></p>
+<p><strong>Response</strong></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;access_token&quot;</span>: <span class="string">&quot;32_S2GVg7DuHc1VxsHY5Hf9kdqCCP1BBI9pBv-ZvK_JHtN1HTjXyN0NmIPYvRHZwkiHy7cDA_944K9V0WU3_XC3GuL8Q8rVF93PDXGDZpuN8-3V6gKFELbEnrF-sN-Ps24he8zrQs8Db_gxqrtYULKeAFAYPO&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;expires_in&quot;</span>: <span class="number">7200</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="获取用户基本信息"><a class="markdownIt-Anchor" href="#获取用户基本信息"></a> 获取用户基本信息</h2>
+<p><strong>GET</strong></p>
+<p><a target="_blank" rel="noopener" href="https://api.weixin.qq.com/cgi-bin/user/info?access_token=32_ybQmVgsXDCHKSiG3bRIL7xRq1Y39sKVylwUOMQls8IKlpY5dqiycEPvQmzBvsl2REtAi11WUSn5Nc29ZnOddO0V8Rll0RtKw6WLtwgzhr3_4h5-I1pGShVa1KuD1GQXcPIKblSae5Bt8PkxiVEHjACAFOR&amp;openid=oHOLJw-r6lBxSXU4pRDKpoDyqWI0&amp;lang=zh_CN">https://api.weixin.qq.com/cgi-bin/user/info?access_token=32_ybQmVgsXDCHKSiG3bRIL7xRq1Y39sKVylwUOMQls8IKlpY5dqiycEPvQmzBvsl2REtAi11WUSn5Nc29ZnOddO0V8Rll0RtKw6WLtwgzhr3_4h5-I1pGShVa1KuD1GQXcPIKblSae5Bt8PkxiVEHjACAFOR&amp;openid=oHOLJw-r6lBxSXU4pRDKpoDyqWI0&amp;lang=zh_CN</a></p>
+<p><strong>Response</strong></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;subscribe&quot;</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="attr">&quot;openid&quot;</span>: <span class="string">&quot;oHOLJw-r6lBxSXU4pRDKpoDyqWI0&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;当我遇上你&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;sex&quot;</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="attr">&quot;language&quot;</span>: <span class="string">&quot;zh_CN&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;city&quot;</span>: <span class="string">&quot;朝阳&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;province&quot;</span>: <span class="string">&quot;北京&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;country&quot;</span>: <span class="string">&quot;中国&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;headimgurl&quot;</span>: <span class="string">&quot;http://thirdwx.qlogo.cn/mmopen/RFKUCMNiaHBDu2OOyCcvq5uTIteIlicusVTVUVNtIicjSyNY2su0eSYAIUzDtlAkE3Ff6uaKN8UvryLwicX1c2OeLNHJR3ibBeo9G/132&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;subscribe_time&quot;</span>: <span class="number">1587187948</span>,</span><br><span class="line">    <span class="attr">&quot;remark&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;groupid&quot;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="attr">&quot;tagid_list&quot;</span>: [],</span><br><span class="line">    <span class="attr">&quot;subscribe_scene&quot;</span>: <span class="string">&quot;ADD_SCENE_QR_CODE&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;qr_scene&quot;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="attr">&quot;qr_scene_str&quot;</span>: <span class="string">&quot;1234567&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="基于-oauth2-获得授权码需要在微信客户端打开"><a class="markdownIt-Anchor" href="#基于-oauth2-获得授权码需要在微信客户端打开"></a> 基于 Oauth2 获得授权码，需要在微信客户端打开</h2>
+<p><strong>GET</strong></p>
+<p><a target="_blank" rel="noopener" href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx3f2f5354f615c639&amp;redirect_uri=http://idcmind.com/weixin/sign&amp;response_type=code&amp;scope=snsapi_base&amp;state=STATE">https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx3f2f5354f615c639&amp;redirect_uri=http://idcmind.com/weixin/sign&amp;response_type=code&amp;scope=snsapi_base&amp;state=STATE</a></p>
+<p><strong>Java代码web接口</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/weixin/code&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WxCodeController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger logger = LoggerFactory.getLogger(WxCodeController.class);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">code</span><span class="params">(<span class="meta">@RequestParam(&quot;code&quot;)</span> String code, <span class="meta">@RequestParam(&quot;state&quot;)</span> String state)</span> </span>&#123;</span><br><span class="line">        logger.info(<span class="string">&quot;code=&#123;&#125;, state=&#123;&#125;&quot;</span>, code, state);</span><br><span class="line">        <span class="keyword">return</span> code;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>微信端访问日志</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">code&#x3D;061PRu4d2jOFiH0Kh83d2Hig4d2PRu4m, state&#x3D;123456</span><br></pre></td></tr></table></figure>
+<h2 id="获取-openid"><a class="markdownIt-Anchor" href="#获取-openid"></a> 获取 OpenId</h2>
+<p><strong>GET</strong></p>
+<p>带入刚才获得的 <code>code</code></p>
+<p><a target="_blank" rel="noopener" href="https://api.weixin.qq.com/sns/oauth2/access_token?appid=wx3f2f5354f615c639&amp;secret=80ae2299328c6c8f6ae0c774a69b08b0&amp;code=061PRu4d2jOFiH0Kh83d2Hig4d2PRu4m&amp;grant_type=authorization_code">https://api.weixin.qq.com/sns/oauth2/access_token?appid=wx3f2f5354f615c639&amp;secret=80ae2299328c6c8f6ae0c774a69b08b0&amp;code=061PRu4d2jOFiH0Kh83d2Hig4d2PRu4m&amp;grant_type=authorization_code</a></p>
+<p><strong>Response</strong></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;access_token&quot;</span>: <span class="string">&quot;32_kCTsG4G6Vp-p2NWQQbelmpTshAHldad7XNBf9FFAtUn6QwhNHuFIM9utpRaabhn4NcT5ObK4XY4_Hc3wWPf5nMVs0zqXtOL5YJvB7Lk2XBg&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;expires_in&quot;</span>: <span class="number">7200</span>,</span><br><span class="line">    <span class="attr">&quot;refresh_token&quot;</span>: <span class="string">&quot;32_oO-cHAoZdugyzJ0uvi49_E81PsddQdO7pBSGjjlmxZqRcXBGqu1aVHQRu4TW_T7_FuGMF4te3CxtCvc7H_21tfqOPWSJMEalhBrgQ3Is8K4&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;openid&quot;</span>: <span class="string">&quot;oHOLJw-r6lBxSXU4pRDKpoDyqWI0&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;scope&quot;</span>: <span class="string">&quot;snsapi_base&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>openid</code> 是微信用户在 <code>公众号</code> 的唯一身份标识。</p>
+<h2 id="获取用户基本信息unionid机制-网页开发获取用户信息-此处的token和公众号token不是一个token"><a class="markdownIt-Anchor" href="#获取用户基本信息unionid机制-网页开发获取用户信息-此处的token和公众号token不是一个token"></a> 获取用户基本信息(UnionID机制-网页开发获取用户信息， 此处的token和公众号token不是一个token)</h2>
+<p><strong>GET</strong></p>
+<p><a target="_blank" rel="noopener" href="https://api.weixin.qq.com/sns/userinfo?access_token=36_9LM_Fr2s2yfcJRlF6Zz9sDdARIXXrVNJFutEh8bURe2NoglsLzeBUiGlYQhhWePWllTOnf1_8vZFwUll97tD-NC5KFq6Gz37uFgDfo7ZIFwZEG7JgTCecJikRkCRqAvjp4_R68u9KdgomRFTTCLeACAHQZ&amp;openid=oHOLJw-r6lBxSXU4pRDKpoDyqWI0&amp;lang=zh_CN">https://api.weixin.qq.com/sns/userinfo?access_token=36_9LM_Fr2s2yfcJRlF6Zz9sDdARIXXrVNJFutEh8bURe2NoglsLzeBUiGlYQhhWePWllTOnf1_8vZFwUll97tD-NC5KFq6Gz37uFgDfo7ZIFwZEG7JgTCecJikRkCRqAvjp4_R68u9KdgomRFTTCLeACAHQZ&amp;openid=oHOLJw-r6lBxSXU4pRDKpoDyqWI0&amp;lang=zh_CN</a></p>
+<p><strong>Response</strong></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;   </span><br><span class="line">  <span class="attr">&quot;openid&quot;</span>: <span class="string">&quot;oHOLJw-r6lBxSXU4pRDKpoDyqWI0&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;当我遇上你&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;sex&quot;</span>:<span class="string">&quot;1&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;province&quot;</span>:<span class="string">&quot;朝阳&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;city&quot;</span>:<span class="string">&quot;北京&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;country&quot;</span>:<span class="string">&quot;中国&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;headimgurl&quot;</span>: <span class="string">&quot;http://thirdwx.qlogo.cn/mmopen/RFKUCMNiaHBDu2OOyCcvq5uTIteIlicusVTVUVNtIicjSyNY2su0eSYAIUzDtlAkE3Ff6uaKN8UvryLwicX1c2OeLNHJR3ibBeo9G/132&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;privilege&quot;</span>:[ <span class="string">&quot;PRIVILEGE1&quot;</span>, <span class="string">&quot;PRIVILEGE2&quot;</span>],</span><br><span class="line">  <span class="attr">&quot;unionid&quot;</span>: <span class="string">&quot;o6_bmasdasdsad6_2sgVt7hMZOPfL&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="获取用户列表"><a class="markdownIt-Anchor" href="#获取用户列表"></a> 获取用户列表</h2>
+<p><strong>GET</strong></p>
+<p><a target="_blank" rel="noopener" href="https://api.weixin.qq.com/cgi-bin/user/get?access_token=32_ybQmVgsXDCHKSiG3bRIL7xRq1Y39sKVylwUOMQls8IKlpY5dqiycEPvQmzBvsl2REtAi11WUSn5Nc29ZnOddO0V8Rll0RtKw6WLtwgzhr3_4h5-I1pGShVa1KuD1GQXcPIKblSae5Bt8PkxiVEHjACAFOR">https://api.weixin.qq.com/cgi-bin/user/get?access_token=32_ybQmVgsXDCHKSiG3bRIL7xRq1Y39sKVylwUOMQls8IKlpY5dqiycEPvQmzBvsl2REtAi11WUSn5Nc29ZnOddO0V8Rll0RtKw6WLtwgzhr3_4h5-I1pGShVa1KuD1GQXcPIKblSae5Bt8PkxiVEHjACAFOR</a></p>
+<p><strong>Response</strong></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;total&quot;</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="attr">&quot;count&quot;</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="attr">&quot;data&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;openid&quot;</span>: [</span><br><span class="line">            <span class="string">&quot;oHOLJw-r6lBxSXU4pRDKpoDyqWI0&quot;</span></span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;next_openid&quot;</span>: <span class="string">&quot;oHOLJw-r6lBxSXU4pRDKpoDyqWI0&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="生成带参数的二维码"><a class="markdownIt-Anchor" href="#生成带参数的二维码"></a> 生成带参数的二维码</h2>
+<p>这里演示带字符串参数的永久二维码</p>
+<p><strong>POST</strong></p>
+<p><a target="_blank" rel="noopener" href="https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=32_9o3KwEVvZho6PxWqnmhVpUNiWcaGpgl_TvvJH1NHS_3ZAPQl-2dh4XCqbxdqtahdd39hKTP9kYAcnr2Jmu1-V7n0szIdiAkoHZmd0BGOUGHrSro4i4oY0I2I4zPxcPfXxmsTJKrvlotsvwjBALCbAAAPAR">https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=32_9o3KwEVvZho6PxWqnmhVpUNiWcaGpgl_TvvJH1NHS_3ZAPQl-2dh4XCqbxdqtahdd39hKTP9kYAcnr2Jmu1-V7n0szIdiAkoHZmd0BGOUGHrSro4i4oY0I2I4zPxcPfXxmsTJKrvlotsvwjBALCbAAAPAR</a></p>
+<p>请求体</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;action_name&quot;</span>: <span class="string">&quot;QR_LIMIT_STR_SCENE&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;action_info&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;scene&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;scene_str&quot;</span>: <span class="string">&quot;1234567&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Response</strong></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;ticket&quot;</span>: <span class="string">&quot;gQG18TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyTGhyV01tc3lmOTMxMDAwMGcwN24AAgTQippeAwQAAAAA&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;url&quot;</span>: <span class="string">&quot;http://weixin.qq.com/q/02LhrWMmsyf9310000g07n&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="通过ticket换取二维码"><a class="markdownIt-Anchor" href="#通过ticket换取二维码"></a> 通过ticket换取二维码</h2>
+<p><strong>GET</strong></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQG18TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyTGhyV01tc3lmOTMxMDAwMGcwN24AAgTQippeAwQAAAAA">https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQG18TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyTGhyV01tc3lmOTMxMDAwMGcwN24AAgTQippeAwQAAAAA</a></p>
+<p><strong>Response</strong></p>
+<p>基于字节流的图片，在浏览器访问上述地址即可渲染出二维码。该二维码是带参数的二维码，扫码关注后回调消息中会携带参数。比如按 <code>userId</code> 生成二维码，扫码关注后回调消息包含 <code>openid</code> 和 <code>userid</code>, 可以用于后续绑定操作。</p>
+<p>用户关注后java后台会收到xml消息:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">xml</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ToUserName</span>&gt;</span>&lt;![CDATA[gh_d0c6b73cc08e]]&gt;<span class="tag">&lt;/<span class="name">ToUserName</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">FromUserName</span>&gt;</span>&lt;![CDATA[oHOLJw-r6lBxSXU4pRDKpoDyqWI0]]&gt;<span class="tag">&lt;/<span class="name">FromUserName</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">CreateTime</span>&gt;</span>1587187948<span class="tag">&lt;/<span class="name">CreateTime</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">MsgType</span>&gt;</span>&lt;![CDATA[event]]&gt;<span class="tag">&lt;/<span class="name">MsgType</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">Event</span>&gt;</span>&lt;![CDATA[subscribe]]&gt;<span class="tag">&lt;/<span class="name">Event</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">EventKey</span>&gt;</span>&lt;![CDATA[qrscene_1234567]]&gt;<span class="tag">&lt;/<span class="name">EventKey</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">Ticket</span>&gt;</span>&lt;![CDATA[gQG18TwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyTGhyV01tc3lmOTMxMDAwMGcwN24AAgTQippeAwQAAAAA]]&gt;<span class="tag">&lt;/<span class="name">Ticket</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">xml</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="新增临时素材"><a class="markdownIt-Anchor" href="#新增临时素材"></a> 新增临时素材</h2>
+<p><strong>POST</strong></p>
+<p><a target="_blank" rel="noopener" href="https://api.weixin.qq.com/cgi-bin/media/upload?access_token=32_LtMp7FPdxSvV1kmPHoQTqCjhGAjigFDvhzVPnAIQsknmHyFOtTO9g5XBr7DVVNPepYLPZjSRCX0fDKZqTzBufliVoWTMmRI1Uu-T2aMt3vfTzlluzm6eANZ6nJNEa_BXLwHxIx3yLP49fr_MZTZfACAGAG&amp;type=image">https://api.weixin.qq.com/cgi-bin/media/upload?access_token=32_LtMp7FPdxSvV1kmPHoQTqCjhGAjigFDvhzVPnAIQsknmHyFOtTO9g5XBr7DVVNPepYLPZjSRCX0fDKZqTzBufliVoWTMmRI1Uu-T2aMt3vfTzlluzm6eANZ6nJNEa_BXLwHxIx3yLP49fr_MZTZfACAGAG&amp;type=image</a></p>
+<p>Content-Type:multipart/form-data</p>
+<p>body中选择file类型的key，value选择本地图片</p>
+<p><strong>Response</strong></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;image&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;media_id&quot;</span>: <span class="string">&quot;51TAwv-DI7RucNhJr8tzqbYLWSZFH-m1b40Td2rLz3L2WUo881sQ8DgGxeRKXMG5&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;created_at&quot;</span>: <span class="number">1587187471</span>,</span><br><span class="line">    <span class="attr">&quot;item&quot;</span>: []</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="获取临时素材"><a class="markdownIt-Anchor" href="#获取临时素材"></a> 获取临时素材</h2>
+<p><strong>GET</strong></p>
+<p><a target="_blank" rel="noopener" href="https://api.weixin.qq.com/cgi-bin/media/get?access_token=32_LtMp7FPdxSvV1kmPHoQTqCjhGAjigFDvhzVPnAIQsknmHyFOtTO9g5XBr7DVVNPepYLPZjSRCX0fDKZqTzBufliVoWTMmRI1Uu-T2aMt3vfTzlluzm6eANZ6nJNEa_BXLwHxIx3yLP49fr_MZTZfACAGAG&amp;media_id=51TAwv-DI7RucNhJr8tzqbYLWSZFH-m1b40Td2rLz3L2WUo881sQ8DgGxeRKXMG5">https://api.weixin.qq.com/cgi-bin/media/get?access_token=32_LtMp7FPdxSvV1kmPHoQTqCjhGAjigFDvhzVPnAIQsknmHyFOtTO9g5XBr7DVVNPepYLPZjSRCX0fDKZqTzBufliVoWTMmRI1Uu-T2aMt3vfTzlluzm6eANZ6nJNEa_BXLwHxIx3yLP49fr_MZTZfACAGAG&amp;media_id=51TAwv-DI7RucNhJr8tzqbYLWSZFH-m1b40Td2rLz3L2WUo881sQ8DgGxeRKXMG5</a></p>
+<p><strong>Response</strong></p>
+<p>返回图片素材</p>
+<h2 id="获取模板列表"><a class="markdownIt-Anchor" href="#获取模板列表"></a> 获取模板列表</h2>
+<p>创建模板不需要调用接口，在公众号后台即可设置。</p>
+<p>我创建的模板如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">欢迎你: &#123;&#123;name.DATA&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>GET</strong></p>
+<p><a target="_blank" rel="noopener" href="https://api.weixin.qq.com/cgi-bin/template/get_all_private_template?access_token=32_ybQmVgsXDCHKSiG3bRIL7xRq1Y39sKVylwUOMQls8IKlpY5dqiycEPvQmzBvsl2REtAi11WUSn5Nc29ZnOddO0V8Rll0RtKw6WLtwgzhr3_4h5-I1pGShVa1KuD1GQXcPIKblSae5Bt8PkxiVEHjACAFOR">https://api.weixin.qq.com/cgi-bin/template/get_all_private_template?access_token=32_ybQmVgsXDCHKSiG3bRIL7xRq1Y39sKVylwUOMQls8IKlpY5dqiycEPvQmzBvsl2REtAi11WUSn5Nc29ZnOddO0V8Rll0RtKw6WLtwgzhr3_4h5-I1pGShVa1KuD1GQXcPIKblSae5Bt8PkxiVEHjACAFOR</a></p>
+<p><strong>Response</strong></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;template_list&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">&quot;template_id&quot;</span>: <span class="string">&quot;7BsKKP1MsDxbNmfYfTaNVm9guRvgwH8l2PmFbDCMip0&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;title&quot;</span>: <span class="string">&quot;欢迎模板&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;primary_industry&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;deputy_industry&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;content&quot;</span>: <span class="string">&quot;欢迎你: &#123;&#123;name.DATA&#125;&#125;&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;example&quot;</span>: <span class="string">&quot;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="发送模板消息"><a class="markdownIt-Anchor" href="#发送模板消息"></a> 发送模板消息</h2>
+<p><strong>POST</strong></p>
+<p><a target="_blank" rel="noopener" href="https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=32_ybQmVgsXDCHKSiG3bRIL7xRq1Y39sKVylwUOMQls8IKlpY5dqiycEPvQmzBvsl2REtAi11WUSn5Nc29ZnOddO0V8Rll0RtKw6WLtwgzhr3_4h5-I1pGShVa1KuD1GQXcPIKblSae5Bt8PkxiVEHjACAFOR">https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=32_ybQmVgsXDCHKSiG3bRIL7xRq1Y39sKVylwUOMQls8IKlpY5dqiycEPvQmzBvsl2REtAi11WUSn5Nc29ZnOddO0V8Rll0RtKw6WLtwgzhr3_4h5-I1pGShVa1KuD1GQXcPIKblSae5Bt8PkxiVEHjACAFOR</a></p>
+<p>请求体</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> &#123;</span><br><span class="line">           <span class="attr">&quot;touser&quot;</span>:<span class="string">&quot;oHOLJw-r6lBxSXU4pRDKpoDyqWI0&quot;</span>,</span><br><span class="line">           <span class="attr">&quot;template_id&quot;</span>:<span class="string">&quot;7BsKKP1MsDxbNmfYfTaNVm9guRvgwH8l2PmFbDCMip0&quot;</span>,</span><br><span class="line">           <span class="attr">&quot;url&quot;</span>:<span class="string">&quot;http://idea360.cn&quot;</span>,         </span><br><span class="line">           <span class="attr">&quot;data&quot;</span>:&#123;</span><br><span class="line">                   <span class="attr">&quot;name&quot;</span>: &#123;</span><br><span class="line">                       <span class="attr">&quot;value&quot;</span>:<span class="string">&quot;登高射太阳！&quot;</span>,</span><br><span class="line">                       <span class="attr">&quot;color&quot;</span>:<span class="string">&quot;#173177&quot;</span></span><br><span class="line">                   &#125;</span><br><span class="line">           &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>查看微信，会看到测试号给推送了一条模板消息。</p>
+<p>同时，我们的java日志中会看到收到xml消息</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">xml</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ToUserName</span>&gt;</span>&lt;![CDATA[gh_d0c6b73cc08e]]&gt;<span class="tag">&lt;/<span class="name">ToUserName</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">FromUserName</span>&gt;</span>&lt;![CDATA[oHOLJw-r6lBxSXU4pRDKpoDyqWI0]]&gt;<span class="tag">&lt;/<span class="name">FromUserName</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">CreateTime</span>&gt;</span>1587188459<span class="tag">&lt;/<span class="name">CreateTime</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">MsgType</span>&gt;</span>&lt;![CDATA[event]]&gt;<span class="tag">&lt;/<span class="name">MsgType</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">Event</span>&gt;</span>&lt;![CDATA[TEMPLATESENDJOBFINISH]]&gt;<span class="tag">&lt;/<span class="name">Event</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">MsgID</span>&gt;</span>1301848003480829954<span class="tag">&lt;/<span class="name">MsgID</span>&gt;</span>  </span><br><span class="line">  <span class="tag">&lt;<span class="name">Status</span>&gt;</span>&lt;![CDATA[success]]&gt;<span class="tag">&lt;/<span class="name">Status</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">xml</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="发送客服消息"><a class="markdownIt-Anchor" href="#发送客服消息"></a> 发送客服消息</h2>
+<p><strong>POST</strong></p>
+<p><a target="_blank" rel="noopener" href="https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=32_LBmSoFhAku0mBL8dQ3mj4pSPSe6_EFBGUt_uCEu3ZGZX-auOe9etVmtKBfwnK9FgMd9BsrTWKo-mmgy86EVCjJkpvuu2h6_VZXJ_S-fCHtW7VJIKlQ9P7tNEDlWEwDsTCUCN6Cj8dVJqK4e5PNViAJAKIQ">https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=32_LBmSoFhAku0mBL8dQ3mj4pSPSe6_EFBGUt_uCEu3ZGZX-auOe9etVmtKBfwnK9FgMd9BsrTWKo-mmgy86EVCjJkpvuu2h6_VZXJ_S-fCHtW7VJIKlQ9P7tNEDlWEwDsTCUCN6Cj8dVJqK4e5PNViAJAKIQ</a></p>
+<p>消息体</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;touser&quot;</span>:<span class="string">&quot;oHOLJw-r6lBxSXU4pRDKpoDyqWI0&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;msgtype&quot;</span>:<span class="string">&quot;news&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;news&quot;</span>:&#123;</span><br><span class="line">        <span class="attr">&quot;articles&quot;</span>: [</span><br><span class="line">         &#123;</span><br><span class="line">             <span class="attr">&quot;title&quot;</span>:<span class="string">&quot;当我遇上你&quot;</span>,</span><br><span class="line">             <span class="attr">&quot;description&quot;</span>:<span class="string">&quot;当我遇上你&quot;</span>,</span><br><span class="line">             <span class="attr">&quot;url&quot;</span>:<span class="string">&quot;https://www.baidu.com&quot;</span>,</span><br><span class="line">             <span class="attr">&quot;picurl&quot;</span>:<span class="string">&quot;https://gitee.com/idea360/oss/raw/master/images/one.png&quot;</span></span><br><span class="line">         &#125;</span><br><span class="line">         ]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><strong>Response</strong></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;errcode&quot;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="attr">&quot;errmsg&quot;</span>: <span class="string">&quot;ok&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>查看公众号会看到消息。</p>
+<h2 id="监测token是否失效"><a class="markdownIt-Anchor" href="#监测token是否失效"></a> 监测token是否失效</h2>
+<p><strong>GET</strong></p>
+<p><a target="_blank" rel="noopener" href="https://api.weixin.qq.com/cgi-bin/getcallbackip?access_token=%25s">https://api.weixin.qq.com/cgi-bin/getcallbackip?access_token=%s</a></p>
+<h2 id="刷新模板消息10w日限额"><a class="markdownIt-Anchor" href="#刷新模板消息10w日限额"></a> 刷新模板消息10W/日限额</h2>
+<p><strong>GET</strong></p>
+<p><a target="_blank" rel="noopener" href="https://api.weixin.qq.com/cgi-bin/clear_quota?access_token=%25s">https://api.weixin.qq.com/cgi-bin/clear_quota?access_token=%s</a></p>
+<h1 id="最后"><a class="markdownIt-Anchor" href="#最后"></a> 最后</h1>
+<p>本文到此结束，感谢阅读。欢迎关注公众号【当我遇上你】, 您的支持是我最大的动力。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2020/04/18/wechat-api-learning/" title="微信公众号接口学习" target="_blank" rel="external">https://idea360.cn/2020/04/18/wechat-api-learning/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/04/21/dubbo-demo/" title="Dubbo入门demo"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/04/11/springboot-mybatis-oracle-learn/" title="springboot-mybatis-oracle学习笔记"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

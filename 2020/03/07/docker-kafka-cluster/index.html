@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>Docker实战之Kafka集群 | 当我遇上你</title>
+  <meta name="description" content="1. 概述 Apache Kafka是一个快速、可扩展的、高吞吐、可容错的分布式发布订阅消息系统。其具有高吞吐量、内置分区、支持数据副本和容错的特性，适合在大规模消息处理场景中使用。 笔者之前在物联网公司工作，其中Kafka作为物联网MQ选型的事实标准，这里优先给大家搭建Kafka集群环境。由于Kafka的安装需要依赖Zookeeper，对Zookeeper还不了解的小伙伴可以在 这里 先认识下">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker实战之Kafka集群">
+<meta property="og:url" content="https://idea360.cn/2020/03/07/docker-kafka-cluster/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="1. 概述 Apache Kafka是一个快速、可扩展的、高吞吐、可容错的分布式发布订阅消息系统。其具有高吞吐量、内置分区、支持数据副本和容错的特性，适合在大规模消息处理场景中使用。 笔者之前在物联网公司工作，其中Kafka作为物联网MQ选型的事实标准，这里优先给大家搭建Kafka集群环境。由于Kafka的安装需要依赖Zookeeper，对Zookeeper还不了解的小伙伴可以在 这里 先认识下">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/kafka-manage-config-cluster.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/kafka-cluster-default-topic.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/kafka-cluster-topic-test-partition-show.png">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png">
+<meta property="article:published_time" content="2020-03-06T17:40:30.000Z">
+<meta property="article:modified_time" content="2020-12-12T05:28:44.673Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="docker">
+<meta property="article:tag" content="kafka">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/idea360/oss/raw/master/images/kafka-manage-config-cluster.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2020/03/07/docker-kafka-cluster/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text"> 1. 概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-kafka%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">2.</span> <span class="toc-text"> 2. Kafka基本概念</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-docker%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">3.</span> <span class="toc-text"> 3. Docker环境搭建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-kafka%E5%88%9D%E8%AE%A4%E8%AF%86"><span class="toc-number">4.</span> <span class="toc-text"> 4. Kafka初认识</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#41-%E5%8F%AF%E8%A7%86%E5%8C%96%E7%AE%A1%E7%90%86"><span class="toc-number">4.1.</span> <span class="toc-text"> 4.1 可视化管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#42-zookeeper%E5%9C%A8kafka%E7%8E%AF%E5%A2%83%E4%B8%AD%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88"><span class="toc-number">4.2.</span> <span class="toc-text"> 4.2 Zookeeper在kafka环境中做了什么</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-docker%E5%88%9B%E5%BB%BAtopic"><span class="toc-number">5.</span> <span class="toc-text"> 5. docker创建topic</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-%E5%AE%98%E6%96%B9%E5%B7%A5%E5%85%B7"><span class="toc-number">6.</span> <span class="toc-text"> 6. 官方工具</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%90%E7%BB%B4%E7%AE%A1%E7%90%86%E7%B1%BB"><span class="toc-number">6.1.</span> <span class="toc-text"> 运维管理类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#kafka%E6%93%8D%E4%BD%9C%E7%B1%BB"><span class="toc-number">6.2.</span> <span class="toc-text"> kafka操作类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#kafka-topicssh"><span class="toc-number">6.2.1.</span> <span class="toc-text"> kafka-topics.sh</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#kafka-run-classsh"><span class="toc-number">6.2.2.</span> <span class="toc-text"> kafka-run-class.sh</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#kafka-console-producersh"><span class="toc-number">6.2.3.</span> <span class="toc-text"> kafka-console-producer.sh</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#kafka-console-consumersh"><span class="toc-number">6.2.4.</span> <span class="toc-text"> kafka-console-consumer.sh</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#kafka-consumer-groupssh"><span class="toc-number">6.2.5.</span> <span class="toc-text"> kafka-consumer-groups.sh</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#kafka-log-dirssh"><span class="toc-number">6.2.6.</span> <span class="toc-text"> kafka-log-dirs.sh</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#kafka-configssh"><span class="toc-number">6.2.7.</span> <span class="toc-text"> kafka-configs.sh</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#kafka-broker-api-versionssh"><span class="toc-number">6.2.8.</span> <span class="toc-text"> kafka-broker-api-versions.sh</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#7-springboot%E9%9B%86%E6%88%90"><span class="toc-number">7.</span> <span class="toc-text"> 7. SpringBoot集成</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#7-ad"><span class="toc-number">8.</span> <span class="toc-text"> 7. AD</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">9.</span> <span class="toc-text"> 参考</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-docker-kafka-cluster" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Docker实战之Kafka集群
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/03/07/docker-kafka-cluster/" class="article-date">
+	  <time datetime="2020-03-06T17:40:30.000Z" itemprop="datePublished">2020-03-07</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/docker/">docker</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/docker/" rel="tag">docker</a>, <a class="article-tag-link-link" href="/tags/kafka/" rel="tag">kafka</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2020/03/07/docker-kafka-cluster/" class="leancloud_visitors"  data-flag-title="Docker实战之Kafka集群">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/03/07/docker-kafka-cluster/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="1-概述"><a class="markdownIt-Anchor" href="#1-概述"></a> 1. 概述</h1>
+<p>Apache Kafka是一个快速、可扩展的、高吞吐、可容错的分布式发布订阅消息系统。其具有高吞吐量、内置分区、支持数据副本和容错的特性，适合在大规模消息处理场景中使用。</p>
+<p>笔者之前在物联网公司工作，其中Kafka作为物联网MQ选型的事实标准，这里优先给大家搭建Kafka集群环境。由于Kafka的安装需要依赖Zookeeper，对Zookeeper还不了解的小伙伴可以在 <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/aNpn59gHD_WOhtZkceMwug">这里</a> 先认识下Zookeeper。</p>
+<p>Kafka能解决什么问题呢？先说一下消息队列常见的使用场景吧，其实场景有很多，但是比较核心的有 3 个：解耦、异步、削峰。</p>
+<h1 id="2-kafka基本概念"><a class="markdownIt-Anchor" href="#2-kafka基本概念"></a> 2. Kafka基本概念</h1>
+<p>Kafka部分名词解释如下：</p>
+<ul>
+<li>Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多个broker可以组成一个Kafka集群。</li>
+<li>Topic：一类消息，例如page view日志、click日志等都可以以topic的形式存在，Kafka集群能够同时负责多个topic的分发。</li>
+<li>Partition：topic物理上的分组，一个topic可以分为多个partition，每个partition是一个有序的队列。</li>
+<li>Segment：partition物理上由多个segment组成，下面有详细说明。</li>
+<li>offset：每个partition都由一系列有序的、不可变的消息组成，这些消息被连续的追加到partition中。partition中的每个消息都有一个连续的序列号叫做offset,用于partition唯一标识一条消息.每个partition中的消息都由offset=0开始记录消息。</li>
+</ul>
+<h1 id="3-docker环境搭建"><a class="markdownIt-Anchor" href="#3-docker环境搭建"></a> 3. Docker环境搭建</h1>
+<p>配合上一节的Zookeeper环境,计划搭建一个3节点的集群。宿主机IP为 <code>192.168.124.5</code>。</p>
+<p><strong>docker-compose-kafka-cluster.yml</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3.7&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">networks:</span></span><br><span class="line">  <span class="attr">docker_net:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">kafka1:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">wurstmeister/kafka</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">kafka1</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;9093:9092&quot;</span></span><br><span class="line">    <span class="attr">external_links:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">zoo1</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">zoo2</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">zoo3</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">KAFKA_BROKER_ID:</span> <span class="number">1</span></span><br><span class="line">      <span class="attr">KAFKA_ADVERTISED_HOST_NAME:</span> <span class="number">192.168</span><span class="number">.124</span><span class="number">.5</span>                   <span class="comment">## 修改:宿主机IP</span></span><br><span class="line">      <span class="attr">KAFKA_ADVERTISED_PORT:</span> <span class="number">9093</span>                                 <span class="comment">## 修改:宿主机映射port</span></span><br><span class="line">      <span class="attr">KAFKA_ADVERTISED_LISTENERS:</span> <span class="string">PLAINTEXT://192.168.124.5:9093</span>    <span class="comment">## 绑定发布订阅的端口。修改:宿主机IP</span></span><br><span class="line">      <span class="attr">KAFKA_ZOOKEEPER_CONNECT:</span> <span class="string">&quot;zoo1:2181,zoo2:2181,zoo3:2181&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./kafka/kafka1/docker.sock:/var/run/docker.sock&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./kafka/kafka1/data/:/kafka&quot;</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">docker_net</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="attr">kafka2:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">wurstmeister/kafka</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">kafka2</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;9094:9092&quot;</span></span><br><span class="line">    <span class="attr">external_links:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">zoo1</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">zoo2</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">zoo3</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">KAFKA_BROKER_ID:</span> <span class="number">2</span></span><br><span class="line">      <span class="attr">KAFKA_ADVERTISED_HOST_NAME:</span> <span class="number">192.168</span><span class="number">.124</span><span class="number">.5</span>                 <span class="comment">## 修改:宿主机IP</span></span><br><span class="line">      <span class="attr">KAFKA_ADVERTISED_PORT:</span> <span class="number">9094</span>                               <span class="comment">## 修改:宿主机映射port</span></span><br><span class="line">      <span class="attr">KAFKA_ADVERTISED_LISTENERS:</span> <span class="string">PLAINTEXT://192.168.124.5:9094</span>   <span class="comment">## 修改:宿主机IP</span></span><br><span class="line">      <span class="attr">KAFKA_ZOOKEEPER_CONNECT:</span> <span class="string">&quot;zoo1:2181,zoo2:2181,zoo3:2181&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./kafka/kafka2/docker.sock:/var/run/docker.sock&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./kafka/kafka2/data/:/kafka&quot;</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">docker_net</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">kafka3:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">wurstmeister/kafka</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">kafka3</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;9095:9092&quot;</span></span><br><span class="line">    <span class="attr">external_links:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">zoo1</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">zoo2</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">zoo3</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">KAFKA_BROKER_ID:</span> <span class="number">3</span></span><br><span class="line">      <span class="attr">KAFKA_ADVERTISED_HOST_NAME:</span> <span class="number">192.168</span><span class="number">.124</span><span class="number">.5</span>                 <span class="comment">## 修改:宿主机IP</span></span><br><span class="line">      <span class="attr">KAFKA_ADVERTISED_PORT:</span> <span class="number">9095</span>                              <span class="comment">## 修改:宿主机映射port</span></span><br><span class="line">      <span class="attr">KAFKA_ADVERTISED_LISTENERS:</span> <span class="string">PLAINTEXT://192.168.124.5:9095</span>   <span class="comment">## 修改:宿主机IP</span></span><br><span class="line">      <span class="attr">KAFKA_ZOOKEEPER_CONNECT:</span> <span class="string">&quot;zoo1:2181,zoo2:2181,zoo3:2181&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./kafka/kafka3/docker.sock:/var/run/docker.sock&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;./kafka/kafka3/data/:/kafka&quot;</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">docker_net</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">kafka-manager:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">sheepkiller/kafka-manager:latest</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">kafka-manager</span></span><br><span class="line">    <span class="attr">hostname:</span> <span class="string">kafka-manager</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;9000:9000&quot;</span></span><br><span class="line">    <span class="attr">links:</span>            <span class="comment"># 连接本compose文件创建的container</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">kafka1</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">kafka2</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">kafka3</span></span><br><span class="line">    <span class="attr">external_links:</span>   <span class="comment"># 连接本compose文件以外的container</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">zoo1</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">zoo2</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">zoo3</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">ZK_HOSTS:</span> <span class="string">zoo1:2181,zoo2:2181,zoo3:2181</span>                 <span class="comment">## 修改:宿主机IP</span></span><br><span class="line">      <span class="attr">TZ:</span> <span class="string">CST-8</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">docker_net</span></span><br></pre></td></tr></table></figure>
+<p>执行以下命令启动</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose -f docker-compose-kafka-cluster.yml up -d</span><br></pre></td></tr></table></figure>
+<p>可以看到kafka集群已经启动成功。</p>
+<h1 id="4-kafka初认识"><a class="markdownIt-Anchor" href="#4-kafka初认识"></a> 4. Kafka初认识</h1>
+<h2 id="41-可视化管理"><a class="markdownIt-Anchor" href="#41-可视化管理"></a> 4.1 可视化管理</h2>
+<p>细心的小伙伴发现上边的配置除了kafka外还有一个kafka-manager模块。它是kafka的可视化管理模块。因为kafka的元数据、配置信息由Zookeeper管理，这里我们在UI页面做下相关配置。</p>
+<p><em>1.</em> 访问 <a href="http:localhost:9000">http:localhost:9000</a>,按图示添加相关配置</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/kafka-manage-config-cluster.png" alt="" /></p>
+<p><em>2.</em> 配置后我们可以看到默认有一个topic(__consumer_offsets)，3个brokers。该topic分50个partition，用于记录kafka的消费偏移量。</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/kafka-cluster-default-topic.png" alt="" /></p>
+<h2 id="42-zookeeper在kafka环境中做了什么"><a class="markdownIt-Anchor" href="#42-zookeeper在kafka环境中做了什么"></a> 4.2 Zookeeper在kafka环境中做了什么</h2>
+<p><em>1.</em> 首先观察下根目录</p>
+<p>kafka基于zookeeper，kafka启动会将元数据保存在zookeeper中。查看zookeeper节点目录，会发现多了很多和kafka相关的目录。结果如下:</p>
+<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">➜  docker zkCli -server <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">2183</span></span><br><span class="line">Connecting to <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">2183</span></span><br><span class="line">Welcome to ZooKeeper!</span><br><span class="line">JLine support is enabled</span><br><span class="line"></span><br><span class="line">WATCHER::</span><br><span class="line"></span><br><span class="line">WatchedEvent state:SyncConnected type:None path:null</span><br><span class="line">[zk: <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">2183</span>(CONNECTED) <span class="number">0</span>] ls /</span><br><span class="line">[cluster, controller, brokers, zookeeper, admin, isr_change_notification, log_dir_event_notification, controller_epoch, zk-test0000000000, kafka-manager, consumers, latest_producer_id_block, config]</span><br></pre></td></tr></table></figure>
+<p><em>2.</em> 查看我们映射的kafka目录，新版本的kafka偏移量不再存储在zk中，而是在kafka自己的环境中。</p>
+<p>我们节选了部分目录(包含2个partition)</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">├── kafka1</span><br><span class="line">│   ├── data</span><br><span class="line">│   │   └── kafka-logs-c4e2e9edc235</span><br><span class="line">│   │       ├── __consumer_offsets-1</span><br><span class="line">│   │       │   ├── 00000000000000000000.index       // segment索引文件</span><br><span class="line">│   │       │   ├── 00000000000000000000.log         // 数据文件</span><br><span class="line">│   │       │   ├── 00000000000000000000.timeindex   // 消息时间戳索引文件</span><br><span class="line">│   │       │   └── leader-epoch-checkpoint</span><br><span class="line">...</span><br><span class="line">│   │       ├── __consumer_offsets-7</span><br><span class="line">│   │       │   ├── 00000000000000000000.index</span><br><span class="line">│   │       │   ├── 00000000000000000000.log</span><br><span class="line">│   │       │   ├── 00000000000000000000.timeindex</span><br><span class="line">│   │       │   └── leader-epoch-checkpoint</span><br><span class="line">│   │       ├── cleaner-offset-checkpoint</span><br><span class="line">│   │       ├── log-start-offset-checkpoint</span><br><span class="line">│   │       ├── meta.properties</span><br><span class="line">│   │       ├── recovery-point-offset-checkpoint</span><br><span class="line">│   │       └── replication-offset-checkpoint</span><br><span class="line">│   └── docker.sock</span><br></pre></td></tr></table></figure>
+<p>结果与Kafka-Manage显示结果一致。图示的文件是一个Segment，00000000000000000000.log表示offset从0开始，随着数据不断的增加，会有多个Segment文件。</p>
+<h1 id="5-docker创建topic"><a class="markdownIt-Anchor" href="#5-docker创建topic"></a> 5. docker创建topic</h1>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">➜  docker docker <span class="built_in">exec</span> -it kafka1 /bin/bash   <span class="comment"># 进入容器</span></span><br><span class="line">bash-4.4<span class="comment"># cd /opt/kafka/   # 进入安装目录</span></span><br><span class="line">bash-4.4<span class="comment"># ./bin/kafka-topics.sh --list --zookeeper zoo1:2181,zoo2:2181,zoo3:2181   # 查看主题列表</span></span><br><span class="line">__consumer_offsets</span><br><span class="line">bash-4.4<span class="comment"># ./bin/kafka-topics.sh --create --zookeeper zoo1:2181,zoo2:2181,zoo3:2181 --replication-factor 2 --partitions 3 --topic test    # 新建主题</span></span><br><span class="line">Created topic <span class="built_in">test</span>.</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>说明:<br />
+–replication-factor副本数;<br />
+–partitions分区数;<br />
+replication&lt;=broker(一定);<br />
+有效消费者数&lt;=partitions分区数(一定);</p>
+</blockquote>
+<p>新建主题后, 再次查看映射目录, 由图可见，partition在3个broker上均匀分布。图示同步副本表示当前和主节点数据保持同步的副本数。kafka服务端可以设置 <code>min.insync.replicas</code> 参数(最小同步副本)。这个值必须大于 1，这个是要求一个 leader 至少感知到有至少一个 follower 还跟自己保持联系，没掉队，这样才能确保 leader 挂了还有一个 follower (一种保证消息可靠不丢失的策略)。</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/kafka-cluster-topic-test-partition-show.png" alt="" /></p>
+<blockquote>
+<p>ISR是由leader维护，follower从leader同步数据有一些延迟 （包括延迟时间replica.lag.time.max.ms和延迟条数replica.lag.max.messages两个维度, 当前最新的版本0.10.x中只支持replica.lag.time.max.ms这个维度）， 任意一个超过阈值都会把follower剔除出ISR, 存入OSR（Outof-Sync Replicas）列表，新加入的follower也会先存放在OSR中。AR=ISR+OSR。</p>
+</blockquote>
+<p><strong>docker中的data路径示例: /kafka/kafka-logs-c4e2e9edc235/test-0/00000000000000000000.log</strong></p>
+<h1 id="6-官方工具"><a class="markdownIt-Anchor" href="#6-官方工具"></a> 6. 官方工具</h1>
+<p>brew安装的kafka指令路径 <code>/usr/local/Cellar/kafka/2.6.0_1/bin</code></p>
+<p>真正的脚本路径 <code>/usr/local/Cellar/kafka/2.6.0_1/libexec/bin</code></p>
+<p>配置文件路径 <code>/usr/local/etc/kafka</code></p>
+<p>数据存储在 <code>/usr/local/var/lib/kafka-logs</code> 目录下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">├── connect-distributed</span><br><span class="line">├── connect-mirror-maker</span><br><span class="line">├── connect-standalone</span><br><span class="line">├── kafka-acls</span><br><span class="line">├── kafka-broker-api-versions</span><br><span class="line">├── kafka-configs</span><br><span class="line">├── kafka-console-consumer</span><br><span class="line">├── kafka-console-producer</span><br><span class="line">├── kafka-consumer-groups</span><br><span class="line">├── kafka-consumer-perf-test</span><br><span class="line">├── kafka-delegation-tokens</span><br><span class="line">├── kafka-delete-records</span><br><span class="line">├── kafka-dump-log</span><br><span class="line">├── kafka-leader-election</span><br><span class="line">├── kafka-log-dirs</span><br><span class="line">├── kafka-mirror-maker</span><br><span class="line">├── kafka-preferred-replica-election</span><br><span class="line">├── kafka-producer-perf-test</span><br><span class="line">├── kafka-reassign-partitions</span><br><span class="line">├── kafka-replica-verification</span><br><span class="line">├── kafka-run-class</span><br><span class="line">├── kafka-server-start</span><br><span class="line">├── kafka-server-stop</span><br><span class="line">├── kafka-streams-application-reset</span><br><span class="line">├── kafka-topics</span><br><span class="line">├── kafka-verifiable-consumer</span><br><span class="line">├── kafka-verifiable-producer</span><br><span class="line">├── trogdor</span><br><span class="line">├── zookeeper-security-migration</span><br><span class="line">├── zookeeper-server-start</span><br><span class="line">├── zookeeper-server-stop</span><br><span class="line">└── zookeeper-shell</span><br></pre></td></tr></table></figure>
+<h2 id="运维管理类"><a class="markdownIt-Anchor" href="#运维管理类"></a> 运维管理类</h2>
+<ul>
+<li><code>kafka-topics.sh</code>: 用来创建，删除，查看，改变一个topic参数的工具</li>
+<li><code>kafka-reassign-partitions.sh</code>: 用来对partition进行重新分配(管理员会较多使用)</li>
+<li><code>kafka-log-dirs.sh</code>: 用来查看指定broker下日志目录的使用空间</li>
+<li><code>kafka-leader-election.sh</code>: 用于一组Topic分区的leader重新分配，可以支持优先副本和非同步副本(不在ISR中)，老版本中的kafka-preferred-replica-election.sh脚本</li>
+<li><code>kafka-replica-verification.sh</code>: 该工具可以用来检查topic的一组副本的数据是否一致</li>
+<li><code>kafka-broker-api-versions.sh</code>: 用来查看指定broker当前支持的各个接口的版本(kafka高版本已经保证了向下兼容)</li>
+<li><code>kafka-configs.sh</code>: 用来操作和查看topic, client, user or broker的实体配置</li>
+</ul>
+<h2 id="kafka操作类"><a class="markdownIt-Anchor" href="#kafka操作类"></a> kafka操作类</h2>
+<ul>
+<li><code>kafka-console-consumer.sh</code>: 通过终端来启动消费者</li>
+<li><code>kafka-console-producer.sh</code>: 通过终端来启动生产者</li>
+<li><code>kafka-consumer-groups.sh</code>: 用来查看，删除或者重置消费者组offset</li>
+<li><code>kafka-consumer-perf-test.sh</code>: 用来进行消费者压力测试</li>
+<li><code>kafka-producer-perf-test.sh</code>: 用来进行生产者压力测试</li>
+<li><code>kafka-delete-records.sh</code>: 删除指定分区的记录，直到指定的offset</li>
+<li><code>kafka-mirror-maker.sh</code>: 用于多集群之间同步topic数据</li>
+<li><code>kafka-server-start.sh</code>: broker启动脚本</li>
+<li><code>kafka-server-stop.sh</code>: broker关闭脚本</li>
+<li><code>kafka-streams-application-reset.sh</code>: 流式应用工具</li>
+<li><code>zookeeper-shell.sh</code>: kafka工具中也默认提供了zookeeper管理工具(不太好用)</li>
+</ul>
+<h3 id="kafka-topicssh"><a class="markdownIt-Anchor" href="#kafka-topicssh"></a> <a target="_blank" rel="noopener" href="http://kafka-topics.sh">kafka-topics.sh</a></h3>
+<p><strong>topic创建</strong></p>
+<ul>
+<li><code>--create</code>: 创建topic</li>
+<li>
+<ul>
+<li><code>--topic</code>: 指定topic名称</li>
+</ul>
+</li>
+<li>
+<ul>
+<li><code>--partitions</code>: 指定分区数量</li>
+</ul>
+</li>
+<li>
+<ul>
+<li><code>--replication-factor</code>: 指定副本数量(仅在创建时可用)</li>
+</ul>
+</li>
+<li>
+<ul>
+<li><code>--config</code>: 指定topic级别的参数(动态参数，可修改)</li>
+</ul>
+</li>
+<li>
+<ul>
+<li><code>--replica-assignment</code>: 手动指定partition到broker的分配&lt;part1_replica1:part1_replica2,part2_replica1:part2_replica2&gt;</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"># 创建topic</span><br><span class="line">➜  bin .&#x2F;kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --create --topic test</span><br><span class="line">Created topic test.</span><br><span class="line"></span><br><span class="line"># 查看默认创建topic的参数详情(由broker配置决定)</span><br><span class="line"># 默认1个分区，1个副本</span><br><span class="line">➜  bin .&#x2F;kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --describe --topic test</span><br><span class="line">Topic: test PartitionCount: 1 ReplicationFactor: 1  Configs: segment.bytes&#x3D;1073741824</span><br><span class="line">  Topic: test Partition: 0  Leader: 0 Replicas: 0 Isr: 0</span><br><span class="line"></span><br><span class="line"># 指定参数创建topic</span><br><span class="line"># 指定分区partitions为2，副本replication-factor为1，topic数据保留2分钟</span><br><span class="line"># replication&lt;&#x3D;broker(一定);</span><br><span class="line"># 有效消费者数&lt;&#x3D;partitions分区数(一定);</span><br><span class="line">➜  bin .&#x2F;kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --create --topic test1 --partitions 2 --replication-factor 1 --config retention.ms&#x3D;120000</span><br><span class="line">Created topic test1.</span><br><span class="line"></span><br><span class="line"># 分区，副本和指定参数都改变了</span><br><span class="line">➜  bin .&#x2F;kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --describe --topic test1</span><br><span class="line">Topic: test1  PartitionCount: 2 ReplicationFactor: 1  Configs: segment.bytes&#x3D;1073741824,retention.ms&#x3D;120000</span><br><span class="line">  Topic: test1  Partition: 0  Leader: 0 Replicas: 0 Isr: 0</span><br><span class="line">  Topic: test1  Partition: 1  Leader: 0 Replicas: 0 Isr: 0</span><br><span class="line"></span><br><span class="line"># 查看topic列表</span><br><span class="line">➜  bin .&#x2F;kafka-topics.sh --list --zookeeper 127.0.0.1:2181</span><br><span class="line">__consumer_offsets</span><br><span class="line">test</span><br><span class="line">test1</span><br><span class="line"></span><br><span class="line"># 删除topic</span><br><span class="line">➜  bin .&#x2F;kafka-topics.sh --delete --zookeeper 127.0.0.1:2181 --topic test</span><br><span class="line">Topic test is marked for deletion.</span><br><span class="line">Note: This will have no impact if delete.topic.enable is not set to true.</span><br><span class="line"></span><br><span class="line"># 查看集群leader不可用分区</span><br><span class="line">➜  bin .&#x2F;kafka-topics.sh --zookeeper 127.0.0.1:2181&#x2F;test --describe --unavailable-partitions</span><br><span class="line"></span><br><span class="line"># 查看副本不同步的分区详情</span><br><span class="line">➜  bin .&#x2F;kafka-topics.sh --zookeeper 127.0.0.1:2181&#x2F;test --describe --under-replicated-partitions</span><br></pre></td></tr></table></figure>
+<h3 id="kafka-run-classsh"><a class="markdownIt-Anchor" href="#kafka-run-classsh"></a> <a target="_blank" rel="noopener" href="http://kafka-run-class.sh">kafka-run-class.sh</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"># 查看topic偏移量</span><br><span class="line">➜  bin .&#x2F;kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list 127.0.0.1:9092 --topic test</span><br><span class="line">test:0:7</span><br><span class="line"></span><br><span class="line"># 查看topic指定分区offset的最大值</span><br><span class="line"># -1为最大值</span><br><span class="line">➜  bin .&#x2F;kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list  127.0.0.1:9092 --topic test --time -1</span><br><span class="line">test:0:7</span><br><span class="line"></span><br><span class="line"># 查看topic指定分区offset的最小值</span><br><span class="line"># -2为最小值</span><br><span class="line">➜  bin .&#x2F;kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list  127.0.0.1:9092 --topic test --time -2</span><br><span class="line">test:0:0</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 查看.log数据文件</span><br><span class="line">➜  bin .&#x2F;kafka-run-class.sh kafka.tools.DumpLogSegments --files &#x2F;usr&#x2F;local&#x2F;var&#x2F;lib&#x2F;kafka-logs&#x2F;test-0&#x2F;00000000000000000000.log  --print-data-log</span><br><span class="line">Dumping &#x2F;usr&#x2F;local&#x2F;var&#x2F;lib&#x2F;kafka-logs&#x2F;test-0&#x2F;00000000000000000000.log</span><br><span class="line">Starting offset: 0</span><br><span class="line">baseOffset: 0 lastOffset: 1 count: 2 baseSequence: -1 lastSequence: -1 producerId: -1 producerEpoch: -1 partitionLeaderEpoch: 0 isTransactional: false isControl: false position: 0 CreateTime: 1607746708893 size: 78 magic: 2 compresscodec: NONE crc: 3385071347 isvalid: true</span><br><span class="line">| offset: 0 CreateTime: 1607746708347 keysize: -1 valuesize: 1 sequence: -1 headerKeys: [] payload: 1</span><br><span class="line">| offset: 1 CreateTime: 1607746708893 keysize: -1 valuesize: 1 sequence: -1 headerKeys: [] payload: 2</span><br><span class="line">baseOffset: 2 lastOffset: 4 count: 3 baseSequence: -1 lastSequence: -1 producerId: -1 producerEpoch: -1 partitionLeaderEpoch: 0 isTransactional: false isControl: false position: 78 CreateTime: 1607746710358 size: 87 magic: 2 compresscodec: NONE crc: 2415539616 isvalid: true</span><br><span class="line">| offset: 2 CreateTime: 1607746709397 keysize: -1 valuesize: 1 sequence: -1 headerKeys: [] payload: 3</span><br><span class="line">| offset: 3 CreateTime: 1607746709874 keysize: -1 valuesize: 1 sequence: -1 headerKeys: [] payload: 4</span><br><span class="line">| offset: 4 CreateTime: 1607746710358 keysize: -1 valuesize: 1 sequence: -1 headerKeys: [] payload: 5</span><br><span class="line">baseOffset: 5 lastOffset: 6 count: 2 baseSequence: -1 lastSequence: -1 producerId: -1 producerEpoch: -1 partitionLeaderEpoch: 0 isTransactional: false isControl: false position: 165 CreateTime: 1607746712081 size: 78 magic: 2 compresscodec: NONE crc: 449097919 isvalid: true</span><br><span class="line">| offset: 5 CreateTime: 1607746711241 keysize: -1 valuesize: 1 sequence: -1 headerKeys: [] payload: 6</span><br><span class="line">| offset: 6 CreateTime: 1607746712081 keysize: -1 valuesize: 1 sequence: -1 headerKeys: [] payload: 7</span><br><span class="line">baseOffset: 7 lastOffset: 7 count: 1 baseSequence: -1 lastSequence: -1 producerId: -1 producerEpoch: -1 partitionLeaderEpoch: 0 isTransactional: false isControl: false position: 243 CreateTime: 1607750506795 size: 69 magic: 2 compresscodec: NONE crc: 1201654216 isvalid: true</span><br><span class="line">| offset: 7 CreateTime: 1607750506795 keysize: -1 valuesize: 1 sequence: -1 headerKeys: [] payload: a</span><br><span class="line">baseOffset: 8 lastOffset: 9 count: 2 baseSequence: -1 lastSequence: -1 producerId: -1 producerEpoch: -1 partitionLeaderEpoch: 0 isTransactional: false isControl: false position: 312 CreateTime: 1607750508922 size: 78 magic: 2 compresscodec: NONE crc: 2249065123 isvalid: true</span><br><span class="line">| offset: 8 CreateTime: 1607750508188 keysize: -1 valuesize: 1 sequence: -1 headerKeys: [] payload: b</span><br><span class="line">| offset: 9 CreateTime: 1607750508922 keysize: -1 valuesize: 1 sequence: -1 headerKeys: [] payload: c</span><br><span class="line">baseOffset: 10 lastOffset: 10 count: 1 baseSequence: -1 lastSequence: -1 producerId: -1 producerEpoch: -1 partitionLeaderEpoch: 0 isTransactional: false isControl: false position: 390 CreateTime: 1607750511875 size: 69 magic: 2 compresscodec: NONE crc: 926719390 isvalid: true</span><br><span class="line">| offset: 10 CreateTime: 1607750511875 keysize: -1 valuesize: 1 sequence: -1 headerKeys: [] payload: d</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 查看.index索引文件</span><br><span class="line">➜  bin .&#x2F;kafka-run-class.sh kafka.tools.DumpLogSegments --files &#x2F;usr&#x2F;local&#x2F;var&#x2F;lib&#x2F;kafka-logs&#x2F;test-0&#x2F;00000000000000000000.index</span><br><span class="line">Dumping &#x2F;usr&#x2F;local&#x2F;var&#x2F;lib&#x2F;kafka-logs&#x2F;test-0&#x2F;00000000000000000000.index</span><br><span class="line">offset: 0 position: 0</span><br><span class="line">Mismatches in :&#x2F;usr&#x2F;local&#x2F;var&#x2F;lib&#x2F;kafka-logs&#x2F;test-0&#x2F;00000000000000000000.index</span><br><span class="line">  Index offset: 0, log offset: 1</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 查看.timeindex索引文件</span><br><span class="line">➜  bin .&#x2F;kafka-run-class.sh kafka.tools.DumpLogSegments --files &#x2F;usr&#x2F;local&#x2F;var&#x2F;lib&#x2F;kafka-logs&#x2F;test-0&#x2F;00000000000000000000.timeindex  --verify-index-only</span><br><span class="line">Dumping &#x2F;usr&#x2F;local&#x2F;var&#x2F;lib&#x2F;kafka-logs&#x2F;test-0&#x2F;00000000000000000000.timeindex</span><br><span class="line">The following indexed offsets are not found in the log.</span><br><span class="line">Indexed offset: 0, found log offset: 1</span><br></pre></td></tr></table></figure>
+<h3 id="kafka-console-producersh"><a class="markdownIt-Anchor" href="#kafka-console-producersh"></a> <a target="_blank" rel="noopener" href="http://kafka-console-producer.sh">kafka-console-producer.sh</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 生产消息</span><br><span class="line">➜  bin .&#x2F;kafka-console-producer.sh --broker-list 127.0.0.1:9092  --topic test</span><br></pre></td></tr></table></figure>
+<h3 id="kafka-console-consumersh"><a class="markdownIt-Anchor" href="#kafka-console-consumersh"></a> <a target="_blank" rel="noopener" href="http://kafka-console-consumer.sh">kafka-console-consumer.sh</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># 消费消息</span><br><span class="line">➜  bin .&#x2F;kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic test --from-beginning</span><br><span class="line"></span><br><span class="line"># 指定offset消费消息</span><br><span class="line"># 指定offset&#x3D;2, 分片0, 最多消费3条</span><br><span class="line">➜  bin .&#x2F;kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic test --offset 2 --partition 0 --max-messages 3</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">Processed a total of 3 messages</span><br></pre></td></tr></table></figure>
+<h3 id="kafka-consumer-groupssh"><a class="markdownIt-Anchor" href="#kafka-consumer-groupssh"></a> <a target="_blank" rel="noopener" href="http://kafka-consumer-groups.sh">kafka-consumer-groups.sh</a></h3>
+<p>消费组管理工具，可以列出所有的消费组，查看消费组详情，删除消费组信息以及重置消费组的offset</p>
+<ul>
+<li><code>--all-groups</code>: 应用到所有的消费组</li>
+<li><code>--all-topics</code>:</li>
+<li><code>--delete</code>: 删除topic分区的offset,以及拥有者和消费组信息(–group g1 –group g2)</li>
+<li><code>--delete-offsets</code>: 删除消费组的offset</li>
+<li><code>--describe</code>: 查看消费组信息以及消费者的offset lag</li>
+<li><code>--execute</code>: 指定操作，支持<code>reset-offsets</code>操作</li>
+<li><code>--export</code>: 导出操作执行到csv，支持<code>reset-offsets</code></li>
+<li><code>--from-file</code>: 指定文件中指定的值重置offset (csv文件)</li>
+<li><code>--group</code>: 指定消费组</li>
+<li><code>--list</code>: 列出所有的消费组</li>
+<li><code>--members</code>: 查看消费组中的成员</li>
+<li><code>--state</code>: 查看消费组的状态</li>
+<li><code>--offsets</code>: 查看消费组并且列出每个消费组所有topic的分区以及消息的offset lag</li>
+<li><code>--reset-offsets</code>: 重置消费组的offset (需要指定如下一个参数)</li>
+<li>
+<ul>
+<li><code>--to-datetime</code>:</li>
+</ul>
+</li>
+<li>
+<ul>
+<li><code>--by-period</code>:</li>
+</ul>
+</li>
+<li>
+<ul>
+<li><code>--to-earliest</code>:</li>
+</ul>
+</li>
+<li>
+<ul>
+<li><code>--to-latest</code>:</li>
+</ul>
+</li>
+<li>
+<ul>
+<li><code>--shift-by</code>:</li>
+</ul>
+</li>
+<li>
+<ul>
+<li><code>--from-file</code>:</li>
+</ul>
+</li>
+<li>
+<ul>
+<li><code>--to-current</code>:</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"># 查看分组列表</span><br><span class="line">➜  bin .&#x2F;kafka-consumer-groups.sh --bootstrap-server 127.0.0.1:9092 --list</span><br><span class="line">console-consumer-10023</span><br><span class="line">console-consumer-20994</span><br><span class="line"></span><br><span class="line"># 查看消费组的成员</span><br><span class="line">➜  bin .&#x2F;kafka-consumer-groups.sh --bootstrap-server 127.0.0.1:9092 --group console-consumer-32644 --members --describe</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Consumer group &#39;console-consumer-32644&#39; has no active members.</span><br><span class="line"></span><br><span class="line"># 查看消费组的offset信息</span><br><span class="line">➜  bin .&#x2F;kafka-consumer-groups.sh --bootstrap-server 127.0.0.1:9092 --group console-consumer-32644 --offsets --describe</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Consumer group &#39;console-consumer-32644&#39; has no active members.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 查看消费组状态</span><br><span class="line">➜  bin .&#x2F;kafka-consumer-groups.sh --bootstrap-server 127.0.0.1:9092 --group console-consumer-32644 --state --describe</span><br><span class="line"></span><br><span class="line">Consumer group &#39;console-consumer-32644&#39; has no active members.</span><br><span class="line"></span><br><span class="line">GROUP                     COORDINATOR (ID)          ASSIGNMENT-STRATEGY  STATE           #MEMBERS</span><br><span class="line">console-consumer-32644    localhost:9092 (0)                             Empty           0</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 查看group详情</span><br><span class="line"># CURRENT-OFFSET: 当前消费者群组最近提交的 offset，也就是消费者分区里读取的当前位置</span><br><span class="line"># LOG-END-OFFSET: 当前最高水位偏移量，也就是最近一个读取消息的偏移量，同时也是最近一个提交到集群的偏移量</span><br><span class="line"># LAG：消费者的 CURRENT-OFFSET 与 broker 的 LOG-END-OFFSET 之间的差距</span><br><span class="line">➜  bin .&#x2F;kafka-consumer-groups.sh --bootstrap-server 127.0.0.1:9092 --group console-consumer-20994 --describe</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Consumer group &#39;console-consumer-20994&#39; has no active members.</span><br><span class="line"></span><br><span class="line">GROUP                  TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID</span><br><span class="line">console-consumer-20994 test            0          4               7               3               -               -               -</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 重新设置设置group的offset</span><br><span class="line"># 指定group&#x3D;console-consumer-20994, 重置offset&#x3D;4</span><br><span class="line">➜  bin .&#x2F;kafka-consumer-groups.sh --bootstrap-server 127.0.0.1:9092 --group console-consumer-20994  --reset-offsets --topic test --to-offset 4 --execute</span><br><span class="line"></span><br><span class="line">GROUP                          TOPIC                          PARTITION  NEW-OFFSET</span><br><span class="line">console-consumer-20994         test                           0          4</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 把group&#x3D;console-consumer-20994在topic&#x3D;test上的offcet恢复到最初</span><br><span class="line">➜  bin .&#x2F;kafka-consumer-groups.sh --bootstrap-server 127.0.0.1:9092 --group console-consumer-20994 --topic test --reset-offsets --to-earliest –execute</span><br><span class="line">WARN: No action will be performed as the --execute option is missing.In a future major release, the default behavior of this command will be to prompt the user before executing the reset rather than doing a dry run. You should add the --dry-run option explicitly if you are scripting this command and want to keep the current default behavior without prompting.</span><br><span class="line"></span><br><span class="line">GROUP                          TOPIC                          PARTITION  NEW-OFFSET</span><br><span class="line">console-consumer-20994         test                           0          0</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 重置Consumer Group的Offset到最新位移</span><br><span class="line">➜  bin .&#x2F;kafka-consumer-groups.sh --bootstrap-server 127.0.0.1:9092 --group console-consumer-20994 --reset-offsets --topic test --to-latest --execute</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">GROUP                          TOPIC                          PARTITION  NEW-OFFSET</span><br><span class="line">console-consumer-20994         test                           0          7</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 把offcet从当前位置往前移动2个，如果是正数就是往后移动。</span><br><span class="line">➜  bin .&#x2F;kafka-consumer-groups.sh --bootstrap-server 127.0.0.1:9092 --group console-consumer-20994 --topic test --reset-offsets --shift-by -2 --execute</span><br><span class="line"></span><br><span class="line">GROUP                          TOPIC                          PARTITION  NEW-OFFSET</span><br><span class="line">console-consumer-20994         test                           0          5</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="kafka-log-dirssh"><a class="markdownIt-Anchor" href="#kafka-log-dirssh"></a> <a target="_blank" rel="noopener" href="http://kafka-log-dirs.sh">kafka-log-dirs.sh</a></h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 查看kafka各个broker节点以及topic的磁盘使用率情况</span><br><span class="line">➜  bin .&#x2F;kafka-log-dirs.sh --bootstrap-server 127.0.0.1:9092 --describe --topic-list test</span><br><span class="line">Querying brokers for log directories information</span><br><span class="line">Received log directory information from brokers 0</span><br><span class="line">&#123;&quot;version&quot;:1,&quot;brokers&quot;:[&#123;&quot;broker&quot;:0,&quot;logDirs&quot;:[&#123;&quot;logDir&quot;:&quot;&#x2F;usr&#x2F;local&#x2F;var&#x2F;lib&#x2F;kafka-logs&quot;,&quot;error&quot;:null,&quot;partitions&quot;:[&#123;&quot;partition&quot;:&quot;test-0&quot;,&quot;size&quot;:243,&quot;offsetLag&quot;:0,&quot;isFuture&quot;:false&#125;]&#125;]&#125;]&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="kafka-configssh"><a class="markdownIt-Anchor" href="#kafka-configssh"></a> <a target="_blank" rel="noopener" href="http://kafka-configs.sh">kafka-configs.sh</a></h3>
+<p>用来查看和修改kafka相关的配置信息，包含集群的动态配置，topic级别的动态配置等等</p>
+<ul>
+<li><code>--all</code>: 列出给定实体的全部配置文件(默认已经生效的全部参数，如果没有all仅对动态参数生效)</li>
+<li><code>--entity-type</code>: 实体类型[topics/clients/users/brokers/broker-loggers]</li>
+<li><code>--entity-name</code>: 实体名称[topic名称/client-id/user-name/broker-id]</li>
+<li><code>--describe</code>: 列出给定实体的配置文件</li>
+<li><code>--force</code>: 强制生效</li>
+<li><code>--topic</code>: 指定topic名称</li>
+<li><code>--alter</code>: 修改指定实体的配置文件 <code>注意:当使用delete-config和add-config时必须使用--alter</code></li>
+<li><code>--delete-config</code>: 删除指定的配置&quot;k1,k2&quot;</li>
+<li><code>--add-config</code>: 给指定的实体增加配置(k=v,k2=[v1,v2,v3],k3=v3)</li>
+</ul>
+<p><strong>topic级别的动态参数</strong></p>
+<ul>
+<li><code>cleanup.policy</code>: 清理策略</li>
+<li><code>compression.type</code>: 压缩类型(通常建议在produce端控制)</li>
+<li><code>delete.retention.ms</code>: 压缩日志的保留时间</li>
+<li><code>flush.messages</code>: 持久化message限制</li>
+<li><code>flush.ms</code>: 持久化频率</li>
+<li><code>follower.replication.throttled.replicas</code>: follower副本限流</li>
+<li><code>leader.replication.throttled.replicas</code>: leader副本限流</li>
+<li><code>max.message.bytes</code>: 最大的batch的message大小</li>
+<li><code>message.downconversion.enable</code>: message向下兼容</li>
+<li><code>message.format.version</code>: message格式版本</li>
+<li><code>min.insync.replicas</code>: 最小的ISR</li>
+<li><code>retention.ms</code>: 日志保留时间</li>
+<li><code>retention.bytes</code>: 日志保留大小(通常按照时间限制)</li>
+<li><code>segment.bytes</code>: segment的大小限制</li>
+<li><code>segment.ms</code>: segment的切割时间</li>
+<li><code>unclean.leader.election.enable</code>: 是否允许非同步副本选主(针对可用性设置的一个参数)</li>
+</ul>
+<p><strong>broker级别的动态参数</strong></p>
+<p>broker级别的动态参数比较多，这里只列举常用的几个</p>
+<ul>
+<li><code>log.retention.ms</code>: 日志保留时间</li>
+<li><code>max.connections</code>: 最大连接数</li>
+<li><code>max.connections.per.ip</code>: 每个ip的最大连接数</li>
+<li><code>message.max.bytes</code>: batch的message的最大限制</li>
+<li><code>min.insync.replicas</code>: 最小的ISR</li>
+<li><code>num.io.threads</code>: IO线程数(网络线程数的两倍)</li>
+<li><code>num.network.threads</code>: 网络线程数(cpu的2/3较好)</li>
+<li><code>num.recovery.threads.per.data.dir</code>: 每个数据目录的恢复线程</li>
+<li><code>num.replica.fetchers</code>: 副本的fetchers数量(默认为1,可适当调大)</li>
+</ul>
+<p><strong>user级别的参数</strong></p>
+<ul>
+<li><code>SCRAM-SHA-256</code>:</li>
+<li><code>SCRAM-SHA-512</code>:</li>
+<li><code>consumer_byte_rate</code>: 针对消费者user进行限流</li>
+<li><code>producer_byte_rate</code>: 针对生产者进行限流</li>
+<li><code>request_percentage</code>: 请求百分比</li>
+</ul>
+<p><strong>clients级别参数</strong></p>
+<ul>
+<li><code>consumer_byte_rate</code>: 针对消费者user进行限流</li>
+<li><code>producer_byte_rate</code>: 针对生产者进行限流</li>
+<li><code>request_percentage</code>: 请求百分比</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"># 修改topic的数据保留时间</span><br><span class="line">➜  bin .&#x2F;kafka-configs.sh --bootstrap-server 127.0.0.1:9092 --topic test --add-config retention.ms&#x3D;10000000 --alter</span><br><span class="line">Completed updating config for topic test.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 查看topic的动态参数配置</span><br><span class="line">➜  bin .&#x2F;kafka-configs.sh --bootstrap-server 127.0.0.1:9092 --topic test --describe</span><br><span class="line">Dynamic configs for topic test are:</span><br><span class="line">  retention.ms&#x3D;10000000 sensitive&#x3D;false synonyms&#x3D;&#123;DYNAMIC_TOPIC_CONFIG:retention.ms&#x3D;10000000&#125;</span><br><span class="line"></span><br><span class="line"># 删除topic动态参数配置</span><br><span class="line">➜  bin .&#x2F;kafka-configs.sh --bootstrap-server 127.0.0.1:9092 --topic test --alter --delete-config retention.ms</span><br><span class="line">Completed updating config for topic test.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">查看broker全部的参数(--all会获取全部的参数)</span><br><span class="line">➜  bin .&#x2F;kafka-configs.sh --bootstrap-server 127.0.0.1:9092 --all --broker-defaults  --describe</span><br><span class="line">Default configs for brokers in the cluster are:</span><br></pre></td></tr></table></figure>
+<h3 id="kafka-broker-api-versionssh"><a class="markdownIt-Anchor" href="#kafka-broker-api-versionssh"></a> <a target="_blank" rel="noopener" href="http://kafka-broker-api-versions.sh">kafka-broker-api-versions.sh</a></h3>
+<p>查看kafka对外的各个api版本.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"># 查看当前kafka版本</span><br><span class="line">➜  bin .&#x2F;kafka-broker-api-versions.sh --bootstrap-server 127.0.0.1:9092 --version</span><br><span class="line">2.6.0 (Commit:62abe01bee039651)</span><br><span class="line"></span><br><span class="line"># 查看集群所有节点的api版本</span><br><span class="line">➜  bin .&#x2F;kafka-broker-api-versions.sh --bootstrap-server 127.0.0.1:9092</span><br><span class="line">localhost:9092 (id: 0 rack: null) -&gt; (</span><br><span class="line">  Produce(0): 0 to 8 [usable: 8],</span><br><span class="line">  Fetch(1): 0 to 11 [usable: 11],</span><br><span class="line">  ListOffsets(2): 0 to 5 [usable: 5],</span><br><span class="line">  Metadata(3): 0 to 9 [usable: 9],</span><br><span class="line">  LeaderAndIsr(4): 0 to 4 [usable: 4],</span><br><span class="line">  StopReplica(5): 0 to 3 [usable: 3],</span><br><span class="line">  UpdateMetadata(6): 0 to 6 [usable: 6],</span><br><span class="line">  ControlledShutdown(7): 0 to 3 [usable: 3],</span><br><span class="line">  OffsetCommit(8): 0 to 8 [usable: 8],</span><br><span class="line">  OffsetFetch(9): 0 to 7 [usable: 7],</span><br><span class="line">  FindCoordinator(10): 0 to 3 [usable: 3],</span><br><span class="line">  JoinGroup(11): 0 to 7 [usable: 7],</span><br><span class="line">  Heartbeat(12): 0 to 4 [usable: 4],</span><br><span class="line">  LeaveGroup(13): 0 to 4 [usable: 4],</span><br><span class="line">  SyncGroup(14): 0 to 5 [usable: 5],</span><br><span class="line">  DescribeGroups(15): 0 to 5 [usable: 5],</span><br><span class="line">  ListGroups(16): 0 to 4 [usable: 4],</span><br><span class="line">  SaslHandshake(17): 0 to 1 [usable: 1],</span><br><span class="line">  ApiVersions(18): 0 to 3 [usable: 3],</span><br><span class="line">  CreateTopics(19): 0 to 5 [usable: 5],</span><br><span class="line">  DeleteTopics(20): 0 to 4 [usable: 4],</span><br><span class="line">  DeleteRecords(21): 0 to 2 [usable: 2],</span><br><span class="line">  InitProducerId(22): 0 to 3 [usable: 3],</span><br><span class="line">  OffsetForLeaderEpoch(23): 0 to 3 [usable: 3],</span><br><span class="line">  AddPartitionsToTxn(24): 0 to 1 [usable: 1],</span><br><span class="line">  AddOffsetsToTxn(25): 0 to 1 [usable: 1],</span><br><span class="line">  EndTxn(26): 0 to 1 [usable: 1],</span><br><span class="line">  WriteTxnMarkers(27): 0 [usable: 0],</span><br><span class="line">  TxnOffsetCommit(28): 0 to 3 [usable: 3],</span><br><span class="line">  DescribeAcls(29): 0 to 2 [usable: 2],</span><br><span class="line">  CreateAcls(30): 0 to 2 [usable: 2],</span><br><span class="line">  DeleteAcls(31): 0 to 2 [usable: 2],</span><br><span class="line">  DescribeConfigs(32): 0 to 3 [usable: 3],</span><br><span class="line">  AlterConfigs(33): 0 to 1 [usable: 1],</span><br><span class="line">  AlterReplicaLogDirs(34): 0 to 1 [usable: 1],</span><br><span class="line">  DescribeLogDirs(35): 0 to 2 [usable: 2],</span><br><span class="line">  SaslAuthenticate(36): 0 to 2 [usable: 2],</span><br><span class="line">  CreatePartitions(37): 0 to 2 [usable: 2],</span><br><span class="line">  CreateDelegationToken(38): 0 to 2 [usable: 2],</span><br><span class="line">  RenewDelegationToken(39): 0 to 2 [usable: 2],</span><br><span class="line">  ExpireDelegationToken(40): 0 to 2 [usable: 2],</span><br><span class="line">  DescribeDelegationToken(41): 0 to 2 [usable: 2],</span><br><span class="line">  DeleteGroups(42): 0 to 2 [usable: 2],</span><br><span class="line">  ElectLeaders(43): 0 to 2 [usable: 2],</span><br><span class="line">  IncrementalAlterConfigs(44): 0 to 1 [usable: 1],</span><br><span class="line">  AlterPartitionReassignments(45): 0 [usable: 0],</span><br><span class="line">  ListPartitionReassignments(46): 0 [usable: 0],</span><br><span class="line">  OffsetDelete(47): 0 [usable: 0],</span><br><span class="line">  DescribeClientQuotas(48): 0 [usable: 0],</span><br><span class="line">  AlterClientQuotas(49): 0 [usable: 0]</span><br></pre></td></tr></table></figure>
+<h1 id="7-springboot集成"><a class="markdownIt-Anchor" href="#7-springboot集成"></a> 7. SpringBoot集成</h1>
+<p>笔者SpringBoot版本是 <code>2.2.2.RELEASE</code></p>
+<p>pom.xml添加依赖</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.kafka<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-kafka<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.4.0.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>生产者配置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KafkaProducerConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * producer配置</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Map&lt;String, Object&gt; <span class="title">producerConfigs</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Map&lt;String, Object&gt; props = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        <span class="comment">// 指定多个kafka集群多个地址 127.0.0.1:9092,127.0.0.1:9093,127.0.0.1:9094</span></span><br><span class="line">        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,<span class="string">&quot;192.168.124.5:9093,192.168.124.5:9094,192.168.124.5:9095&quot;</span>);</span><br><span class="line">        <span class="comment">// 重试次数，0为不启用重试机制</span></span><br><span class="line">        props.put(ProducerConfig.RETRIES_CONFIG, Integer.MAX_VALUE);</span><br><span class="line">        <span class="comment">// acks=0 把消息发送到kafka就认为发送成功</span></span><br><span class="line">        <span class="comment">// acks=1 把消息发送到kafka leader分区，并且写入磁盘就认为发送成功</span></span><br><span class="line">        <span class="comment">// acks=all 把消息发送到kafka leader分区，并且leader分区的副本follower对消息进行了同步就任务发送成功</span></span><br><span class="line">        props.put(ProducerConfig.ACKS_CONFIG,<span class="string">&quot;all&quot;</span>);</span><br><span class="line">        <span class="comment">// 生产者空间不足时，send()被阻塞的时间，默认60s</span></span><br><span class="line">        props.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, <span class="number">6000</span>);</span><br><span class="line">        <span class="comment">// 控制批处理大小，单位为字节</span></span><br><span class="line">        props.put(ProducerConfig.BATCH_SIZE_CONFIG, <span class="number">4096</span>);</span><br><span class="line">        <span class="comment">// 批量发送，延迟为1毫秒，启用该功能能有效减少生产者发送消息次数，从而提高并发量</span></span><br><span class="line">        props.put(ProducerConfig.LINGER_MS_CONFIG, <span class="number">1</span>);</span><br><span class="line">        <span class="comment">// 生产者可以使用的总内存字节来缓冲等待发送到服务器的记录</span></span><br><span class="line">        props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, <span class="number">40960</span>);</span><br><span class="line">        <span class="comment">// 消息的最大大小限制,也就是说send的消息大小不能超过这个限制, 默认1048576(1MB)</span></span><br><span class="line">        props.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG,<span class="number">1048576</span>);</span><br><span class="line">        <span class="comment">// 客户端id</span></span><br><span class="line">        props.put(ProducerConfig.CLIENT_ID_CONFIG,<span class="string">&quot;producer.client.id.topinfo&quot;</span>);</span><br><span class="line">        <span class="comment">// 键的序列化方式</span></span><br><span class="line">        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);</span><br><span class="line">        <span class="comment">// 值的序列化方式</span></span><br><span class="line">        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);</span><br><span class="line">        <span class="comment">// 压缩消息，支持四种类型，分别为：none、lz4、gzip、snappy，默认为none。</span></span><br><span class="line">        <span class="comment">// 消费者默认支持解压，所以压缩设置在生产者，消费者无需设置。</span></span><br><span class="line">        props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG,<span class="string">&quot;none&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> props;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * producer工厂配置</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ProducerFactory&lt;String, String&gt; <span class="title">producerFactory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DefaultKafkaProducerFactory&lt;&gt;(producerConfigs());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Producer Template 配置</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean(name=&quot;kafkaTemplate&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> KafkaTemplate&lt;String, String&gt; <span class="title">kafkaTemplate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> KafkaTemplate&lt;&gt;(producerFactory());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>消费者配置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KafkaConsumerConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String GROUP0_ID = <span class="string">&quot;group0&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String GROUP1_ID = <span class="string">&quot;group1&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 1. setAckMode: 消费者手动提交ack</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * RECORD： 每处理完一条记录后提交。</span></span><br><span class="line"><span class="comment">     * BATCH(默认)： 每次poll一批数据后提交一次，频率取决于每次poll的调用频率。</span></span><br><span class="line"><span class="comment">     * TIME： 每次间隔ackTime的时间提交。</span></span><br><span class="line"><span class="comment">     * COUNT： 处理完poll的一批数据后并且距离上次提交处理的记录数超过了设置的ackCount就提交。</span></span><br><span class="line"><span class="comment">     * COUNT_TIME： TIME和COUNT中任意一条满足即提交。</span></span><br><span class="line"><span class="comment">     * MANUAL： 手动调用Acknowledgment.acknowledge()后，并且处理完poll的这批数据后提交。</span></span><br><span class="line"><span class="comment">     * MANUAL_IMMEDIATE： 手动调用Acknowledgment.acknowledge()后立即提交。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 2. factory.setConcurrency(3);</span></span><br><span class="line"><span class="comment">     * 此处设置的目的在于：假设 topic test 下有 0、1、2三个 partition，Spring Boot中只有一个 <span class="doctag">@KafkaListener</span>() 消费者订阅此 topic，此处设置并发为3，</span></span><br><span class="line"><span class="comment">     * 启动后 会有三个不同的消费者分别订阅 p0、p1、p2，本地实际有三个消费者线程。</span></span><br><span class="line"><span class="comment">     * 而 factory.setConcurrency(1); 的话 本地只有一个消费者线程， p0、p1、p2被同一个消费者订阅。</span></span><br><span class="line"><span class="comment">     * 由于 一个partition只能被同一个消费者组下的一个消费者订阅，对于只有一个 partition的topic，即使设置 并发为3，也只会有一个消费者，多余的消费者没有 partition可以订阅。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 3. factory.setBatchListener(true);</span></span><br><span class="line"><span class="comment">     * 设置批量消费 ，每个批次数量在Kafka配置参数ConsumerConfig.MAX_POLL_RECORDS_CONFIG中配置，</span></span><br><span class="line"><span class="comment">     * 限制的是 一次批量接收的最大条数，而不是 等到达到最大条数才接收，这点容易被误解。</span></span><br><span class="line"><span class="comment">     * 实际测试时，接收是实时的，当生产者大量写入时，一次批量接收的消息数量为 配置的最大条数。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    KafkaListenerContainerFactory&lt;ConcurrentMessageListenerContainer&lt;Integer, String&gt;&gt; kafkaListenerContainerFactory() &#123;</span><br><span class="line">        ConcurrentKafkaListenerContainerFactory&lt;Integer, String&gt;</span><br><span class="line">                factory = <span class="keyword">new</span> ConcurrentKafkaListenerContainerFactory&lt;&gt;();</span><br><span class="line">        <span class="comment">// 设置消费者工厂</span></span><br><span class="line">        factory.setConsumerFactory(consumerFactory());</span><br><span class="line">        <span class="comment">// 设置为批量消费，每个批次数量在Kafka配置参数中设置ConsumerConfig.MAX_POLL_RECORDS_CONFIG</span></span><br><span class="line">        factory.setBatchListener(<span class="keyword">true</span>);</span><br><span class="line">        <span class="comment">// 消费者组中线程数量,消费者数量&lt;=partition数量，即使配置的消费者数量大于partition数量，多余消费者无法消费到数据。</span></span><br><span class="line">        factory.setConcurrency(<span class="number">4</span>);</span><br><span class="line">        <span class="comment">// 拉取超时时间</span></span><br><span class="line">        factory.getContainerProperties().setPollTimeout(<span class="number">3000</span>);</span><br><span class="line">        <span class="comment">// 手动提交</span></span><br><span class="line">        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);</span><br><span class="line">        <span class="keyword">return</span> factory;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ConsumerFactory&lt;Integer, String&gt; <span class="title">consumerFactory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Map&lt;String, Object&gt; map = consumerConfigs();</span><br><span class="line">        map.put(ConsumerConfig.GROUP_ID_CONFIG, GROUP0_ID);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DefaultKafkaConsumerFactory&lt;&gt;(consumerConfigs());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//    @Bean</span></span><br><span class="line"><span class="comment">//    KafkaListenerContainerFactory&lt;ConcurrentMessageListenerContainer&lt;Integer, String&gt;&gt; kafkaListenerContainerFactory1() &#123;</span></span><br><span class="line"><span class="comment">//        ConcurrentKafkaListenerContainerFactory&lt;Integer, String&gt;</span></span><br><span class="line"><span class="comment">//                factory = new ConcurrentKafkaListenerContainerFactory&lt;&gt;();</span></span><br><span class="line"><span class="comment">//        // 设置消费者工厂</span></span><br><span class="line"><span class="comment">//        factory.setConsumerFactory(consumerFactory1());</span></span><br><span class="line"><span class="comment">//        // 设置为批量消费，每个批次数量在Kafka配置参数中设置ConsumerConfig.MAX_POLL_RECORDS_CONFIG</span></span><br><span class="line"><span class="comment">//        factory.setBatchListener(true);</span></span><br><span class="line"><span class="comment">//        // 消费者组中线程数量,消费者数量&lt;=partition数量，即使配置的消费者数量大于partition数量，多余消费者无法消费到数据。</span></span><br><span class="line"><span class="comment">//        factory.setConcurrency(3);</span></span><br><span class="line"><span class="comment">//        // 拉取超时时间</span></span><br><span class="line"><span class="comment">//        factory.getContainerProperties().setPollTimeout(3000);</span></span><br><span class="line"><span class="comment">//        // 手动提交</span></span><br><span class="line"><span class="comment">//        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);</span></span><br><span class="line"><span class="comment">//        return factory;</span></span><br><span class="line"><span class="comment">//    &#125;</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//    public ConsumerFactory&lt;Integer, String&gt; consumerFactory1() &#123;</span></span><br><span class="line"><span class="comment">//        Map&lt;String, Object&gt; map = consumerConfigs();</span></span><br><span class="line"><span class="comment">//        map.put(ConsumerConfig.GROUP_ID_CONFIG, GROUP1_ID);</span></span><br><span class="line"><span class="comment">//        return new DefaultKafkaConsumerFactory&lt;&gt;(consumerConfigs());</span></span><br><span class="line"><span class="comment">//    &#125;</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Map&lt;String, Object&gt; <span class="title">consumerConfigs</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Map&lt;String, Object&gt; props = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        <span class="comment">// Kafka地址</span></span><br><span class="line">        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, <span class="string">&quot;192.168.124.5:9093,192.168.124.5:9094,192.168.124.5:9095&quot;</span>);</span><br><span class="line">        <span class="comment">// 是否自动提交offset偏移量(默认true)</span></span><br><span class="line">        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, <span class="keyword">false</span>);</span><br><span class="line">        <span class="comment">// 批量消费</span></span><br><span class="line">        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, <span class="string">&quot;100&quot;</span>);</span><br><span class="line">        <span class="comment">// 消费者组</span></span><br><span class="line">        props.put(ConsumerConfig.GROUP_ID_CONFIG, <span class="string">&quot;group-default&quot;</span>);</span><br><span class="line">        <span class="comment">// 自动提交的频率(ms)</span></span><br><span class="line"><span class="comment">//        propsMap.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, &quot;100&quot;);</span></span><br><span class="line">        <span class="comment">// Session超时设置</span></span><br><span class="line">        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, <span class="string">&quot;15000&quot;</span>);</span><br><span class="line">        <span class="comment">// 键的反序列化方式</span></span><br><span class="line">        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);</span><br><span class="line">        <span class="comment">// 值的反序列化方式</span></span><br><span class="line">        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);</span><br><span class="line">        <span class="comment">// offset偏移量规则设置：</span></span><br><span class="line">        <span class="comment">// (1)、earliest：当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，从头开始消费</span></span><br><span class="line">        <span class="comment">// (2)、latest：当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，消费新产生的该分区下的数据</span></span><br><span class="line">        <span class="comment">// (3)、none：topic各分区都存在已提交的offset时，从offset后开始消费；只要有一个分区不存在已提交的offset，则抛出异常</span></span><br><span class="line">        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, <span class="string">&quot;latest&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> props;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>主题配置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KafkaTopicConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 定义一个KafkaAdmin的bean，可以自动检测集群中是否存在topic，不存在则创建</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> KafkaAdmin <span class="title">kafkaAdmin</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Map&lt;String, Object&gt; configs = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        <span class="comment">// 指定多个kafka集群多个地址，例如：192.168.2.11,9092,192.168.2.12:9092,192.168.2.13:9092</span></span><br><span class="line">        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,<span class="string">&quot;192.168.124.5:9093,192.168.124.5:9094,192.168.124.5:9095&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> KafkaAdmin(configs);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建 Topic</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> NewTopic <span class="title">topicinfo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 创建topic，需要指定创建的topic的&quot;名称&quot;、&quot;分区数&quot;、&quot;副本数量(副本数数目设置要小于Broker数量)&quot;</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> NewTopic(<span class="string">&quot;test&quot;</span>, <span class="number">3</span>, (<span class="keyword">short</span>) <span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>消费者服务</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KafkaConsumerService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//    /**</span></span><br><span class="line"><span class="comment">//     * 单条消费</span></span><br><span class="line"><span class="comment">//     * @param message</span></span><br><span class="line"><span class="comment">//     */</span></span><br><span class="line"><span class="comment">//    @KafkaListener(id = &quot;id0&quot;, topics = &#123;Constant.TOPIC&#125;, containerFactory=&quot;kafkaListenerContainerFactory&quot;)</span></span><br><span class="line"><span class="comment">//    public void kafkaListener0(String message)&#123;</span></span><br><span class="line"><span class="comment">//        log.info(&quot;consumer:group0 --&gt; message:&#123;&#125;&quot;, message);</span></span><br><span class="line"><span class="comment">//    &#125;</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//    @KafkaListener(id = &quot;id1&quot;, topics = &#123;Constant.TOPIC&#125;, groupId = &quot;group1&quot;)</span></span><br><span class="line"><span class="comment">//    public void kafkaListener1(String message)&#123;</span></span><br><span class="line"><span class="comment">//        log.info(&quot;consumer:group1 --&gt; message:&#123;&#125;&quot;, message);</span></span><br><span class="line"><span class="comment">//    &#125;</span></span><br><span class="line"><span class="comment">//    /**</span></span><br><span class="line"><span class="comment">//     * 监听某个 Topic 的某个分区示例,也可以监听多个 Topic 的分区</span></span><br><span class="line"><span class="comment">//     * 为什么找不到group2呢？</span></span><br><span class="line"><span class="comment">//     * @param message</span></span><br><span class="line"><span class="comment">//     */</span></span><br><span class="line"><span class="comment">//    @KafkaListener(id = &quot;id2&quot;, groupId = &quot;group2&quot;, topicPartitions = &#123; @TopicPartition(topic = Constant.TOPIC, partitions = &#123; &quot;0&quot; &#125;) &#125;)</span></span><br><span class="line"><span class="comment">//    public void kafkaListener2(String message) &#123;</span></span><br><span class="line"><span class="comment">//        log.info(&quot;consumer:group2 --&gt; message:&#123;&#125;&quot;, message);</span></span><br><span class="line"><span class="comment">//    &#125;</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//    /**</span></span><br><span class="line"><span class="comment">//     * 获取监听的 topic 消息头中的元数据</span></span><br><span class="line"><span class="comment">//     * @param message</span></span><br><span class="line"><span class="comment">//     * @param topic</span></span><br><span class="line"><span class="comment">//     * @param key</span></span><br><span class="line"><span class="comment">//     */</span></span><br><span class="line"><span class="comment">//    @KafkaListener(id = &quot;id3&quot;, topics = Constant.TOPIC, groupId = &quot;group3&quot;)</span></span><br><span class="line"><span class="comment">//    public void kafkaListener(@Payload String message,</span></span><br><span class="line"><span class="comment">//                              @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,</span></span><br><span class="line"><span class="comment">//                              @Header(KafkaHeaders.RECEIVED_PARTITION_ID) String partition,</span></span><br><span class="line"><span class="comment">//                              @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key) &#123;</span></span><br><span class="line"><span class="comment">//        Long threadId = Thread.currentThread().getId();</span></span><br><span class="line"><span class="comment">//        log.info(&quot;consumer:group3 --&gt; message:&#123;&#125;, topic:&#123;&#125;, partition:&#123;&#125;, key:&#123;&#125;, threadId:&#123;&#125;&quot;, message, topic, partition, key, threadId);</span></span><br><span class="line"><span class="comment">//    &#125;</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//    /**</span></span><br><span class="line"><span class="comment">//     * 监听 topic 进行批量消费</span></span><br><span class="line"><span class="comment">//     * @param messages</span></span><br><span class="line"><span class="comment">//     */</span></span><br><span class="line"><span class="comment">//    @KafkaListener(id = &quot;id4&quot;, topics = Constant.TOPIC, groupId = &quot;group4&quot;)</span></span><br><span class="line"><span class="comment">//    public void kafkaListener(List&lt;String&gt; messages) &#123;</span></span><br><span class="line"><span class="comment">//        for(String msg:messages)&#123;</span></span><br><span class="line"><span class="comment">//            log.info(&quot;consumer:group4 --&gt; message:&#123;&#125;&quot;, msg);</span></span><br><span class="line"><span class="comment">//        &#125;</span></span><br><span class="line"><span class="comment">//    &#125;</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//    /**</span></span><br><span class="line"><span class="comment">//     * 监听topic并手动提交偏移量</span></span><br><span class="line"><span class="comment">//     * @param messages</span></span><br><span class="line"><span class="comment">//     * @param acknowledgment</span></span><br><span class="line"><span class="comment">//     */</span></span><br><span class="line"><span class="comment">//    @KafkaListener(id = &quot;id5&quot;, topics = Constant.TOPIC,groupId = &quot;group5&quot;)</span></span><br><span class="line"><span class="comment">//    public void kafkaListener(List&lt;String&gt; messages, Acknowledgment acknowledgment) &#123;</span></span><br><span class="line"><span class="comment">//        for(String msg:messages)&#123;</span></span><br><span class="line"><span class="comment">//            log.info(&quot;consumer:group5 --&gt; message:&#123;&#125;&quot;, msg);</span></span><br><span class="line"><span class="comment">//        &#125;</span></span><br><span class="line"><span class="comment">//        // 触发提交offset偏移量</span></span><br><span class="line"><span class="comment">//        acknowledgment.acknowledge();</span></span><br><span class="line"><span class="comment">//    &#125;</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//    /**</span></span><br><span class="line"><span class="comment">//     * 模糊匹配多个 Topic</span></span><br><span class="line"><span class="comment">//     * @param message</span></span><br><span class="line"><span class="comment">//     */</span></span><br><span class="line"><span class="comment">//    @KafkaListener(id = &quot;id6&quot;, topicPattern = &quot;test.*&quot;,groupId = &quot;group6&quot;)</span></span><br><span class="line"><span class="comment">//    public void annoListener2(String message) &#123;</span></span><br><span class="line"><span class="comment">//        log.error(&quot;consumer:group6 --&gt; message:&#123;&#125;&quot;, message);</span></span><br><span class="line"><span class="comment">//    &#125;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 完整consumer</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@KafkaListener(id = &quot;id7&quot;, topics = &#123;Constant.TOPIC&#125;, groupId = &quot;group7&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">consumer4</span><span class="params">(List&lt;ConsumerRecord&lt;?, ?&gt;&gt; data)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;data.size(); i++) &#123;</span><br><span class="line">            ConsumerRecord&lt;?, ?&gt; record = data.get(i);</span><br><span class="line">            Optional&lt;?&gt; kafkaMessage = Optional.ofNullable(record.value());</span><br><span class="line"></span><br><span class="line">            Long threadId = Thread.currentThread().getId();</span><br><span class="line">            <span class="keyword">if</span> (kafkaMessage.isPresent()) &#123;</span><br><span class="line">                Object message = kafkaMessage.get();</span><br><span class="line">                log.info(<span class="string">&quot;consumer:group7 --&gt; message:&#123;&#125;, topic:&#123;&#125;, partition:&#123;&#125;, key:&#123;&#125;, offset:&#123;&#125;, threadId:&#123;&#125;&quot;</span>, message.toString(), record.topic(), record.partition(), record.key(), record.offset(), threadId);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>生产者服务</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KafkaProducerService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> KafkaTemplate kafkaTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * producer 同步方式发送数据</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> topic    topic名称</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key      一般用业务id，相同业务在同一partition保证消费顺序</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> message  producer发送的数据</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendMessageSync</span><span class="params">(String topic, String key, String message)</span> <span class="keyword">throws</span> InterruptedException, ExecutionException, TimeoutException </span>&#123;</span><br><span class="line">        <span class="comment">// 默认轮询partition</span></span><br><span class="line">        kafkaTemplate.send(topic, message).get(<span class="number">10</span>, TimeUnit.SECONDS);</span><br><span class="line"><span class="comment">//        // 根据key进行hash运算，再将运算结果写入到不同partition</span></span><br><span class="line"><span class="comment">//        kafkaTemplate.send(topic, key, message).get(10, TimeUnit.SECONDS);</span></span><br><span class="line"><span class="comment">//        // 第二个参数为partition,当partition和key同时设置时partition优先。</span></span><br><span class="line"><span class="comment">//        kafkaTemplate.send(topic, 0, key, message);</span></span><br><span class="line"><span class="comment">//        // 组装消息</span></span><br><span class="line"><span class="comment">//        Message msg = MessageBuilder.withPayload(&quot;Send Message(payload,headers) Test&quot;)</span></span><br><span class="line"><span class="comment">//                .setHeader(KafkaHeaders.MESSAGE_KEY, key)</span></span><br><span class="line"><span class="comment">//                .setHeader(KafkaHeaders.TOPIC, topic)</span></span><br><span class="line"><span class="comment">//                .setHeader(KafkaHeaders.PREFIX,&quot;kafka_&quot;)</span></span><br><span class="line"><span class="comment">//                .build();</span></span><br><span class="line"><span class="comment">//        kafkaTemplate.send(msg).get(10, TimeUnit.SECONDS);</span></span><br><span class="line"><span class="comment">//        // 组装消息</span></span><br><span class="line"><span class="comment">//        ProducerRecord&lt;String, String&gt; producerRecord = new ProducerRecord&lt;&gt;(&quot;test&quot;, &quot;Send ProducerRecord(topic,value) Test&quot;);</span></span><br><span class="line"><span class="comment">//        kafkaTemplate.send(producerRecord).get(10, TimeUnit.SECONDS);</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * producer 异步方式发送数据</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> topic    topic名称</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> message  producer发送的数据</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendMessageAsync</span><span class="params">(String topic, String message)</span> </span>&#123;</span><br><span class="line">        ListenableFuture&lt;SendResult&lt;Integer, String&gt;&gt; future = kafkaTemplate.send(topic, message);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 设置异步发送消息获取发送结果后执行的动作</span></span><br><span class="line">        ListenableFutureCallback listenableFutureCallback = <span class="keyword">new</span> ListenableFutureCallback&lt;SendResult&lt;Integer, String&gt;&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onSuccess</span><span class="params">(SendResult&lt;Integer, String&gt; result)</span> </span>&#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;success&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFailure</span><span class="params">(Throwable ex)</span> </span>&#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;failure&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将listenableFutureCallback与异步发送消息对象绑定</span></span><br><span class="line">        future.addCallback(listenableFutureCallback);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(String topic, Integer partition, String key, String message)</span> <span class="keyword">throws</span> InterruptedException, ExecutionException, TimeoutException </span>&#123;</span><br><span class="line">        kafkaTemplate.send(topic, partition, key, message).get(<span class="number">10</span>, TimeUnit.SECONDS);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>web测试</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KafkaProducerController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> KafkaProducerService producerService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/sync&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendMessageSync</span><span class="params">(<span class="meta">@RequestParam</span> String topic)</span> <span class="keyword">throws</span> InterruptedException, ExecutionException, TimeoutException </span>&#123;</span><br><span class="line">        producerService.sendMessageSync(topic, <span class="keyword">null</span>, <span class="string">&quot;同步发送消息测试&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/async&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendMessageAsync</span><span class="params">()</span></span>&#123;</span><br><span class="line">        producerService.sendMessageAsync(<span class="string">&quot;test&quot;</span>,<span class="string">&quot;异步发送消息测试&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/test&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(<span class="meta">@RequestParam</span> String topic, <span class="meta">@RequestParam(required = false)</span> Integer partition, <span class="meta">@RequestParam(required = false)</span> String key, <span class="meta">@RequestParam</span> String message)</span> <span class="keyword">throws</span> InterruptedException, ExecutionException, TimeoutException </span>&#123;</span><br><span class="line">        producerService.test(topic, partition, key, message);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="7-ad"><a class="markdownIt-Anchor" href="#7-ad"></a> 7. AD</h1>
+<p>如果您觉得写的还不错，请关注公众号 【当我遇上你】, 您的支持是我最大的动力。</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" alt="" /></p>
+<h1 id="参考"><a class="markdownIt-Anchor" href="#参考"></a> 参考</h1>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://bgbiao.top/post/kafka%E7%94%9F%E4%BA%A7%E8%A7%84%E5%88%92%E5%92%8C%E8%BF%90%E7%BB%B4/#11-kafka-topicssh">https://bgbiao.top/post/kafka生产规划和运维/#11-kafka-topicssh</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_45778734/article/details/105710636">https://blog.csdn.net/weixin_45778734/article/details/105710636</a></li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2020/03/07/docker-kafka-cluster/" title="Docker实战之Kafka集群" target="_blank" rel="external">https://idea360.cn/2020/03/07/docker-kafka-cluster/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/03/07/java-multi-thread-pool/" title="多线程-线程池的正确打开方式"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/03/07/docker-zookeeper-cluster/" title="Docker实战之Zookeeper集群"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

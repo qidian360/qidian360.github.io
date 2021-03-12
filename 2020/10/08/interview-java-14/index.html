@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>14.为什么要使用泛型和迭代器 + 面试题 | 当我遇上你</title>
+  <meta name="description" content="为什么要使用泛型和迭代器 + 面试题  泛型  1）为什么要用泛型？ 在泛型没有诞生之前，我们经常会遇到这样的问题，如以下代码所示： 1234567ArrayList arrayList &#x3D; new ArrayList();arrayList.add(&quot;Java&quot;);arrayList.add(24);for (int i &#x3D; 0; i &lt; arra">
+<meta property="og:type" content="article">
+<meta property="og:title" content="14.为什么要使用泛型和迭代器 + 面试题">
+<meta property="og:url" content="https://idea360.cn/2020/10/08/interview-java-14/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="为什么要使用泛型和迭代器 + 面试题  泛型  1）为什么要用泛型？ 在泛型没有诞生之前，我们经常会遇到这样的问题，如以下代码所示： 1234567ArrayList arrayList &#x3D; new ArrayList();arrayList.add(&quot;Java&quot;);arrayList.add(24);for (int i &#x3D; 0; i &lt; arra">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images.gitbook.cn/83dce010-cdeb-11e9-932d-6123ff488b55">
+<meta property="og:image" content="https://images.gitbook.cn/b3a90d00-cdeb-11e9-932d-6123ff488b55">
+<meta property="og:image" content="https://images.gitbook.cn/cb2aa8d0-cdeb-11e9-b572-5118f14310d8">
+<meta property="og:image" content="https://images.gitbook.cn/e34947f0-cdeb-11e9-932d-6123ff488b55">
+<meta property="article:published_time" content="2020-10-08T06:08:27.000Z">
+<meta property="article:modified_time" content="2020-10-08T06:21:42.917Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="面试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://images.gitbook.cn/83dce010-cdeb-11e9-932d-6123ff488b55">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2020/10/08/interview-java-14/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8%E6%B3%9B%E5%9E%8B%E5%92%8C%E8%BF%AD%E4%BB%A3%E5%99%A8-%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text"> 为什么要使用泛型和迭代器 + 面试题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%9B%E5%9E%8B"><span class="toc-number">1.1.</span> <span class="toc-text"> 泛型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8%E6%B3%9B%E5%9E%8B"><span class="toc-number">1.1.1.</span> <span class="toc-text"> 1）为什么要用泛型？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E6%B3%9B%E5%9E%8B%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.1.2.</span> <span class="toc-text"> 2）泛型介绍</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E6%B3%9B%E5%9E%8B%E7%9A%84%E4%BC%98%E7%82%B9"><span class="toc-number">1.1.3.</span> <span class="toc-text"> 3）泛型的优点</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%AD%E4%BB%A3%E5%99%A8iterator"><span class="toc-number">1.2.</span> <span class="toc-text"> 迭代器（Iterator）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8%E8%BF%AD%E4%BB%A3%E5%99%A8"><span class="toc-number">1.2.1.</span> <span class="toc-text"> 1）为什么要用迭代器？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E8%BF%AD%E4%BB%A3%E5%99%A8%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.2.2.</span> <span class="toc-text"> 2）迭代器介绍</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="toc-number">1.3.</span> <span class="toc-text"> 相关面试题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%AD%E4%BB%A3%E5%99%A8%E7%9A%84-next-%E8%BF%94%E5%9B%9E%E7%9A%84%E6%98%AF-object-%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.3.1.</span> <span class="toc-text"> 1.为什么迭代器的 next() 返回的是 Object 类型？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2hashmap-%E7%9A%84%E9%81%8D%E5%8E%86%E6%96%B9%E5%BC%8F%E9%83%BD%E6%9C%89%E5%87%A0%E7%A7%8D"><span class="toc-number">1.3.2.</span> <span class="toc-text"> 2.HashMap 的遍历方式都有几种？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E4%BB%A5%E4%B8%8B%E5%85%B3%E4%BA%8E%E6%B3%9B%E5%9E%8B%E8%AF%B4%E6%B3%95%E9%94%99%E8%AF%AF%E7%9A%84%E6%98%AF"><span class="toc-number">1.3.3.</span> <span class="toc-text"> 3.以下关于泛型说法错误的是？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%E4%BB%A5%E4%B8%8B%E7%A8%8B%E5%BA%8F%E6%89%A7%E8%A1%8C%E7%9A%84%E7%BB%93%E6%9E%9C%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.3.4.</span> <span class="toc-text"> 4.以下程序执行的结果是什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-list-%E5%92%8C-list-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">1.3.5.</span> <span class="toc-text"> 5. List 和 List 有什么区别？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6%E5%8F%AF%E4%BB%A5%E6%8A%8A-list-%E8%B5%8B%E5%80%BC%E7%BB%99-list-%E5%90%97"><span class="toc-number">1.3.6.</span> <span class="toc-text"> 6.可以把 List 赋值给 List 吗？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-list-%E5%92%8C-list-%E7%9A%84%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.3.7.</span> <span class="toc-text"> 7. List 和 List 的区别是什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8%E4%BB%A5%E4%B8%8B%E7%A8%8B%E5%BA%8F%E6%89%A7%E8%A1%8C%E7%9A%84%E7%BB%93%E6%9E%9C%E6%98%AF"><span class="toc-number">1.3.8.</span> <span class="toc-text"> 8.以下程序执行的结果是？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9%E6%B3%9B%E5%9E%8B%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%9C%89%E7%B1%BB%E5%9E%8B%E6%93%A6%E9%99%A4"><span class="toc-number">1.3.9.</span> <span class="toc-text"> 9.泛型的工作原理是什么？为什么要有类型擦除？</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.4.</span> <span class="toc-text"> 总结</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-interview-java-14" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      14.为什么要使用泛型和迭代器 + 面试题
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/10/08/interview-java-14/" class="article-date">
+	  <time datetime="2020-10-08T06:08:27.000Z" itemprop="datePublished">2020-10-08</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Java%E9%9D%A2%E8%AF%95%E5%85%A8%E8%A7%A3%E6%9E%90/">Java面试全解析</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/java/" rel="tag">java</a>, <a class="article-tag-link-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2020/10/08/interview-java-14/" class="leancloud_visitors"  data-flag-title="14.为什么要使用泛型和迭代器 + 面试题">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/10/08/interview-java-14/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="为什么要使用泛型和迭代器-面试题"><a class="markdownIt-Anchor" href="#为什么要使用泛型和迭代器-面试题"></a> 为什么要使用泛型和迭代器 + 面试题</h2>
+<h3 id="泛型"><a class="markdownIt-Anchor" href="#泛型"></a> 泛型</h3>
+<h4 id="1为什么要用泛型"><a class="markdownIt-Anchor" href="#1为什么要用泛型"></a> 1）为什么要用泛型？</h4>
+<p>在泛型没有诞生之前，我们经常会遇到这样的问题，如以下代码所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ArrayList arrayList &#x3D; new ArrayList();</span><br><span class="line">arrayList.add(&quot;Java&quot;);</span><br><span class="line">arrayList.add(24);</span><br><span class="line">for (int i &#x3D; 0; i &lt; arrayList.size(); i++) &#123;</span><br><span class="line">    String str &#x3D; (String) arrayList.get(i);</span><br><span class="line">    System.out.println(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看起来好像没有什么大问题，也能正常编译，但真正运行起来就会报错：</p>
+<blockquote>
+<p>Exception in thread “main” java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.String</p>
+<p>at xxx(xxx.java:12)</p>
+<p>类型转换出错，当我们给 ArrayList 放入不同类型的数据，却使用一种类型进行接收的时候，就会出现很多类似的错误，可能更多的时候，是因为开发人员的不小心导致的。那有没有好的办法可以杜绝此类问题的发生呢？这个时候 Java 语言提供了一个很好的解决方案——“泛型”。</p>
+</blockquote>
+<h4 id="2泛型介绍"><a class="markdownIt-Anchor" href="#2泛型介绍"></a> 2）泛型介绍</h4>
+<p><strong>泛型</strong>：泛型本质上是类型参数化，解决了不确定对象的类型问题。<br />
+泛型的使用，请参考以下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ArrayList&lt;String&gt; arrayList &#x3D; new ArrayList();</span><br><span class="line">arrayList.add(&quot;Java&quot;);</span><br></pre></td></tr></table></figure>
+<p>这个时候如果给 arrayList 添加非 String 类型的元素，编译器就会报错，提醒开发人员插入相同类型的元素。</p>
+<p>报错信息如下图所示：</p>
+<p><img src="https://images.gitbook.cn/83dce010-cdeb-11e9-932d-6123ff488b55" alt="enter image description here" /></p>
+<p>这样就可以避免开头示例中，类型不一致导致程序运行过程中报错的问题了。</p>
+<h4 id="3泛型的优点"><a class="markdownIt-Anchor" href="#3泛型的优点"></a> 3）泛型的优点</h4>
+<p>泛型的优点主要体现在以下三个方面。</p>
+<ul>
+<li>安全：不用担心程序运行过程中出现类型转换的错误。</li>
+<li>避免了类型转换：如果是非泛型，获取到的元素是 Object 类型的，需要强制类型转换。</li>
+<li>可读性高：编码阶段就明确的知道集合中元素的类型。</li>
+</ul>
+<h3 id="迭代器iterator"><a class="markdownIt-Anchor" href="#迭代器iterator"></a> 迭代器（Iterator）</h3>
+<h4 id="1为什么要用迭代器"><a class="markdownIt-Anchor" href="#1为什么要用迭代器"></a> 1）为什么要用迭代器？</h4>
+<p>我们回想一下，在迭代器（Iterator）没有出现之前，如果要遍历数组和集合，需要使用方法。</p>
+<p>数组遍历，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">String[] arr &#x3D; new String[]&#123;&quot;Java&quot;, &quot;Java虚拟机&quot;, &quot;Java中文社群&quot;&#125;;</span><br><span class="line">for (int i &#x3D; 0; i &lt; arr.length; i++) &#123;</span><br><span class="line">    String item &#x3D; arr[i];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>集合遍历，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list &#x3D; new ArrayList&lt;String&gt;() &#123;&#123;</span><br><span class="line">    add(&quot;Java&quot;);</span><br><span class="line">    add(&quot;Java虚拟机&quot;);</span><br><span class="line">    add(&quot;Java中文社群&quot;);</span><br><span class="line">&#125;&#125;;</span><br><span class="line">for (int i &#x3D; 0; i &lt; list.size(); i++) &#123;</span><br><span class="line">    String item &#x3D; list.get(i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而迭代器的产生，就是为不同类型的容器遍历，提供标准统一的方法。</p>
+<p>迭代器遍历，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Iterator iterator &#x3D; list.iterator();</span><br><span class="line">while (iterator.hasNext()) &#123;</span><br><span class="line">    Object object &#x3D; iterator.next();</span><br><span class="line">    &#x2F;&#x2F; do something</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>总结</strong>：使用了迭代器就可以不用关注容器的内部细节，用同样的方式遍历不同类型的容器。</p>
+<h4 id="2迭代器介绍"><a class="markdownIt-Anchor" href="#2迭代器介绍"></a> 2）迭代器介绍</h4>
+<p>迭代器是用来遍历容器内所有元素对象的，也是一种常见的设计模式。</p>
+<p>迭代器包含以下四个方法。</p>
+<ul>
+<li>hasNext():boolean —— 容器内是否还有可以访问的元素。</li>
+<li>next():E —— 返回下一个元素。</li>
+<li>remove():void —— 删除当前元素。</li>
+<li>forEachRemaining(Consumer):void —— JDK 8 中添加的，提供一个 lambda 表达式遍历容器元素。</li>
+</ul>
+<p>迭代器使用如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list &#x3D; new ArrayList&lt;String&gt;() &#123;&#123;</span><br><span class="line">    add(&quot;Java&quot;);</span><br><span class="line">    add(&quot;Java虚拟机&quot;);</span><br><span class="line">    add(&quot;Java中文社群&quot;);</span><br><span class="line">&#125;&#125;;</span><br><span class="line">Iterator iterator &#x3D;  list.iterator();</span><br><span class="line">&#x2F;&#x2F; 遍历</span><br><span class="line">while (iterator.hasNext())&#123;</span><br><span class="line">    String str &#x3D; (String) iterator.next();</span><br><span class="line">    if (str.equals(&quot;Java中文社群&quot;))&#123;</span><br><span class="line">        iterator.remove();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(list);</span><br></pre></td></tr></table></figure>
+<p>程序执行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[Java, Java虚拟机]</span><br></pre></td></tr></table></figure>
+<p>forEachRemaining 使用如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list &#x3D; new ArrayList&lt;String&gt;() &#123;&#123;</span><br><span class="line">    add(&quot;Java&quot;);</span><br><span class="line">    add(&quot;Java虚拟机&quot;);</span><br><span class="line">    add(&quot;Java中文社群&quot;);</span><br><span class="line">&#125;&#125;;</span><br><span class="line">&#x2F;&#x2F; forEachRemaining 使用</span><br><span class="line">list.iterator().forEachRemaining(item -&gt; System.out.println(item));</span><br></pre></td></tr></table></figure>
+<h3 id="相关面试题"><a class="markdownIt-Anchor" href="#相关面试题"></a> 相关面试题</h3>
+<h4 id="1为什么迭代器的-next-返回的是-object-类型"><a class="markdownIt-Anchor" href="#1为什么迭代器的-next-返回的是-object-类型"></a> 1.为什么迭代器的 next() 返回的是 Object 类型？</h4>
+<p>答：因为迭代器不需要关注容器的内部细节，所以 next() 返回 Object 类型就可以接收任何类型的对象。</p>
+<h4 id="2hashmap-的遍历方式都有几种"><a class="markdownIt-Anchor" href="#2hashmap-的遍历方式都有几种"></a> 2.HashMap 的遍历方式都有几种？</h4>
+<p>答：HashMap 的遍历分为以下四种方式。</p>
+<ul>
+<li>方式一：entrySet 遍历</li>
+<li>方式二：iterator 遍历</li>
+<li>方式三：遍历所有的 key 和 value</li>
+<li>方式四：通过 key 值遍历</li>
+</ul>
+<p>以上方式的代码实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;String, String&gt; hashMap &#x3D; new HashMap();</span><br><span class="line">hashMap.put(&quot;name&quot;, &quot;老王&quot;);</span><br><span class="line">hashMap.put(&quot;sex&quot;, &quot;你猜&quot;);</span><br><span class="line">&#x2F;&#x2F; 方式一：entrySet 遍历</span><br><span class="line">for (Map.Entry item : hashMap.entrySet()) &#123;</span><br><span class="line">  System.out.println(item.getKey() + &quot;:&quot; + item.getValue());</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F; 方式二：iterator 遍历</span><br><span class="line">Iterator&lt;Map.Entry&lt;String, String&gt;&gt; iterator &#x3D; hashMap.entrySet().iterator();</span><br><span class="line">while (iterator.hasNext()) &#123;</span><br><span class="line">  Map.Entry&lt;String, String&gt; entry &#x3D; iterator.next();</span><br><span class="line">  System.out.println(entry.getKey() + &quot;:&quot; + entry.getValue());</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F; 方式三：遍历所有的 key 和 value</span><br><span class="line">for (Object k : hashMap.keySet()) &#123;</span><br><span class="line">  &#x2F;&#x2F; 循环所有的 key</span><br><span class="line">  System.out.println(k);</span><br><span class="line">&#125;</span><br><span class="line">for (Object v : hashMap.values()) &#123;</span><br><span class="line">  &#x2F;&#x2F; 循环所有的值</span><br><span class="line">  System.out.println(v);</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F; 方式四：通过 key 值遍历</span><br><span class="line">for (Object k : hashMap.keySet()) &#123;</span><br><span class="line">  System.out.println(k + &quot;:&quot; + hashMap.get(k));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="3以下关于泛型说法错误的是"><a class="markdownIt-Anchor" href="#3以下关于泛型说法错误的是"></a> 3.以下关于泛型说法错误的是？</h4>
+<p>A：泛型可以修饰类<br />
+B：泛型可以修饰方法<br />
+C：泛型不可以修饰接口<br />
+D：以上说法全错</p>
+<p>答：选 C，泛型可以修饰类、方法、接口、变量。<br />
+例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">public interface Iterable&lt;T&gt; &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="4以下程序执行的结果是什么"><a class="markdownIt-Anchor" href="#4以下程序执行的结果是什么"></a> 4.以下程序执行的结果是什么？</h4>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">List&lt;Integer&gt; list2 = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">System.out.println(list.getClass() == list2.getClass());</span><br></pre></td></tr></table></figure>
+<p>答：程序的执行结果是 <code>true</code>。<br />
+题目解析：Java 中泛型在编译时会进行类型擦除，因此 <code>List list</code> 和 <code>List list2</code> 类型擦除后的结果都是 java.util.ArrayLis ，进而 list.getClass() == list2.getClass() 的结果也一定是 true。</p>
+<h4 id="5-list-和-list-有什么区别"><a class="markdownIt-Anchor" href="#5-list-和-list-有什么区别"></a> 5. <code>List</code> 和 <code>List</code> 有什么区别？</h4>
+<p>答：<code>List</code> 可以容纳任意类型，只不过 <code>List</code> 被赋值之后，就不允许添加和修改操作了；而 <code>List</code> 和 <code>List</code> 不同的是它在赋值之后，可以进行添加和修改操作，如下图所示：</p>
+<p><img src="https://images.gitbook.cn/b3a90d00-cdeb-11e9-932d-6123ff488b55" alt="enter image description here" /></p>
+<h4 id="6可以把-list-赋值给-list-吗"><a class="markdownIt-Anchor" href="#6可以把-list-赋值给-list-吗"></a> 6.可以把 <code>List</code> 赋值给 <code>List</code> 吗？</h4>
+<p>答：不可以，编译器会报错，如下图所示：</p>
+<p><img src="https://images.gitbook.cn/cb2aa8d0-cdeb-11e9-b572-5118f14310d8" alt="enter image description here" /></p>
+<h4 id="7-list-和-list-的区别是什么"><a class="markdownIt-Anchor" href="#7-list-和-list-的区别是什么"></a> 7. <code>List</code> 和 <code>List</code> 的区别是什么？</h4>
+<p>答： <code>List</code> 和 <code>List</code> 都能存储任意类型的数据，但 <code>List</code> 和 <code>List</code> 的唯一区别就是，<code>List</code> 不会触发编译器的类型安全检查，比如把 <code>List</code> 赋值给 <code>List</code> 是没有任何问题的，但赋值给 <code>List</code> 就不行，如下图所示：</p>
+<p><img src="https://images.gitbook.cn/e34947f0-cdeb-11e9-932d-6123ff488b55" alt="enter image description here" /></p>
+<h4 id="8以下程序执行的结果是"><a class="markdownIt-Anchor" href="#8以下程序执行的结果是"></a> 8.以下程序执行的结果是？</h4>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">list.add(&quot;Java&quot;);</span><br><span class="line">list.add(&quot;Java虚拟机&quot;);</span><br><span class="line">list.add(&quot;Java中文社群&quot;);</span><br><span class="line">Iterator iterator &#x3D; list.iterator();</span><br><span class="line">while (iterator.hasNext()) &#123;</span><br><span class="line">    String str &#x3D; (String) iterator.next();</span><br><span class="line">    if (str.equals(&quot;Java中文社群&quot;)) &#123;</span><br><span class="line">        iterator.remove();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">while (iterator.hasNext()) &#123;</span><br><span class="line">    System.out.println(iterator.next());</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(&quot;Over&quot;);</span><br></pre></td></tr></table></figure>
+<p>答：程序打印结果是 <code>Over</code>。<br />
+题目解析：因为第一个 while 循环之后，iterator.hasNext() 返回值就为 false 了，所以不会进入第二个循环，之后打印最后的 Over。</p>
+<h4 id="9泛型的工作原理是什么为什么要有类型擦除"><a class="markdownIt-Anchor" href="#9泛型的工作原理是什么为什么要有类型擦除"></a> 9.泛型的工作原理是什么？为什么要有类型擦除？</h4>
+<p>答：泛型是通过类型擦除来实现的，类型擦除指的是编译器在编译时，会擦除了所有类型相关的信息，比如 <code>List</code> 在编译后就会变成 <code>List</code> 类型，这样做的目的就是确保能和 Java 5 之前的版本（二进制类库）进行兼容。</p>
+<h3 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h3>
+<p>通过本文知道了泛型的优点：安全性、避免类型转换、提高了代码的可读性。泛型的本质是类型参数化，但编译之后会执行类型擦除，这样就可以和 Java 5 之前的二进制类库进行兼容。本文也介绍了迭代器（Iterator）的使用，使用迭代器的好处是不用关注容器的内部细节，用同样的方式遍历不同类型的容器。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2020/10/08/interview-java-14/" title="14.为什么要使用泛型和迭代器 + 面试题" target="_blank" rel="external">https://idea360.cn/2020/10/08/interview-java-14/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/10/08/interview-java-15/" title="15.数据结构之队列的使用 + 面试题"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/10/08/interview-java-13/" title="13.集合详解之 Map + 面试题"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>复盘MySQL分页查询优化方案 | 当我遇上你</title>
+  <meta name="description" content="一、前言 MySQL分页查询作为Java面试的一道高频面试题，这里有必要实践一下，毕竟实践出真知。 很多同学在做测试时苦于没有海量数据，官方其实是有一套测试库的。  二、模拟数据 这里模拟数据分2种情况导入，如果只是需要数据测试下，那么推荐官方数据。如果官方数据满足不了需求的话，那么我们自己模拟数据。  1. 导入官方测试库 下载 官方数据库文件 或者在 github 上下载。 该测试库含有6个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="复盘MySQL分页查询优化方案">
+<meta property="og:url" content="https://idea360.cn/2020/03/09/how-to-optimization-mysql-page/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="一、前言 MySQL分页查询作为Java面试的一道高频面试题，这里有必要实践一下，毕竟实践出真知。 很多同学在做测试时苦于没有海量数据，官方其实是有一套测试库的。  二、模拟数据 这里模拟数据分2种情况导入，如果只是需要数据测试下，那么推荐官方数据。如果官方数据满足不了需求的话，那么我们自己模拟数据。  1. 导入官方测试库 下载 官方数据库文件 或者在 github 上下载。 该测试库含有6个">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/employees.png">
+<meta property="article:published_time" content="2020-03-09T06:37:24.000Z">
+<meta property="article:modified_time" content="2020-03-15T03:53:40.375Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="mysql">
+<meta property="article:tag" content="调优">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/idea360/oss/raw/master/images/employees.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2020/03/09/how-to-optimization-mysql-page/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80-%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text"> 一、前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C-%E6%A8%A1%E6%8B%9F%E6%95%B0%E6%8D%AE"><span class="toc-number">2.</span> <span class="toc-text"> 二、模拟数据</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%AF%BC%E5%85%A5%E5%AE%98%E6%96%B9%E6%B5%8B%E8%AF%95%E5%BA%93"><span class="toc-number">2.1.</span> <span class="toc-text"> 1. 导入官方测试库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B%E5%AF%BC%E5%85%A5%E6%A8%A1%E6%8B%9F%E6%95%B0%E6%8D%AE"><span class="toc-number">2.2.</span> <span class="toc-text"> 2. 存储过程导入模拟数据</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89-%E5%B8%B8%E7%94%A8%E7%9A%84mysql%E5%88%86%E9%A1%B5%E6%9F%A5%E8%AF%A2%E9%97%AE%E9%A2%98%E5%A4%8D%E7%8E%B0%E5%8F%8A%E4%BC%98%E5%8C%96"><span class="toc-number">3.</span> <span class="toc-text"> 三、常用的MySQL分页查询问题复现及优化。</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%89%8D%E7%BD%AE%E6%A3%80%E6%9F%A5"><span class="toc-number">3.1.</span> <span class="toc-text"> 1. 前置检查</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%97%A0%E7%B4%A2%E5%BC%95%E5%88%86%E9%A1%B5%E6%9F%A5%E8%AF%A2"><span class="toc-number">3.2.</span> <span class="toc-text"> 2. 无索引分页查询</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%9C%89%E7%B4%A2%E5%BC%95%E5%88%86%E9%A1%B5%E6%9F%A5%E8%AF%A2"><span class="toc-number">3.3.</span> <span class="toc-text"> 3. 有索引分页查询</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E4%BC%98%E5%8C%96"><span class="toc-number">3.4.</span> <span class="toc-text"> 4. 优化</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B-%E6%9C%80%E5%90%8E"><span class="toc-number">4.</span> <span class="toc-text"> 四、最后</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-how-to-optimization-mysql-page" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      复盘MySQL分页查询优化方案
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/03/09/how-to-optimization-mysql-page/" class="article-date">
+	  <time datetime="2020-03-09T06:37:24.000Z" itemprop="datePublished">2020-03-09</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/mysql/">mysql</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/mysql/" rel="tag">mysql</a>, <a class="article-tag-link-link" href="/tags/%E8%B0%83%E4%BC%98/" rel="tag">调优</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2020/03/09/how-to-optimization-mysql-page/" class="leancloud_visitors"  data-flag-title="复盘MySQL分页查询优化方案">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/03/09/how-to-optimization-mysql-page/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="一-前言"><a class="markdownIt-Anchor" href="#一-前言"></a> 一、前言</h1>
+<p>MySQL分页查询作为Java面试的一道高频面试题，这里有必要实践一下，毕竟实践出真知。<br />
+很多同学在做测试时苦于没有海量数据，官方其实是有一套测试库的。</p>
+<h1 id="二-模拟数据"><a class="markdownIt-Anchor" href="#二-模拟数据"></a> 二、模拟数据</h1>
+<p>这里模拟数据分2种情况导入，如果只是需要数据测试下，那么推荐官方数据。如果官方数据满足不了需求的话，那么我们自己模拟数据。</p>
+<h2 id="1-导入官方测试库"><a class="markdownIt-Anchor" href="#1-导入官方测试库"></a> 1. 导入官方测试库</h2>
+<p>下载 <a target="_blank" rel="noopener" href="https://launchpad.net/test-db">官方数据库文件</a> 或者在 <a target="_blank" rel="noopener" href="https://github.com/datacharmer/test_db">github</a> 上下载。</p>
+<p>该测试库含有6个表。</p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/employees.png" alt="" /></p>
+<p>首先进入 <code>employees_db</code>, 执行导入数据指令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -proot -t &lt; employees.sql</span><br></pre></td></tr></table></figure>
+<p>有些环境可能会报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ERROR 1193 (HY000) at line 38: Unknown system variable &#39;storage_engine&#39;</span><br></pre></td></tr></table></figure>
+<p>连接mysql查看默认引擎，发现不是本地环境的问题。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%engine%&#39;;</span><br><span class="line">+----------------------------------+--------+</span><br><span class="line">| Variable_name                    | Value  |</span><br><span class="line">+----------------------------------+--------+</span><br><span class="line">| default_storage_engine           | InnoDB |</span><br><span class="line">| default_tmp_storage_engine       | InnoDB |</span><br><span class="line">| disabled_storage_engines         |        |</span><br><span class="line">| internal_tmp_disk_storage_engine | InnoDB |</span><br><span class="line">+----------------------------------+--------+</span><br><span class="line">4 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+<p>修改 <code>employees.sql</code> 脚本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">   set default_storage_engine &#x3D; InnoDB;</span><br><span class="line">-- set storage_engine &#x3D; MyISAM;</span><br><span class="line">-- set storage_engine &#x3D; Falcon;</span><br><span class="line">-- set storage_engine &#x3D; PBXT;</span><br><span class="line">-- set storage_engine &#x3D; Maria;</span><br><span class="line"></span><br><span class="line">select CONCAT(&#39;storage engine: &#39;, @@default_storage_engine) as INFO;</span><br></pre></td></tr></table></figure>
+<p>再次执行发现导入成功</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">➜  employees_db mysql -uroot -proot -t &lt; employees.sql</span><br><span class="line">mysql: [Warning] Using a password on the <span class="built_in">command</span> line interface can be insecure.</span><br><span class="line">+-----------------------------+</span><br><span class="line">| INFO                        |</span><br><span class="line">+-----------------------------+</span><br><span class="line">| CREATING DATABASE STRUCTURE |</span><br><span class="line">+-----------------------------+</span><br><span class="line">+------------------------+</span><br><span class="line">| INFO                   |</span><br><span class="line">+------------------------+</span><br><span class="line">| storage engine: InnoDB |</span><br><span class="line">+------------------------+</span><br><span class="line">+---------------------+</span><br><span class="line">| INFO                |</span><br><span class="line">+---------------------+</span><br><span class="line">| LOADING departments |</span><br><span class="line">+---------------------+</span><br><span class="line">+-------------------+</span><br><span class="line">| INFO              |</span><br><span class="line">+-------------------+</span><br><span class="line">| LOADING employees |</span><br><span class="line">+-------------------+</span><br><span class="line">+------------------+</span><br><span class="line">| INFO             |</span><br><span class="line">+------------------+</span><br><span class="line">| LOADING dept_emp |</span><br><span class="line">+------------------+</span><br><span class="line">+----------------------+</span><br><span class="line">| INFO                 |</span><br><span class="line">+----------------------+</span><br><span class="line">| LOADING dept_manager |</span><br><span class="line">+----------------------+</span><br><span class="line">+----------------+</span><br><span class="line">| INFO           |</span><br><span class="line">+----------------+</span><br><span class="line">| LOADING titles |</span><br><span class="line">+----------------+</span><br><span class="line">+------------------+</span><br><span class="line">| INFO             |</span><br><span class="line">+------------------+</span><br><span class="line">| LOADING salaries |</span><br><span class="line">+------------------+</span><br></pre></td></tr></table></figure>
+<p>验证结果(配置修改同上)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">➜  employees_db mysql -uroot -proot -t &lt; test_employees_sha.sql</span><br><span class="line">mysql: [Warning] Using a password on the command line interface can be insecure.</span><br><span class="line">+----------------------+</span><br><span class="line">| INFO                 |</span><br><span class="line">+----------------------+</span><br><span class="line">| TESTING INSTALLATION |</span><br><span class="line">+----------------------+</span><br><span class="line">+--------------+------------------+------------------------------------------+</span><br><span class="line">| table_name   | expected_records | expected_crc                             |</span><br><span class="line">+--------------+------------------+------------------------------------------+</span><br><span class="line">| departments  |                9 | 4b315afa0e35ca6649df897b958345bcb3d2b764 |</span><br><span class="line">| dept_emp     |           331603 | d95ab9fe07df0865f592574b3b33b9c741d9fd1b |</span><br><span class="line">| dept_manager |               24 | 9687a7d6f93ca8847388a42a6d8d93982a841c6c |</span><br><span class="line">| employees    |           300024 | 4d4aa689914d8fd41db7e45c2168e7dcb9697359 |</span><br><span class="line">| salaries     |          2844047 | b5a1785c27d75e33a4173aaa22ccf41ebd7d4a9f |</span><br><span class="line">| titles       |           443308 | d12d5f746b88f07e69b9e36675b6067abb01b60e |</span><br><span class="line">+--------------+------------------+------------------------------------------+</span><br></pre></td></tr></table></figure>
+<p>我们可以看到emp大概有33万条数据。</p>
+<h2 id="2-存储过程导入模拟数据"><a class="markdownIt-Anchor" href="#2-存储过程导入模拟数据"></a> 2. 存储过程导入模拟数据</h2>
+<p>这里我们可以选择存储过程批量导入。</p>
+<p>首先创建一张表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">drop table if exists &#96;user&#96;;</span><br><span class="line">create table &#96;user&#96;(</span><br><span class="line">  &#96;id&#96; int unsigned auto_increment,</span><br><span class="line">  &#96;username&#96; varchar(64) not null default &#39;&#39;,</span><br><span class="line">  &#96;score&#96; int(11) not null default 0,</span><br><span class="line">    primary key(&#96;id&#96;)</span><br><span class="line">)ENGINE &#x3D; InnoDB;</span><br></pre></td></tr></table></figure>
+<p>创建存储过程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">DROP PROCEDURE IF EXISTS batchInsert;</span><br><span class="line">delimiter $$  -- 声明存储过程结束符号</span><br><span class="line">create procedure batchInsert() -- 创建存储过程</span><br><span class="line">begin   -- 存储过程主体开始</span><br><span class="line">    declare num int; -- 声明变量</span><br><span class="line">    set num&#x3D;1; -- 初始值</span><br><span class="line">    while num&lt;&#x3D;3000000 do -- 循环条件</span><br><span class="line">        insert into user(&#96;username&#96;,&#96;score&#96;) values(concat(&#39;user-&#39;, num),num); -- 执行语句</span><br><span class="line">        set num&#x3D;num+1; -- 循环变量自增</span><br><span class="line">    end while; -- 结束循环</span><br><span class="line">end$$ -- 存储过程主体结束</span><br><span class="line">delimiter ; #恢复;表示结束</span><br><span class="line"></span><br><span class="line">CALL batchInsert; -- 执行存储过程</span><br></pre></td></tr></table></figure>
+<p>可以看到测试300W条数据大概1046s插入完成。好吧，本来计划导入1000w的结果时间太长了。</p>
+<h1 id="三-常用的mysql分页查询问题复现及优化"><a class="markdownIt-Anchor" href="#三-常用的mysql分页查询问题复现及优化"></a> 三、常用的MySQL分页查询问题复现及优化。</h1>
+<p>我们拿现有的表 <code>user</code> 进行测试，该表有 300w 条数据。</p>
+<h2 id="1-前置检查"><a class="markdownIt-Anchor" href="#1-前置检查"></a> 1. 前置检查</h2>
+<p>首先查看下该表结构以及目前存在哪些索引</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; desc user;</span><br><span class="line">+----------+------------------+------+-----+---------+----------------+</span><br><span class="line">| Field    | Type             | Null | Key | Default | Extra          |</span><br><span class="line">+----------+------------------+------+-----+---------+----------------+</span><br><span class="line">| id       | int(10) unsigned | NO   | PRI | NULL    | auto_increment |</span><br><span class="line">| username | varchar(30)      | NO   |     |         |                |</span><br><span class="line">| score    | int(11)          | NO   |     | 0       |                |</span><br><span class="line">+----------+------------------+------+-----+---------+----------------+</span><br><span class="line">3 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; show index from user;</span><br><span class="line">+-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line">| Table | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |</span><br><span class="line">+-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line">| user  |          0 | PRIMARY  |            1 | id          | A         |     2991886 |     NULL | NULL   |      | BTREE      |         |               |</span><br><span class="line">+-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p>可以看到只有 <code>id</code> 主键索引。</p>
+<hr />
+<p>其次查看是否开启 <code>缓存</code> (避免查询缓存对执行效率产生影响)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &#39;%query_cache%&#39;;</span><br><span class="line">+------------------------------+---------+</span><br><span class="line">| Variable_name                | Value   |</span><br><span class="line">+------------------------------+---------+</span><br><span class="line">| have_query_cache             | YES     |</span><br><span class="line">| query_cache_limit            | 1048576 |</span><br><span class="line">| query_cache_min_res_unit     | 4096    |</span><br><span class="line">| query_cache_size             | 1048576 |</span><br><span class="line">| query_cache_type             | OFF     |</span><br><span class="line">| query_cache_wlock_invalidate | OFF     |</span><br><span class="line">+------------------------------+---------+</span><br><span class="line">6 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; show profiles;</span><br><span class="line">Empty set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p><code>have_query_cache</code> 和 <code>query_cache_type</code> 说明支持缓存但并未开启。<br />
+<code>show profiles</code> 显示为空，说明profiles功能是关闭的。</p>
+<hr />
+<p>开启 <code>profiles</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SET profiling &#x3D; 1;</span><br><span class="line">Query OK, 0 rows affected, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; show profiles;</span><br><span class="line">+----------+------------+-------------------+</span><br><span class="line">| Query_ID | Duration   | Query             |</span><br><span class="line">+----------+------------+-------------------+</span><br><span class="line">|        1 | 0.00012300 | SET profiling &#x3D; 1 |</span><br><span class="line">+----------+------------+-------------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+<h2 id="2-无索引分页查询"><a class="markdownIt-Anchor" href="#2-无索引分页查询"></a> 2. 无索引分页查询</h2>
+<p>一般我们最常用的分页查询的方式为 <code>order by</code> + <code>limit m,n</code> 的方式, 现在我们测试下分页性能</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">select * from user order by score limit 0,10; -- 10 rows in set (0.65 sec)</span><br><span class="line">select * from user order by score limit 10000,10; -- 10 rows in set (0.83 sec)</span><br><span class="line">select * from user order by score limit 100000,10; -- 10 rows in set (1.03 sec)</span><br><span class="line">select * from user order by score limit 1000000,10; -- 10 rows in set (1.14 sec)</span><br></pre></td></tr></table></figure>
+<p>这里我们确认下是否用到了索引</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from user order by score limit 1000000,10;</span><br><span class="line">+----+-------------+-------+------------+------+---------------+------+---------+------+---------+----------+----------------+</span><br><span class="line">| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows    | filtered | Extra          |</span><br><span class="line">+----+-------------+-------+------------+------+---------------+------+---------+------+---------+----------+----------------+</span><br><span class="line">|  1 | SIMPLE      | user  | NULL       | ALL  | NULL          | NULL | NULL    | NULL | 2991995 |   100.00 | Using filesort |</span><br><span class="line">+----+-------------+-------+------------+------+---------------+------+---------+------+---------+----------+----------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p>可以看到确实没有用到索引，全表扫描100W数据分页大概需要1.14s的时间。</p>
+<h2 id="3-有索引分页查询"><a class="markdownIt-Anchor" href="#3-有索引分页查询"></a> 3. 有索引分页查询</h2>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select * from user order by id limit 10000,10; -- 10 rows in set (0.01 sec)</span><br><span class="line">select * from user order by id limit 1000000,10; -- 10 rows in set (0.18 sec)</span><br><span class="line">select * from user order by id limit 2000000,10; -- 10 rows in set (0.35 sec)</span><br></pre></td></tr></table></figure>
+<p>该查询用到了主键索引，所以查询效率比较高。<br />
+可以看到，当数据量变大时，查询效率明显下降。</p>
+<p>这里我们确认下是否使用到了索引</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from user order by id limit 2000000,10;</span><br><span class="line">+----+-------------+-------+------------+-------+---------------+---------+---------+------+---------+----------+-------+</span><br><span class="line">| id | select_type | table | partitions | type  | possible_keys | key     | key_len | ref  | rows    | filtered | Extra |</span><br><span class="line">+----+-------------+-------+------------+-------+---------------+---------+---------+------+---------+----------+-------+</span><br><span class="line">|  1 | SIMPLE      | user  | NULL       | index | NULL          | PRIMARY | 4       | NULL | 2000010 |   100.00 | NULL  |</span><br><span class="line">+----+-------------+-------+------------+-------+---------------+---------+---------+------+---------+----------+-------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p>可以看到用了全索引扫描，共查询了2000010行数据。</p>
+<h2 id="4-优化"><a class="markdownIt-Anchor" href="#4-优化"></a> 4. 优化</h2>
+<p>我们根据MYSQL自带的一种query诊断分析工具查看下sql语句执行各个操作的耗时详情。可以看到查询获取到的2000010条记录都返回给客户端了，耗时主要集中在Sending data阶段。但是客户端只需要10条数据，我们能否只给客户端返回10条数据呢？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show profiles;</span><br><span class="line">+----------+------------+---------------------------------------------------------+</span><br><span class="line">| Query_ID | Duration   | Query                                                   |</span><br><span class="line">+----------+------------+---------------------------------------------------------+</span><br><span class="line">|        1 | 0.00012300 | SET profiling &#x3D; 1                                       |</span><br><span class="line">|        2 | 0.00009200 | SET profiling &#x3D; 1                                       |</span><br><span class="line">|        3 | 0.35689500 | select * from user order by id limit 2000000,10         |</span><br><span class="line">|        4 | 0.00023900 | explain select * from user order by id limit 2000000,10 |</span><br><span class="line">+----------+------------+---------------------------------------------------------+</span><br><span class="line">4 rows in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; show profile for query 3;</span><br><span class="line">+----------------------+----------+</span><br><span class="line">| Status               | Duration |</span><br><span class="line">+----------------------+----------+</span><br><span class="line">| starting             | 0.000071 |</span><br><span class="line">| checking permissions | 0.000007 |</span><br><span class="line">| Opening tables       | 0.000012 |</span><br><span class="line">| init                 | 0.000017 |</span><br><span class="line">| System lock          | 0.000008 |</span><br><span class="line">| optimizing           | 0.000005 |</span><br><span class="line">| statistics           | 0.000024 |</span><br><span class="line">| preparing            | 0.000016 |</span><br><span class="line">| Sorting result       | 0.000004 |</span><br><span class="line">| executing            | 0.000003 |</span><br><span class="line">| Sending data         | 0.356653 |</span><br><span class="line">| end                  | 0.000013 |</span><br><span class="line">| query end            | 0.000005 |</span><br><span class="line">| closing tables       | 0.000008 |</span><br><span class="line">| freeing items        | 0.000019 |</span><br><span class="line">| cleaning up          | 0.000030 |</span><br><span class="line">+----------------------+----------+</span><br><span class="line">16 rows in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p><strong>网上的优化方案</strong>: 子查询 + 覆盖索引</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from user where id &gt; (select id from user order by id limit 2000000, 1) limit 10;</span><br><span class="line">+---------+--------------+---------+</span><br><span class="line">| id      | username     | score   |</span><br><span class="line">+---------+--------------+---------+</span><br><span class="line">| 2000002 | user-2000002 | 2000002 |</span><br><span class="line">| 2000003 | user-2000003 | 2000003 |</span><br><span class="line">| 2000004 | user-2000004 | 2000004 |</span><br><span class="line">| 2000005 | user-2000005 | 2000005 |</span><br><span class="line">| 2000006 | user-2000006 | 2000006 |</span><br><span class="line">| 2000007 | user-2000007 | 2000007 |</span><br><span class="line">| 2000008 | user-2000008 | 2000008 |</span><br><span class="line">| 2000009 | user-2000009 | 2000009 |</span><br><span class="line">| 2000010 | user-2000010 | 2000010 |</span><br><span class="line">| 2000011 | user-2000011 | 2000011 |</span><br><span class="line">+---------+--------------+---------+</span><br><span class="line">10 rows in set (0.29 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; explain select * from user where id &gt; (select id from user order by id limit 2000000, 1) limit 10;</span><br><span class="line">+----+-------------+-------+------------+-------+---------------+---------+---------+------+---------+----------+-------------+</span><br><span class="line">| id | select_type | table | partitions | type  | possible_keys | key     | key_len | ref  | rows    | filtered | Extra       |</span><br><span class="line">+----+-------------+-------+------------+-------+---------------+---------+---------+------+---------+----------+-------------+</span><br><span class="line">|  1 | PRIMARY     | user  | NULL       | range | PRIMARY       | PRIMARY | 4       | NULL | 1495997 |   100.00 | Using where |</span><br><span class="line">|  2 | SUBQUERY    | user  | NULL       | index | NULL          | PRIMARY | 4       | NULL | 2000001 |   100.00 | Using index |</span><br><span class="line">+----+-------------+-------+------------+-------+---------------+---------+---------+------+---------+----------+-------------+</span><br><span class="line">2 rows in set, 1 warning (0.30 sec)</span><br></pre></td></tr></table></figure>
+<p>然而并没有提升查询性能。没看到问题出在哪里呢？从执行计划可以看出，索引和我们期望是一致的。rows这里检索了很多行。单独看下子查询</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select id from user order by id limit 2000000, 1;</span><br><span class="line">+---------+</span><br><span class="line">| id      |</span><br><span class="line">+---------+</span><br><span class="line">| 2000001 |</span><br><span class="line">+---------+</span><br><span class="line">1 row in set (0.29 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; explain select id from user order by id limit 2000000, 1;</span><br><span class="line">+----+-------------+-------+------------+-------+---------------+---------+---------+------+---------+----------+-------------+</span><br><span class="line">| id | select_type | table | partitions | type  | possible_keys | key     | key_len | ref  | rows    | filtered | Extra       |</span><br><span class="line">+----+-------------+-------+------------+-------+---------------+---------+---------+------+---------+----------+-------------+</span><br><span class="line">|  1 | SIMPLE      | user  | NULL       | index | NULL          | PRIMARY | 4       | NULL | 2000001 |   100.00 | Using index |</span><br><span class="line">+----+-------------+-------+------------+-------+---------------+---------+---------+------+---------+----------+-------------+</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p>这里可以看出子查询即使走了覆盖索引，依旧消耗3s左右，我觉得这就是正常的索引IO花费的时间。没找到官方测试数据做对比，以及MySQL一次IO查询花费的时间来做对比。</p>
+<p>理论上int主键一页可以存储1000个键,根常驻内存,那么B+Tree第二层大概100W个键,测试数据在200W的分页，理论上需要2次IO可以找到数据。2次IO花费的时间是3s的话，1次应该在1.5s左右, 我们查询下99W左右的分页看是否符合假想。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select id from user order by id limit 990000,1;</span><br><span class="line">+--------+</span><br><span class="line">| id     |</span><br><span class="line">+--------+</span><br><span class="line">| 990001 |</span><br><span class="line">+--------+</span><br><span class="line">1 row in set (0.15 sec)</span><br></pre></td></tr></table></figure>
+<p>所以这里笔者大胆的猜想结果是正常开销</p>
+<h1 id="四-最后"><a class="markdownIt-Anchor" href="#四-最后"></a> 四、最后</h1>
+<p>本来想复盘网上的分页优化方案是否可靠，但是预期结果还是有区别。希望聪明的读者有不同见解的不吝赐教。公众号里有笔者的微信二维码。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2020/03/09/how-to-optimization-mysql-page/" title="复盘MySQL分页查询优化方案" target="_blank" rel="external">https://idea360.cn/2020/03/09/how-to-optimization-mysql-page/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/03/09/learn-java-thread-wait-notify-from-interview/" title="从一道面试题引发的Java线程通信的思考"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/03/09/tcp-protocol-intro/" title="TCP的三次握手和四次挥手"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

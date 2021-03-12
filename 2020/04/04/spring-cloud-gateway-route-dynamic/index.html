@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>spring-cloud-gateway动态路由 | 当我遇上你</title>
+  <meta name="description" content="概述 线上项目发布一般有以下几种方案:  停机发布 蓝绿部署 滚动部署 灰度发布  停机发布 这种发布一般在夜里或者进行大版本升级的时候发布，因为需要停机，所以现在大家都在研究 Devops 方案。 蓝绿部署 需要准备两个相同的环境。一个环境新版本，一个环境旧版本，通过负载均衡进行切换与回滚，目的是为了减少服务停止时间。 滚动部署 就是在升级过程中，并不一下子启动所有新版本，是先启动一台新版本，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="spring-cloud-gateway动态路由">
+<meta property="og:url" content="https://idea360.cn/2020/04/04/spring-cloud-gateway-route-dynamic/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="概述 线上项目发布一般有以下几种方案:  停机发布 蓝绿部署 滚动部署 灰度发布  停机发布 这种发布一般在夜里或者进行大版本升级的时候发布，因为需要停机，所以现在大家都在研究 Devops 方案。 蓝绿部署 需要准备两个相同的环境。一个环境新版本，一个环境旧版本，通过负载均衡进行切换与回滚，目的是为了减少服务停止时间。 滚动部署 就是在升级过程中，并不一下子启动所有新版本，是先启动一台新版本，">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-04T06:35:30.000Z">
+<meta property="article:modified_time" content="2021-02-23T14:43:51.020Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="spring">
+<meta property="article:tag" content="gateway">
+<meta property="article:tag" content="Spring-Cloud">
+<meta property="article:tag" content="动态路由">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2020/04/04/spring-cloud-gateway-route-dynamic/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text"> 概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1"><span class="toc-number">2.</span> <span class="toc-text"> 动态路由</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%B0%86-actuator-%E7%9A%84%E7%AB%AF%E7%82%B9%E6%9A%B4%E9%9C%B2%E5%87%BA%E6%9D%A5"><span class="toc-number">2.1.</span> <span class="toc-text"> 1. 将 actuator 的端点暴露出来。</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-redis%E9%85%8D%E7%BD%AE"><span class="toc-number">2.2.</span> <span class="toc-text"> 2. redis配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%B0%86%E5%8E%9F%E5%86%85%E5%AD%98%E8%B7%AF%E7%94%B1%E6%8C%81%E4%B9%85%E5%8C%96%E5%88%B0redis"><span class="toc-number">2.3.</span> <span class="toc-text"> 3. 将原内存路由持久化到redis</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E9%87%8D%E5%86%99%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1%E6%9C%8D%E5%8A%A1"><span class="toc-number">2.4.</span> <span class="toc-text"> 4. 重写动态路由服务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%AF%B9%E5%A4%96%E6%9A%B4%E9%9C%B2%E6%8E%A5%E5%8F%A3"><span class="toc-number">2.5.</span> <span class="toc-text"> 5. 对外暴露接口</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-number">3.</span> <span class="toc-text"> 测试</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BB%93%E8%AF%AD"><span class="toc-number">4.</span> <span class="toc-text"> 结语</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-spring-cloud-gateway-route-dynamic" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      spring-cloud-gateway动态路由
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/04/04/spring-cloud-gateway-route-dynamic/" class="article-date">
+	  <time datetime="2020-04-04T06:35:30.000Z" itemprop="datePublished">2020-04-04</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/spring/">spring</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/Spring-Cloud/" rel="tag">Spring-Cloud</a>, <a class="article-tag-link-link" href="/tags/gateway/" rel="tag">gateway</a>, <a class="article-tag-link-link" href="/tags/spring/" rel="tag">spring</a>, <a class="article-tag-link-link" href="/tags/%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1/" rel="tag">动态路由</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2020/04/04/spring-cloud-gateway-route-dynamic/" class="leancloud_visitors"  data-flag-title="spring-cloud-gateway动态路由">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/04/04/spring-cloud-gateway-route-dynamic/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="概述"><a class="markdownIt-Anchor" href="#概述"></a> 概述</h1>
+<p>线上项目发布一般有以下几种方案:</p>
+<ol>
+<li>停机发布</li>
+<li>蓝绿部署</li>
+<li>滚动部署</li>
+<li>灰度发布</li>
+</ol>
+<p><strong>停机发布</strong> 这种发布一般在夜里或者进行大版本升级的时候发布，因为需要停机，所以现在大家都在研究 <code>Devops</code> 方案。</p>
+<p><strong>蓝绿部署</strong> 需要准备两个相同的环境。一个环境新版本，一个环境旧版本，通过负载均衡进行切换与回滚，目的是为了减少服务停止时间。</p>
+<p><strong>滚动部署</strong> 就是在升级过程中，并不一下子启动所有新版本，是先启动一台新版本，再停止一台老版本，然后再启动一台新版本，再停止一台老版本，直到升级完成。基于 <code>k8s</code> 的升级方案默认就是滚动部署。</p>
+<p><strong>灰度发布</strong> 也叫金丝雀发布，灰度发布中，常常按照用户设置路由权重，例如90%的用户维持使用老版本，10%的用户尝鲜新版本。不同版本应用共存，经常与A/B测试一起使用，用于测试选择多种方案。</p>
+<p>上边介绍的几种发布方案，主要是引出我们接下来介绍的 <code>spring-cloud-gateway</code> 动态路由，我们可以基于动态路由、负载均衡和策略加载去实现 <code>灰度发布</code>。当然现在有很多开源的框架可以实现 <code>灰度发布</code>，这里只是研究学习。</p>
+<h1 id="动态路由"><a class="markdownIt-Anchor" href="#动态路由"></a> 动态路由</h1>
+<p><code>spring-cloud-gateway</code> 默认将路由加载在内存中。具体可以参见 <code>InMemoryRouteDefinitionRepository</code> 类的实现。</p>
+<p>这里我们基于 <code>Redis</code> 实现动态路由。基础项目见 <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/nGlIREVZ13qQ3CvaftmYaA">spring-cloud-gateway简介</a></p>
+<h2 id="1-将-actuator-的端点暴露出来"><a class="markdownIt-Anchor" href="#1-将-actuator-的端点暴露出来"></a> 1. 将 actuator 的端点暴露出来。</h2>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">management:</span></span><br><span class="line">  <span class="attr">endpoints:</span></span><br><span class="line">    <span class="attr">web:</span></span><br><span class="line">      <span class="attr">exposure:</span></span><br><span class="line">        <span class="attr">include:</span> <span class="string">&quot;*&quot;</span></span><br></pre></td></tr></table></figure>
+<h2 id="2-redis配置"><a class="markdownIt-Anchor" href="#2-redis配置"></a> 2. redis配置</h2>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean(name = &#123;&quot;redisTemplate&quot;, &quot;stringRedisTemplate&quot;&#125;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> StringRedisTemplate <span class="title">stringRedisTemplate</span><span class="params">(RedisConnectionFactory factory)</span> </span>&#123;</span><br><span class="line">        StringRedisTemplate redisTemplate = <span class="keyword">new</span> StringRedisTemplate();</span><br><span class="line">        redisTemplate.setConnectionFactory(factory);</span><br><span class="line">        <span class="keyword">return</span> redisTemplate;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3-将原内存路由持久化到redis"><a class="markdownIt-Anchor" href="#3-将原内存路由持久化到redis"></a> 3. 将原内存路由持久化到redis</h2>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisRouteDefinitionRepository</span> <span class="keyword">implements</span> <span class="title">RouteDefinitionRepository</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * hash存储的key</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String GATEWAY_ROUTES = <span class="string">&quot;gateway_dynamic_route&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> StringRedisTemplate redisTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取路由信息</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Flux&lt;RouteDefinition&gt; <span class="title">getRouteDefinitions</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        List&lt;RouteDefinition&gt; routeDefinitions = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        redisTemplate.opsForHash().values(GATEWAY_ROUTES).stream()</span><br><span class="line">                .forEach(routeDefinition -&gt; routeDefinitions.add(JSON.parseObject(routeDefinition.toString(), RouteDefinition.class)));</span><br><span class="line">        <span class="keyword">return</span> Flux.fromIterable(routeDefinitions);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Mono&lt;Void&gt; <span class="title">save</span><span class="params">(Mono&lt;RouteDefinition&gt; route)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> route.flatMap(routeDefinition -&gt; &#123;</span><br><span class="line">            redisTemplate.opsForHash().put(GATEWAY_ROUTES, routeDefinition.getId(), JSONObject.toJSONString(routeDefinition));</span><br><span class="line">            <span class="keyword">return</span> Mono.empty();</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Mono&lt;Void&gt; <span class="title">delete</span><span class="params">(Mono&lt;String&gt; routeId)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> routeId.flatMap(id -&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span> (redisTemplate.opsForHash().hasKey(GATEWAY_ROUTES, id)) &#123;</span><br><span class="line">                redisTemplate.opsForHash().delete(GATEWAY_ROUTES, id);</span><br><span class="line">                <span class="keyword">return</span> Mono.empty();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> Mono.defer(() -&gt; Mono.error(<span class="keyword">new</span> NotFoundException(<span class="string">&quot;route definition is not found, routeId:&quot;</span> + routeId)));</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="4-重写动态路由服务"><a class="markdownIt-Anchor" href="#4-重写动态路由服务"></a> 4. 重写动态路由服务</h2>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GatewayDynamicRouteService</span> <span class="keyword">implements</span> <span class="title">ApplicationEventPublisherAware</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> RedisRouteDefinitionRepository redisRouteDefinitionRepository;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ApplicationEventPublisher applicationEventPublisher;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 增加路由</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> routeDefinition</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">add</span><span class="params">(RouteDefinition routeDefinition)</span> </span>&#123;</span><br><span class="line">        redisRouteDefinitionRepository.save(Mono.just(routeDefinition)).subscribe();</span><br><span class="line">        applicationEventPublisher.publishEvent(<span class="keyword">new</span> RefreshRoutesEvent(<span class="keyword">this</span>));</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 更新</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> routeDefinition</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">update</span><span class="params">(RouteDefinition routeDefinition)</span> </span>&#123;</span><br><span class="line">        redisRouteDefinitionRepository.delete(Mono.just(routeDefinition.getId()));</span><br><span class="line">        redisRouteDefinitionRepository.save(Mono.just(routeDefinition)).subscribe();</span><br><span class="line">        applicationEventPublisher.publishEvent(<span class="keyword">new</span> RefreshRoutesEvent(<span class="keyword">this</span>));</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 删除</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> Mono&lt;ResponseEntity&lt;Object&gt;&gt; delete(String id) &#123;</span><br><span class="line">        <span class="keyword">return</span> redisRouteDefinitionRepository.delete(Mono.just(id)).then(Mono.defer(() -&gt; Mono.just(ResponseEntity.ok().build())))</span><br><span class="line">                .onErrorResume(t -&gt; t <span class="keyword">instanceof</span> NotFoundException, t -&gt; Mono.just(ResponseEntity.notFound().build()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setApplicationEventPublisher</span><span class="params">(ApplicationEventPublisher applicationEventPublisher)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.applicationEventPublisher = applicationEventPublisher;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="5-对外暴露接口"><a class="markdownIt-Anchor" href="#5-对外暴露接口"></a> 5. 对外暴露接口</h2>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/gateway&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GatewayDynamicRouteController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> GatewayDynamicRouteService gatewayDynamicRouteService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/add&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">create</span><span class="params">(<span class="meta">@RequestBody</span> RouteDefinition entity)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> result = gatewayDynamicRouteService.add(entity);</span><br><span class="line">        <span class="keyword">return</span> String.valueOf(result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/update&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">update</span><span class="params">(<span class="meta">@RequestBody</span> RouteDefinition entity)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> result = gatewayDynamicRouteService.update(entity);</span><br><span class="line">        <span class="keyword">return</span> String.valueOf(result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@DeleteMapping(&quot;/delete/&#123;id&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Mono&lt;ResponseEntity&lt;Object&gt;&gt; delete(<span class="meta">@PathVariable</span> String id) &#123;</span><br><span class="line">        <span class="keyword">return</span> gatewayDynamicRouteService.delete(id);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="测试"><a class="markdownIt-Anchor" href="#测试"></a> 测试</h1>
+<p>测试前删除我们配置的静态路由，因为静态路由和redis动态路由同时存在时取并集。</p>
+<ol>
+<li>访问 <a target="_blank" rel="noopener" href="http://localhost:2000/actuator/gateway/routes">http://localhost:2000/actuator/gateway/routes</a> , 可以看到只有默认路由。</li>
+</ol>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">&quot;route_id&quot;</span>: <span class="string">&quot;CompositeDiscoveryClient_consul&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;route_definition&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;id&quot;</span>: <span class="string">&quot;CompositeDiscoveryClient_consul&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;predicates&quot;</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Path&quot;</span>,</span><br><span class="line">                    <span class="attr">&quot;args&quot;</span>: &#123;</span><br><span class="line">                        <span class="attr">&quot;pattern&quot;</span>: <span class="string">&quot;/consul/**&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">&quot;filters&quot;</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;RewritePath&quot;</span>,</span><br><span class="line">                    <span class="attr">&quot;args&quot;</span>: &#123;</span><br><span class="line">                        <span class="attr">&quot;regexp&quot;</span>: <span class="string">&quot;/consul/(?&lt;remaining&gt;.*)&quot;</span>,</span><br><span class="line">                        <span class="attr">&quot;replacement&quot;</span>: <span class="string">&quot;/$&#123;remaining&#125;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">&quot;uri&quot;</span>: <span class="string">&quot;lb://consul&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;order&quot;</span>: <span class="number">0</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;order&quot;</span>: <span class="number">0</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">&quot;route_id&quot;</span>: <span class="string">&quot;CompositeDiscoveryClient_idc-gateway&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;route_definition&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;id&quot;</span>: <span class="string">&quot;CompositeDiscoveryClient_idc-gateway&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;predicates&quot;</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Path&quot;</span>,</span><br><span class="line">                    <span class="attr">&quot;args&quot;</span>: &#123;</span><br><span class="line">                        <span class="attr">&quot;pattern&quot;</span>: <span class="string">&quot;/idc-gateway/**&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">&quot;filters&quot;</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;RewritePath&quot;</span>,</span><br><span class="line">                    <span class="attr">&quot;args&quot;</span>: &#123;</span><br><span class="line">                        <span class="attr">&quot;regexp&quot;</span>: <span class="string">&quot;/idc-gateway/(?&lt;remaining&gt;.*)&quot;</span>,</span><br><span class="line">                        <span class="attr">&quot;replacement&quot;</span>: <span class="string">&quot;/$&#123;remaining&#125;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">&quot;uri&quot;</span>: <span class="string">&quot;lb://idc-gateway&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;order&quot;</span>: <span class="number">0</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;order&quot;</span>: <span class="number">0</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">&quot;route_id&quot;</span>: <span class="string">&quot;CompositeDiscoveryClient_idc-provider1&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;route_definition&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;id&quot;</span>: <span class="string">&quot;CompositeDiscoveryClient_idc-provider1&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;predicates&quot;</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Path&quot;</span>,</span><br><span class="line">                    <span class="attr">&quot;args&quot;</span>: &#123;</span><br><span class="line">                        <span class="attr">&quot;pattern&quot;</span>: <span class="string">&quot;/idc-provider1/**&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">&quot;filters&quot;</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;RewritePath&quot;</span>,</span><br><span class="line">                    <span class="attr">&quot;args&quot;</span>: &#123;</span><br><span class="line">                        <span class="attr">&quot;regexp&quot;</span>: <span class="string">&quot;/idc-provider1/(?&lt;remaining&gt;.*)&quot;</span>,</span><br><span class="line">                        <span class="attr">&quot;replacement&quot;</span>: <span class="string">&quot;/$&#123;remaining&#125;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">&quot;uri&quot;</span>: <span class="string">&quot;lb://idc-provider1&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;order&quot;</span>: <span class="number">0</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;order&quot;</span>: <span class="number">0</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">&quot;route_id&quot;</span>: <span class="string">&quot;CompositeDiscoveryClient_idc-provider2&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;route_definition&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;id&quot;</span>: <span class="string">&quot;CompositeDiscoveryClient_idc-provider2&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;predicates&quot;</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Path&quot;</span>,</span><br><span class="line">                    <span class="attr">&quot;args&quot;</span>: &#123;</span><br><span class="line">                        <span class="attr">&quot;pattern&quot;</span>: <span class="string">&quot;/idc-provider2/**&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">&quot;filters&quot;</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;RewritePath&quot;</span>,</span><br><span class="line">                    <span class="attr">&quot;args&quot;</span>: &#123;</span><br><span class="line">                        <span class="attr">&quot;regexp&quot;</span>: <span class="string">&quot;/idc-provider2/(?&lt;remaining&gt;.*)&quot;</span>,</span><br><span class="line">                        <span class="attr">&quot;replacement&quot;</span>: <span class="string">&quot;/$&#123;remaining&#125;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">&quot;uri&quot;</span>: <span class="string">&quot;lb://idc-provider2&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;order&quot;</span>: <span class="number">0</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;order&quot;</span>: <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>这个时候访问 <a target="_blank" rel="noopener" href="http://192.168.124.5:2000/idc-provider1/provider1/1">http://192.168.124.5:2000/idc-provider1/provider1/1</a> 根据结果可以推测能正确路由到 <code>provider1</code>， 测试结果一致。</p>
+<ol start="2">
+<li>创建 <code>provider1</code> 路由，将路径设置为 <code>/p1/**</code>，测试是否生效。</li>
+</ol>
+<p><code>POST</code> 请求 <a target="_blank" rel="noopener" href="http://localhost:2000/gateway/add">http://localhost:2000/gateway/add</a></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">   <span class="attr">&quot;id&quot;</span>:<span class="string">&quot;provider1&quot;</span>,</span><br><span class="line">   <span class="attr">&quot;predicates&quot;</span>:[</span><br><span class="line">      &#123;</span><br><span class="line">         <span class="attr">&quot;name&quot;</span>:<span class="string">&quot;Path&quot;</span>,</span><br><span class="line">         <span class="attr">&quot;args&quot;</span>:&#123;</span><br><span class="line">            <span class="attr">&quot;_genkey_0&quot;</span>:<span class="string">&quot;/p1/**&quot;</span></span><br><span class="line">         &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">         <span class="attr">&quot;name&quot;</span>:<span class="string">&quot;RemoteAddr&quot;</span>,</span><br><span class="line">         <span class="attr">&quot;args&quot;</span>:&#123;</span><br><span class="line">            <span class="attr">&quot;_genkey_0&quot;</span>:<span class="string">&quot;192.168.124.5/16&quot;</span></span><br><span class="line">         &#125;</span><br><span class="line">      &#125;</span><br><span class="line">   ],</span><br><span class="line">   <span class="attr">&quot;filters&quot;</span>:[</span><br><span class="line">      &#123;</span><br><span class="line">         <span class="attr">&quot;name&quot;</span>:<span class="string">&quot;StripPrefix&quot;</span>,</span><br><span class="line">         <span class="attr">&quot;args&quot;</span>:&#123;</span><br><span class="line">            <span class="attr">&quot;_genkey_0&quot;</span>:<span class="string">&quot;1&quot;</span></span><br><span class="line">         &#125;</span><br><span class="line">      &#125;</span><br><span class="line">   ],</span><br><span class="line">   <span class="attr">&quot;uri&quot;</span>:<span class="string">&quot;lb://idc-provider1&quot;</span>,</span><br><span class="line">   <span class="attr">&quot;order&quot;</span>:<span class="number">0</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>查看 <code>redis</code> 存储，或者请求 <a target="_blank" rel="noopener" href="http://localhost:2000/actuator/gateway/routes">http://localhost:2000/actuator/gateway/routes</a> , 都可以看到配置成功。</p>
+<p>访问</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl http://localhost:2000/p1/provider1/1</span><br></pre></td></tr></table></figure>
+<p>结果输出2001，与期望一致。</p>
+<p>由此可见动态路由已经生效。</p>
+<h1 id="结语"><a class="markdownIt-Anchor" href="#结语"></a> 结语</h1>
+<p>本文到此结束。感兴趣的小伙伴后续可以通过加载配置文件，基于权重进行灰度。欢迎大家关注公众号【当我遇上你】。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2020/04/04/spring-cloud-gateway-route-dynamic/" title="spring-cloud-gateway动态路由" target="_blank" rel="external">https://idea360.cn/2020/04/04/spring-cloud-gateway-route-dynamic/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/04/06/docker-oracle-intro/" title="Docker实战之Oracle学习笔记"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/04/04/spring-cloud-gateway-route-static/" title="spring-cloud-gateway静态路由"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

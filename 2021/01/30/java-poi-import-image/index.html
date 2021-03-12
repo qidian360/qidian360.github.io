@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>Java开发中如何用POI导入包含图片的Excel文件 | 当我遇上你</title>
+  <meta name="description" content="前言 前导知识  Java开发中如何用POI优雅的导出Excel文件, Java开发中如何用POI优雅的导入Excel文件  本篇基于 注解 + 反射 实现Excel导入功能的实现。 原想把图片上传等方法抽象出来封装一个工具jar, 大家根据业务不同实现不同的逻辑, 由于时间原因, 本篇直接返回图片bytes, 在业务层处理~, 大家如有需求，自行修改源码   实现 还是老规矩, 直接上代码,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java开发中如何用POI导入包含图片的Excel文件">
+<meta property="og:url" content="https://idea360.cn/2021/01/30/java-poi-import-image/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="前言 前导知识  Java开发中如何用POI优雅的导出Excel文件, Java开发中如何用POI优雅的导入Excel文件  本篇基于 注解 + 反射 实现Excel导入功能的实现。 原想把图片上传等方法抽象出来封装一个工具jar, 大家根据业务不同实现不同的逻辑, 由于时间原因, 本篇直接返回图片bytes, 在业务层处理~, 大家如有需求，自行修改源码   实现 还是老规矩, 直接上代码,">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/poi-import-image.png">
+<meta property="article:published_time" content="2021-01-30T13:44:26.000Z">
+<meta property="article:modified_time" content="2021-02-23T14:25:16.157Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="excel">
+<meta property="article:tag" content="poi">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/idea360/oss/raw/master/images/poi-import-image.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2021/01/30/java-poi-import-image/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text"> 前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text"> 实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89excel%E6%B3%A8%E8%A7%A3"><span class="toc-number">2.1.</span> <span class="toc-text"> 定义Excel注解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E6%95%B0%E6%8D%AE%E5%9F%BA%E7%B1%BB"><span class="toc-number">2.2.</span> <span class="toc-text"> 定义数据基类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E7%B1%BB"><span class="toc-number">2.3.</span> <span class="toc-text"> 工具类</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-number">3.</span> <span class="toc-text"> 测试</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">4.</span> <span class="toc-text"> 最后</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-java-poi-import-image" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Java开发中如何用POI导入包含图片的Excel文件
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/01/30/java-poi-import-image/" class="article-date">
+	  <time datetime="2021-01-30T13:44:26.000Z" itemprop="datePublished">2021-01-30</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/java/">java</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/excel/" rel="tag">excel</a>, <a class="article-tag-link-link" href="/tags/java/" rel="tag">java</a>, <a class="article-tag-link-link" href="/tags/poi/" rel="tag">poi</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2021/01/30/java-poi-import-image/" class="leancloud_visitors"  data-flag-title="Java开发中如何用POI导入包含图片的Excel文件">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/01/30/java-poi-import-image/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
+<p>前导知识</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/YALOH4Xo8ItXsq9BRTP-_Q">Java开发中如何用POI优雅的导出Excel文件</a>,</li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/pgJw8mD-D89nzblKo_ysWQ">Java开发中如何用POI优雅的导入Excel文件</a></li>
+</ul>
+<p>本篇基于 <code>注解</code> + <code>反射</code> 实现Excel导入功能的实现。</p>
+<p>原想把图片上传等方法抽象出来封装一个工具jar, 大家根据业务不同实现不同的逻辑, 由于时间原因, 本篇直接返回图片bytes, 在业务层处理~, 大家如有需求，自行修改源码</p>
+<img src="https://gitee.com/idea360/oss/raw/master/images/poi-import-image.png" style="zoom:50%" />
+<h1 id="实现"><a class="markdownIt-Anchor" href="#实现"></a> 实现</h1>
+<p>还是老规矩, 直接上代码, 说明看注释。</p>
+<h2 id="定义excel注解"><a class="markdownIt-Anchor" href="#定义excel注解"></a> 定义Excel注解</h2>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.excel;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.*;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> cuishiying</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021-01-22</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Target(ElementType.FIELD)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> ExcelHeader &#123;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">enum</span> <span class="title">Type</span> </span>&#123;TEXT, IMAGE&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 表头</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">String <span class="title">value</span><span class="params">()</span> <span class="keyword">default</span> &quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 列索引</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">columnIndex</span><span class="params">()</span> <span class="keyword">default</span> 0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 字段类型</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Type <span class="title">type</span><span class="params">()</span> <span class="keyword">default</span> Type.TEXT</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="定义数据基类"><a class="markdownIt-Anchor" href="#定义数据基类"></a> 定义数据基类</h2>
+<p>由于图片和数据需要做对应并回填到实体字段中, 所以这里抽取了实体基类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> cuishiying</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021-01-22</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExcelData</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 行号</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@ExcelHeader(value = &quot;行号&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String rowIndex;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getRowIndex</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> rowIndex;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setRowIndex</span><span class="params">(String rowIndex)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.rowIndex = rowIndex;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;ExcelData&#123;&quot;</span> +</span><br><span class="line">                <span class="string">&quot;rowIndex=&#x27;&quot;</span> + rowIndex + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&#x27;&#125;&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="工具类"><a class="markdownIt-Anchor" href="#工具类"></a> 工具类</h2>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.excel;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.lang3.tuple.Pair;</span><br><span class="line"><span class="keyword">import</span> org.apache.poi.hssf.usermodel.HSSFPatriarch;</span><br><span class="line"><span class="keyword">import</span> org.apache.poi.hssf.usermodel.HSSFShape;</span><br><span class="line"><span class="keyword">import</span> org.apache.poi.hssf.usermodel.HSSFSheet;</span><br><span class="line"><span class="keyword">import</span> org.apache.poi.ss.usermodel.*;</span><br><span class="line"><span class="keyword">import</span> org.apache.poi.xssf.usermodel.XSSFDrawing;</span><br><span class="line"><span class="keyword">import</span> org.apache.poi.xssf.usermodel.XSSFShape;</span><br><span class="line"><span class="keyword">import</span> org.apache.poi.xssf.usermodel.XSSFSheet;</span><br><span class="line"><span class="keyword">import</span> org.springframework.util.ReflectionUtils;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.FileOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStream;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.math.BigDecimal;</span><br><span class="line"><span class="keyword">import</span> java.time.LocalDateTime;</span><br><span class="line"><span class="keyword">import</span> java.time.ZoneId;</span><br><span class="line"><span class="keyword">import</span> java.time.format.DateTimeFormatter;</span><br><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.StreamSupport;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> java.util.stream.Collectors.toList;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> java.util.stream.Collectors.toMap;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> cuishiying</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021-01-22</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExcelUtils</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(<span class="string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span>);</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String ROW_INDEX = <span class="string">&quot;rowIndex&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> &lt;T extends ExcelData&gt; <span class="function">List&lt;T&gt; <span class="title">importExcel</span><span class="params">(InputStream inputStream, Class&lt;T&gt; clz)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">// 返回数据</span></span><br><span class="line">        List&lt;T&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        Workbook workbook = WorkbookFactory.create(inputStream);</span><br><span class="line">        <span class="comment">// 读取第一个sheet</span></span><br><span class="line">        Sheet sheet = workbook.getSheetAt(<span class="number">0</span>);</span><br><span class="line">        <span class="comment">// 获取最大行数(或者sheet.getLastRowNum())</span></span><br><span class="line">        <span class="keyword">int</span> rownum = sheet.getPhysicalNumberOfRows();</span><br><span class="line">        <span class="comment">// 反射获取字段</span></span><br><span class="line">        Field[] fields = clz.getDeclaredFields();</span><br><span class="line">        <span class="comment">// 获取第一行(表头)</span></span><br><span class="line">        Row row = sheet.getRow(<span class="number">0</span>);</span><br><span class="line">        <span class="comment">// 获取最大列数</span></span><br><span class="line">        <span class="keyword">int</span> column = row.getPhysicalNumberOfCells();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 表头校验</span></span><br><span class="line">        checkExcelHeader(fields, row);</span><br><span class="line">        log.info(<span class="string">&quot;Excel导入, ts=[&#123;&#125;], rows=[&#123;&#125;], column=[&#123;&#125;]&quot;</span>, LocalDateTime.now(), rownum, column);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 处理行数据</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i&lt;rownum; i++) &#123;</span><br><span class="line"></span><br><span class="line">            row = sheet.getRow(i);</span><br><span class="line">            <span class="comment">// 遇到空行则结束</span></span><br><span class="line">            <span class="keyword">if</span> (row == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            T instance = clz.getDeclaredConstructor().newInstance();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 处理列数据</span></span><br><span class="line">            <span class="keyword">for</span> (Field field : fields) &#123;</span><br><span class="line">                <span class="keyword">if</span> (field.isAnnotationPresent(ExcelHeader.class)) &#123;</span><br><span class="line">                    <span class="comment">// 设置属性可访问</span></span><br><span class="line">                    ReflectionUtils.makeAccessible(field);</span><br><span class="line">                    Cell cell = getCell(row, field);</span><br><span class="line">                    <span class="keyword">if</span> (cell == <span class="keyword">null</span>) &#123;</span><br><span class="line">                        <span class="keyword">continue</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="comment">// 获取列值</span></span><br><span class="line">                    Object value = getCellValue(cell);</span><br><span class="line">                    <span class="comment">// 设置属性</span></span><br><span class="line">                    setFieldValue(instance, field, value);</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            setRowIndex(clz, instance, row.getRowNum());</span><br><span class="line">            list.add(instance);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (log.isDebugEnabled()) &#123;</span><br><span class="line">            log.debug(<span class="string">&quot;上传数据=&#123;&#125;&quot;</span>, list.toString());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;Image&gt; <span class="title">getImagesFromExcel</span><span class="params">(InputStream inputStream)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        Workbook workbook = WorkbookFactory.create(inputStream);</span><br><span class="line">        <span class="comment">// 读取第一个sheet</span></span><br><span class="line">        Sheet sheet = workbook.getSheetAt(<span class="number">0</span>);</span><br><span class="line">        <span class="comment">// 获取第一个sheet的图片数据</span></span><br><span class="line">        <span class="keyword">return</span> getImagesFromExcel(sheet);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 校验表头是否合法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">checkExcelHeader</span><span class="params">(Field[] fields, Row row)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (Field field : fields) &#123;</span><br><span class="line">            <span class="keyword">if</span> (field.isAnnotationPresent(ExcelHeader.class)) &#123;</span><br><span class="line">                Cell cell = getCell(row, field);</span><br><span class="line">                <span class="keyword">if</span> (cell == <span class="keyword">null</span> || (Objects.nonNull(getCellValue(cell)) &amp;&amp; !getCellValue(cell).equals(field.getAnnotation(ExcelHeader.class).value()))) &#123;</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;Excel格式错误&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 为每行数据添加行号</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> &lt;T extends ExcelData&gt; <span class="function"><span class="keyword">void</span> <span class="title">setRowIndex</span><span class="params">(Class&lt;T&gt; clz, T instance, Object rowIndex)</span> <span class="keyword">throws</span> NoSuchFieldException, IllegalAccessException </span>&#123;</span><br><span class="line">        Field field = clz.getSuperclass().getDeclaredField(ROW_INDEX);</span><br><span class="line">        ReflectionUtils.makeAccessible(field);</span><br><span class="line">        setFieldValue(instance, field, rowIndex);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 从Sheet中提取所有图片</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> List&lt;Image&gt; <span class="title">getImagesFromExcel</span><span class="params">(Sheet sheet)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (sheet <span class="keyword">instanceof</span> XSSFSheet) &#123;</span><br><span class="line">            <span class="comment">// Excel 2007</span></span><br><span class="line">            XSSFDrawing patriarch = (XSSFDrawing) sheet.createDrawingPatriarch();</span><br><span class="line">            List&lt;XSSFShape&gt; shapes = patriarch.getShapes();</span><br><span class="line">            <span class="keyword">return</span> convertShape2Image(sheet, shapes);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (sheet <span class="keyword">instanceof</span> HSSFSheet) &#123;</span><br><span class="line">            <span class="comment">// Excel 2003</span></span><br><span class="line">            HSSFPatriarch patriarch = (HSSFPatriarch) sheet.createDrawingPatriarch();</span><br><span class="line">            List&lt;HSSFShape&gt; shapes = patriarch.getChildren();</span><br><span class="line">            <span class="keyword">return</span> convertShape2Image(sheet, shapes);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> Collections.emptyList();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 将Shape转换为图片</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> List&lt;Image&gt; <span class="title">convertShape2Image</span><span class="params">(Sheet sheet, Collection&lt;? extends Shape&gt; shapes)</span> </span>&#123;</span><br><span class="line">        Map&lt;Integer, <span class="keyword">byte</span>[]&gt; imageByLocations = shapes.stream()</span><br><span class="line">                .filter(Picture.class::isInstance)</span><br><span class="line">                .map(s -&gt; (Picture) s)</span><br><span class="line">                .map(<span class="keyword">this</span>::toMapEntry)</span><br><span class="line">                .collect(toMap(Pair::getKey, Pair::getValue));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> StreamSupport.stream(sheet.spliterator(), <span class="keyword">false</span>)</span><br><span class="line">                .filter(<span class="keyword">this</span>::isNotHeader)</span><br><span class="line">                .map(row -&gt; <span class="keyword">new</span> Image(String.valueOf(row.getRowNum()), imageByLocations.get(row.getRowNum())))</span><br><span class="line">                .collect(toList());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断是否为标题头</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isNotHeader</span><span class="params">(Row row)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> row.getRowNum() != <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Pair&lt;Integer, <span class="keyword">byte</span>[]&gt; toMapEntry(Picture picture) &#123;</span><br><span class="line">        <span class="keyword">byte</span>[] data = picture.getPictureData().getData();</span><br><span class="line">        ClientAnchor anchor = picture.getClientAnchor();</span><br><span class="line">        <span class="keyword">if</span> (log.isDebugEnabled()) &#123;</span><br><span class="line">            log.debug(<span class="string">&quot;行: &#123;&#125;, 列: &#123;&#125;, 格式: &#123;&#125;&quot;</span>, anchor.getRow1(), anchor.getCol1(), picture.getPictureData().suggestFileExtension());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> Pair.of(anchor.getRow1(), data);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 图片包装类</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Image</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 行号, 作为唯一id</span></span><br><span class="line">        String rowIndex;</span><br><span class="line">        <span class="comment">// 图片数据</span></span><br><span class="line">        <span class="keyword">byte</span>[] bytes;</span><br><span class="line"></span><br><span class="line">        Image(String rowIndex, <span class="keyword">byte</span>[] bytes) &#123;</span><br><span class="line">            <span class="keyword">this</span>.rowIndex = rowIndex;</span><br><span class="line">            <span class="keyword">this</span>.bytes = bytes;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ImageUrl</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 行号, 作为唯一id</span></span><br><span class="line">        String rowIndex;</span><br><span class="line">        <span class="comment">// 图片url</span></span><br><span class="line">        String url;</span><br><span class="line"></span><br><span class="line">        ImageUrl(String rowIndex, String url) &#123;</span><br><span class="line">            <span class="keyword">this</span>.rowIndex = rowIndex;</span><br><span class="line">            <span class="keyword">this</span>.url = url;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> Object <span class="title">getCellValue</span><span class="params">(Cell cell)</span> </span>&#123;</span><br><span class="line">        CellType cellType = cell.getCellType();</span><br><span class="line">        Object cellValue = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">switch</span> (cellType) &#123;</span><br><span class="line">            <span class="keyword">case</span> STRING:</span><br><span class="line">                cellValue = cell.getStringCellValue();</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> BOOLEAN:</span><br><span class="line">                cellValue = cell.getBooleanCellValue();</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> ERROR:</span><br><span class="line">                cellValue = cell.getErrorCellValue();</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> NUMERIC:</span><br><span class="line">                <span class="comment">// 数值型</span></span><br><span class="line">                <span class="keyword">if</span> (DateUtil.isCellDateFormatted(cell)) &#123;</span><br><span class="line">                    <span class="comment">// 日期类型</span></span><br><span class="line">                    Date d = cell.getDateCellValue();</span><br><span class="line">                    cellValue = dateTimeFormatter.format(LocalDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault()));</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">double</span> numericCellValue = cell.getNumericCellValue();</span><br><span class="line">                    BigDecimal bdVal = BigDecimal.valueOf(numericCellValue);</span><br><span class="line">                    <span class="keyword">if</span> ((bdVal + <span class="string">&quot;.0&quot;</span>).equals(Double.toString(numericCellValue))) &#123;</span><br><span class="line">                        <span class="comment">// 整型</span></span><br><span class="line">                        cellValue = bdVal;</span><br><span class="line">                    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (String.valueOf(numericCellValue).contains(<span class="string">&quot;E10&quot;</span>)) &#123;</span><br><span class="line">                        <span class="comment">// 科学记数法</span></span><br><span class="line">                        cellValue = BigDecimal.valueOf(numericCellValue).toPlainString();</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="comment">// 浮点型</span></span><br><span class="line">                        cellValue = numericCellValue;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (log.isDebugEnabled()) &#123;</span><br><span class="line">            log.debug(<span class="string">&quot;cellType=&#123;&#125;, cellValue=&#123;&#125;&quot;</span>, cellType.name(), cellValue);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> cellValue;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">setFieldValue</span><span class="params">(T instance, Field field, Object value)</span> <span class="keyword">throws</span> IllegalAccessException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (field.getType() == <span class="keyword">int</span>.class || field.getType() == Integer.class) &#123;</span><br><span class="line">            field.set(instance, value);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (field.getType() == <span class="keyword">long</span>.class || field.getType() == Long.class) &#123;</span><br><span class="line">            field.set(instance, value);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (field.getType() == <span class="keyword">double</span>.class || field.getType() == Double.class) &#123;</span><br><span class="line">            field.set(instance, value);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (field.getType() == String.class) &#123;</span><br><span class="line">            field.set(instance, String.valueOf(value));</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (field.getType() == LocalDateTime.class) &#123;</span><br><span class="line">            field.set(instance, LocalDateTime.parse(String.valueOf(value), dateTimeFormatter));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> Cell <span class="title">getCell</span><span class="params">(Row row, Field field)</span> </span>&#123;</span><br><span class="line">        ExcelHeader annotation = field.getAnnotation(ExcelHeader.class);</span><br><span class="line">        <span class="keyword">return</span> row.getCell(annotation.columnIndex());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">saveImage2Disk</span><span class="params">(<span class="keyword">byte</span>[] data, String path, String imageName, String ext)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        String filePath = path + imageName + <span class="string">&quot;.&quot;</span> + ext;</span><br><span class="line">        log.info(<span class="string">&quot;saveImage2Disk: [&#123;&#125;]&quot;</span>, filePath);</span><br><span class="line">        FileOutputStream out = <span class="keyword">new</span> FileOutputStream(filePath);</span><br><span class="line">        out.write(data);</span><br><span class="line">        out.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="测试"><a class="markdownIt-Anchor" href="#测试"></a> 测试</h1>
+<p>假设我们需要导入微信相关信息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.excel;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"><span class="keyword">import</span> lombok.ToString;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> cuishiying</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021-01-22</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@ToString(callSuper = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeixinData</span> <span class="keyword">extends</span> <span class="title">ExcelData</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 号码池名称</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@ExcelHeader(value = &quot;号码池名称&quot;, columnIndex = 0)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 微信号</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@ExcelHeader(value = &quot;微信号&quot;, columnIndex = 1)</span></span><br><span class="line">    <span class="keyword">private</span> String weixin;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 微信二维码</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@ExcelHeader(value = &quot;微信二维码&quot;, columnIndex = 2, type = ExcelHeader.Type.IMAGE)</span></span><br><span class="line">    <span class="keyword">private</span> String qrCode;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 权重</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@ExcelHeader(value = &quot;权重&quot;, columnIndex = 3)</span></span><br><span class="line">    <span class="keyword">private</span> String weight;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 启用禁用</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@ExcelHeader(value = &quot;状态&quot;, columnIndex = 4)</span></span><br><span class="line">    <span class="keyword">private</span> String enable;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>模拟导入Excel文件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> cuishiying</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021-01-22</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        String excelFilePath = <span class="string">&quot;/Users/cuishiying/Desktop/微信号码池导入模板2003.xls&quot;</span>;</span><br><span class="line">        ExcelUtils excelUtils = <span class="keyword">new</span> ExcelUtils();</span><br><span class="line">        List&lt;WeixinData&gt; weixinData = excelUtils.importExcel(<span class="keyword">new</span> FileInputStream(excelFilePath), WeixinData.class);</span><br><span class="line">        List&lt;ExcelUtils.Image&gt; imagesFromExcel = excelUtils.getImagesFromExcel(<span class="keyword">new</span> FileInputStream(excelFilePath));</span><br><span class="line">        log.info(weixinData.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">21:43:16.084 [main] INFO com.example.excel.Main - [WeixinData(super&#x3D;ExcelData&#123;rowIndex&#x3D;&#39;1&#39;&#125;, name&#x3D;号码池1, weixin&#x3D;mini-code1, qrCode&#x3D;null, weight&#x3D;10.0, enable&#x3D;启用), WeixinData(super&#x3D;ExcelData&#123;rowIndex&#x3D;&#39;2&#39;&#125;, name&#x3D;号码池2, weixin&#x3D;moni-code2, qrCode&#x3D;null, weight&#x3D;20.0, enable&#x3D;启用)]</span><br></pre></td></tr></table></figure>
+<h1 id="最后"><a class="markdownIt-Anchor" href="#最后"></a> 最后</h1>
+<p>本文到此结束，感谢阅读。如果您觉得不错，请关注公众号【当我遇上你】支持一下。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2021/01/30/java-poi-import-image/" title="Java开发中如何用POI导入包含图片的Excel文件" target="_blank" rel="external">https://idea360.cn/2021/01/30/java-poi-import-image/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2021/02/01/java8-CompletableFuture/" title="java8异步任务CompletableFuture"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2021/01/18/springboot-prometheus/" title="SpringBoot监控之prometheus"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

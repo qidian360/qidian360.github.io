@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  <meta name="google-site-verification" content="zo0LqAAU1ik3Yk5Gdqg2DpsQI1Xlhh7jC07I0IGeyVc" />
+  <meta name="baidu-site-verification" content="6LE45O63Sc" />
+  <!-- 谷歌广告-->
+  <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  
+  
+  <title>9.各种内部类和枚举类的使用 + 面试题 | 当我遇上你</title>
+  <meta name="description" content="各种内部类和枚举类的使用 + 面试题 内部类不仅经常出现在各种面试题中，还会在 Java 源码中频频出现，因此只有搞明白了 Java 内部类，才能搞定面试和看懂各种 Java 源码。  内部类 Java 内部类，分为以下四种：  成员内部类 静态成员内部类 局部内部类 匿名内部类  下面分别来看这些内部类的使用。  成员内部类  定义 在一个类中定义了另一个类，则将定义在类中的那个类称之为成员内">
+<meta property="og:type" content="article">
+<meta property="og:title" content="9.各种内部类和枚举类的使用 + 面试题">
+<meta property="og:url" content="https://idea360.cn/2020/10/08/interview-java-9/index.html">
+<meta property="og:site_name" content="当我遇上你">
+<meta property="og:description" content="各种内部类和枚举类的使用 + 面试题 内部类不仅经常出现在各种面试题中，还会在 Java 源码中频频出现，因此只有搞明白了 Java 内部类，才能搞定面试和看懂各种 Java 源码。  内部类 Java 内部类，分为以下四种：  成员内部类 静态成员内部类 局部内部类 匿名内部类  下面分别来看这些内部类的使用。  成员内部类  定义 在一个类中定义了另一个类，则将定义在类中的那个类称之为成员内">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images.gitbook.cn/64e7ff70-c7b3-11e9-a87f-3bdeb236b9c4">
+<meta property="og:image" content="https://images.gitbook.cn/7d00d230-c7b3-11e9-9e56-8d3dec542204">
+<meta property="og:image" content="https://images.gitbook.cn/8feae480-c7b3-11e9-9e56-8d3dec542204">
+<meta property="article:published_time" content="2020-10-08T06:08:10.000Z">
+<meta property="article:modified_time" content="2020-10-08T06:28:28.914Z">
+<meta property="article:author" content="当我遇上你">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="面试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://images.gitbook.cn/64e7ff70-c7b3-11e9-a87f-3bdeb236b9c4">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://idea360.cn/2020/10/08/interview-java-9/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="https://gitee.com/idea360/oss/raw/master/images/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-white" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/qidian360" target="_blank">
+          <img class="img-circle img-rotate" src="https://gitee.com/idea360/oss/raw/master/images/one.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">当我遇上你</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md"></h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p><div><img src="https://gitee.com/idea360/oss/raw/master/images/wechat-qr-code.png" width="140px" height="140px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 固定广告位 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="7881226079"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%84%E7%A7%8D%E5%86%85%E9%83%A8%E7%B1%BB%E5%92%8C%E6%9E%9A%E4%B8%BE%E7%B1%BB%E7%9A%84%E4%BD%BF%E7%94%A8-%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text"> 各种内部类和枚举类的使用 + 面试题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E9%83%A8%E7%B1%BB"><span class="toc-number">1.1.</span> <span class="toc-text"> 内部类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%90%E5%91%98%E5%86%85%E9%83%A8%E7%B1%BB"><span class="toc-number">1.1.1.</span> <span class="toc-text"> 成员内部类</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-number">1.1.1.1.</span> <span class="toc-text"> 定义</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8"><span class="toc-number">1.1.1.2.</span> <span class="toc-text"> 使用</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%88%90%E5%91%98%E5%86%85%E9%83%A8%E7%B1%BB%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="toc-number">1.1.1.3.</span> <span class="toc-text"> 成员内部类的创建</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%86%85%E9%83%A8%E7%B1%BB%E8%AE%BF%E9%97%AE%E5%A4%96%E9%83%A8%E7%B1%BB"><span class="toc-number">1.1.1.4.</span> <span class="toc-text"> 内部类访问外部类</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%A4%96%E9%83%A8%E7%B1%BB%E8%AE%BF%E9%97%AE%E5%86%85%E9%83%A8%E7%B1%BB"><span class="toc-number">1.1.1.5.</span> <span class="toc-text"> 外部类访问内部类</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">1.1.1.6.</span> <span class="toc-text"> 小结</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E6%88%90%E5%91%98%E5%86%85%E9%83%A8%E7%B1%BB"><span class="toc-number">1.1.2.</span> <span class="toc-text"> 静态成员内部类</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89-2"><span class="toc-number">1.1.2.1.</span> <span class="toc-text"> 定义</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-2"><span class="toc-number">1.1.2.2.</span> <span class="toc-text"> 使用</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B1%80%E9%83%A8%E5%86%85%E9%83%A8%E7%B1%BB"><span class="toc-number">1.1.3.</span> <span class="toc-text"> 局部内部类</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89-3"><span class="toc-number">1.1.3.1.</span> <span class="toc-text"> 定义</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-3"><span class="toc-number">1.1.3.2.</span> <span class="toc-text"> 使用</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%B1%80%E9%83%A8%E5%86%85%E9%83%A8%E7%B1%BB%E7%89%B9%E7%82%B9"><span class="toc-number">1.1.3.3.</span> <span class="toc-text"> 局部内部类特点</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8C%BF%E5%90%8D%E5%86%85%E9%83%A8%E7%B1%BB"><span class="toc-number">1.1.4.</span> <span class="toc-text"> 匿名内部类</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89-4"><span class="toc-number">1.1.4.1.</span> <span class="toc-text"> 定义</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-4"><span class="toc-number">1.1.4.2.</span> <span class="toc-text"> 使用</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8C%BF%E5%90%8D%E5%86%85%E9%83%A8%E7%B1%BB%E7%89%B9%E7%82%B9"><span class="toc-number">1.1.4.3.</span> <span class="toc-text"> 匿名内部类特点</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%9A%E4%B8%BE%E7%B1%BB"><span class="toc-number">1.2.</span> <span class="toc-text"> 枚举类</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9E%9A%E4%B8%BE%E7%B1%BB%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">1.2.0.1.</span> <span class="toc-text"> 枚举类的使用</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83"><span class="toc-number">1.2.0.2.</span> <span class="toc-text"> 枚举类命名规范</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%89%A9%E5%B1%95%E6%9E%9A%E4%B8%BE%E7%B1%BB"><span class="toc-number">1.2.0.3.</span> <span class="toc-text"> 扩展枚举类</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="toc-number">1.3.</span> <span class="toc-text"> 相关面试题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1java-%E4%B8%AD%E7%9A%84%E5%86%85%E9%83%A8%E7%B1%BB%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-number">1.3.1.</span> <span class="toc-text"> 1.Java 中的内部类有哪些？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E4%BB%A5%E4%B8%8B%E5%85%B3%E4%BA%8E%E5%8C%BF%E5%90%8D%E5%86%85%E9%83%A8%E7%B1%BB%E8%AF%B4%E6%B3%95%E9%94%99%E8%AF%AF%E7%9A%84%E6%98%AF"><span class="toc-number">1.3.2.</span> <span class="toc-text"> 2.以下关于匿名内部类说法错误的是？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E4%BB%A5%E4%B8%8B%E6%9E%9A%E4%B8%BE%E7%B1%BB%E6%AF%94%E8%BE%83%E5%92%8Cequals%E7%BB%93%E6%9E%9C%E4%B8%80%E8%87%B4%E5%90%97%E4%B8%BA%E4%BB%80%E4%B9%88"><span class="toc-number">1.3.3.</span> <span class="toc-text"> 3.以下枚举类比较“&#x3D;&#x3D;”和“equals”结果一致吗？为什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%E4%BD%BF%E7%94%A8%E9%9D%99%E6%80%81%E5%86%85%E9%83%A8%E7%B1%BB%E7%9A%84%E5%A5%BD%E5%A4%84%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-number">1.3.4.</span> <span class="toc-text"> 4.使用静态内部类的好处有哪些？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5%E4%BB%A5%E4%B8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E7%9A%84%E7%BB%93%E6%9E%9C%E6%98%AF"><span class="toc-number">1.3.5.</span> <span class="toc-text"> 5.以下代码执行的结果是？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6%E6%88%90%E5%91%98%E5%86%85%E9%83%A8%E7%B1%BB%E5%92%8C%E5%B1%80%E9%83%A8%E5%86%85%E9%83%A8%E7%B1%BB%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-number">1.3.6.</span> <span class="toc-text"> 6.成员内部类和局部内部类有什么区别？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8%E5%86%85%E9%83%A8%E7%B1%BB%E5%86%85%E9%83%A8%E7%B1%BB%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-number">1.3.7.</span> <span class="toc-text"> 7.为什么要使用内部类？内部类的使用场景有哪些？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8%E4%BB%A5%E4%B8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E7%9A%84%E7%BB%93%E6%9E%9C%E6%98%AF"><span class="toc-number">1.3.8.</span> <span class="toc-text"> 8.以下代码执行的结果是？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9%E6%9E%9A%E4%B8%BE%E6%9C%89%E5%93%AA%E4%BA%9B%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.3.9.</span> <span class="toc-text"> 9.枚举有哪些应用场景？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9C%A8-jvm-%E4%B8%AD%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84"><span class="toc-number">1.3.10.</span> <span class="toc-text"> 10.枚举类在 JVM 中是如何实现的？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#11%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%8F%AF%E4%BB%A5%E8%A2%AB%E7%BB%A7%E6%89%BF%E5%90%97"><span class="toc-number">1.3.11.</span> <span class="toc-text"> 11.枚举类可以被继承吗？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#12%E6%9E%9A%E4%B8%BE%E7%B1%BB%E6%98%AF%E5%90%A6%E6%98%AF%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84"><span class="toc-number">1.3.12.</span> <span class="toc-text"> 12.枚举类是否是线程安全的？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#13%E6%9E%9A%E4%B8%BE%E6%98%AF%E5%90%A6%E5%8F%AF%E4%BB%A5%E8%A2%AB%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">1.3.13.</span> <span class="toc-text"> 13.枚举是否可以被序列化？</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.4.</span> <span class="toc-text"> 总结</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-interview-java-9" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      9.各种内部类和枚举类的使用 + 面试题
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/10/08/interview-java-9/" class="article-date">
+	  <time datetime="2020-10-08T06:08:10.000Z" itemprop="datePublished">2020-10-08</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Java%E9%9D%A2%E8%AF%95%E5%85%A8%E8%A7%A3%E6%9E%90/">Java面试全解析</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/java/" rel="tag">java</a>, <a class="article-tag-link-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+	<span class="article-read hidden-xs">
+    	<i class="icon icon-eye-fill" aria-hidden="true"></i>
+    	<span id="/2020/10/08/interview-java-9/" class="leancloud_visitors"  data-flag-title="9.各种内部类和枚举类的使用 + 面试题">
+			<span class="leancloud-visitors-count">0</span>
+		</span>
+    </span>
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/10/08/interview-java-9/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="各种内部类和枚举类的使用-面试题"><a class="markdownIt-Anchor" href="#各种内部类和枚举类的使用-面试题"></a> 各种内部类和枚举类的使用 + 面试题</h2>
+<p>内部类不仅经常出现在各种面试题中，还会在 Java 源码中频频出现，因此只有搞明白了 Java 内部类，才能搞定面试和看懂各种 Java 源码。</p>
+<h3 id="内部类"><a class="markdownIt-Anchor" href="#内部类"></a> 内部类</h3>
+<p>Java 内部类，分为以下四种：</p>
+<ul>
+<li>成员内部类</li>
+<li>静态成员内部类</li>
+<li>局部内部类</li>
+<li>匿名内部类</li>
+</ul>
+<p>下面分别来看这些内部类的使用。</p>
+<h4 id="成员内部类"><a class="markdownIt-Anchor" href="#成员内部类"></a> 成员内部类</h4>
+<h5 id="定义"><a class="markdownIt-Anchor" href="#定义"></a> <strong>定义</strong></h5>
+<p>在一个类中定义了另一个类，则将定义在类中的那个类称之为成员内部类。成员内部类也是最普通的内部类。</p>
+<h5 id="使用"><a class="markdownIt-Anchor" href="#使用"></a> <strong>使用</strong></h5>
+<p>成员内部类的使用示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">class Outer &#123;</span><br><span class="line">    public Outer() &#123;</span><br><span class="line">        System.out.println(&quot;Outer Class.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    class Inner &#123;</span><br><span class="line">        public void sayHi() &#123;</span><br><span class="line">            System.out.println(&quot;Hi, Inner.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中 Inner 类则为成员内部类。<br />
+而成员内部类的创建和使用，请参考以下完整的示例代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">class InnerTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Outer out &#x3D; new Outer();</span><br><span class="line">        &#x2F;&#x2F; 创建成员内部类</span><br><span class="line">        Outer.Inner inner &#x3D; out.new Inner();</span><br><span class="line">        inner.sayHi();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class Outer &#123;</span><br><span class="line">    public Outer() &#123;</span><br><span class="line">        System.out.println(&quot;Outer Class.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    class Inner &#123;</span><br><span class="line">        public void sayHi() &#123;</span><br><span class="line">            System.out.println(&quot;Hi, Inner.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="成员内部类的创建"><a class="markdownIt-Anchor" href="#成员内部类的创建"></a> <strong>成员内部类的创建</strong></h5>
+<p>语法：</p>
+<blockquote>
+<p>Outer.Inner inner = new Outer().new Inner();</p>
+</blockquote>
+<h5 id="内部类访问外部类"><a class="markdownIt-Anchor" href="#内部类访问外部类"></a> <strong>内部类访问外部类</strong></h5>
+<p>语法：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://Outer.this.xxx">Outer.this.xxx</a></p>
+</blockquote>
+<p>代码示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">class Outer &#123;</span><br><span class="line">    private String name &#x3D; &quot;OuterClass&quot;;</span><br><span class="line">    public void sayHi() &#123;</span><br><span class="line">        System.out.println(&quot;Hi, Outer.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    class Inner &#123;</span><br><span class="line">        public void sayHi() &#123;</span><br><span class="line">            &#x2F;&#x2F; 内部类访问外部类</span><br><span class="line">            Outer.this.sayHi();</span><br><span class="line">            System.out.println(Outer.this.name);</span><br><span class="line">            System.out.println(&quot;Hi, Inner.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class InnerTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Outer.Inner inner &#x3D;  new Outer().new Inner();</span><br><span class="line">        inner.sayHi();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="外部类访问内部类"><a class="markdownIt-Anchor" href="#外部类访问内部类"></a> <strong>外部类访问内部类</strong></h5>
+<p>语法：</p>
+<blockquote>
+<p>new Inner().xxx</p>
+</blockquote>
+<p>代码示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">class Outer &#123;</span><br><span class="line">    public void sayHi() &#123;</span><br><span class="line">        System.out.println(new Inner().name);</span><br><span class="line">        System.out.println(&quot;Hi, Outer.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    private class Inner &#123;</span><br><span class="line">        String name &#x3D; &quot;InnerClass&quot;;</span><br><span class="line">        public void sayHi() &#123;</span><br><span class="line">            System.out.println(&quot;Hi, Inner.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class InnerTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        new Outer().sayHi();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="小结"><a class="markdownIt-Anchor" href="#小结"></a> <strong>小结</strong></h5>
+<ul>
+<li>成员内部类可直接访问外部类（使用：<a target="_blank" rel="noopener" href="http://xn--7rsq73fg6n.this.xxx">外部类.this.xxx</a>）；</li>
+<li>外部成员类要访问内部类，必须先建立成员内部类对象；</li>
+<li>成员内部类可使用任意作用域修饰（public、protected、默认、private）；</li>
+<li>成员内部类可访问外部类任何作用域修饰的属性和方法；</li>
+<li>外部类建立成员内部类对象之后，可以访问任何作用域修饰的内部类属性和方法。</li>
+</ul>
+<h4 id="静态成员内部类"><a class="markdownIt-Anchor" href="#静态成员内部类"></a> 静态成员内部类</h4>
+<h5 id="定义-2"><a class="markdownIt-Anchor" href="#定义-2"></a> <strong>定义</strong></h5>
+<p>在一个类中定义了另一个 static 类，则将定义在类中的那个 static 类称之为静态成员内部类。</p>
+<p>静态成员内部类也就是给内部成员类加上 static 修饰符。</p>
+<h5 id="使用-2"><a class="markdownIt-Anchor" href="#使用-2"></a> <strong>使用</strong></h5>
+<p>静态成员内部类的使用示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">class OuterClass &#123;</span><br><span class="line">    public OuterClass() &#123;</span><br><span class="line">        System.out.println(&quot;OuterClass Init.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    protected static class InnerClass &#123;</span><br><span class="line">        public void sayHi() &#123;</span><br><span class="line">            System.out.println(&quot;Hi, InnerClass.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class InnerClassTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        OuterClass.InnerClass innerClass &#x3D; new OuterClass.InnerClass();</span><br><span class="line">        innerClass.sayHi();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>与内部成员类的创建方式 new Outer().new Inner() 不同，静态成员内部类可使用 new OuterClass.InnerClass() 的方式进行创建。</p>
+<p><strong>注意</strong>：不能从静态成员内部类中访问非静态外部类对象。</p>
+<h4 id="局部内部类"><a class="markdownIt-Anchor" href="#局部内部类"></a> 局部内部类</h4>
+<h5 id="定义-3"><a class="markdownIt-Anchor" href="#定义-3"></a> <strong>定义</strong></h5>
+<p>一个类定义在另一个类的局部（方法或者任意作用域），这个类就称之为局部内部类。</p>
+<h5 id="使用-3"><a class="markdownIt-Anchor" href="#使用-3"></a> <strong>使用</strong></h5>
+<p>局部内部类的使用示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">class OutClass &#123;</span><br><span class="line">    public void sayHi() &#123;</span><br><span class="line">        class InnerClass &#123;</span><br><span class="line">            InnerClass(String name) &#123;</span><br><span class="line">                System.out.println(&quot;InnerClass:&quot; + name);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(new InnerClass(&quot;Three&quot;));</span><br><span class="line">        System.out.println(&quot;Hi, OutClass&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class OutTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        new OutClass().sayHi();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="局部内部类特点"><a class="markdownIt-Anchor" href="#局部内部类特点"></a> <strong>局部内部类特点</strong></h5>
+<ul>
+<li>局部内部类不能使用任何访问修饰符；</li>
+<li>局部类如果在方法中，可以直接使用方法中的变量，不需要通过 <a target="_blank" rel="noopener" href="http://OutClass.this.xxx">OutClass.this.xxx</a> 的方式获得。</li>
+</ul>
+<h4 id="匿名内部类"><a class="markdownIt-Anchor" href="#匿名内部类"></a> 匿名内部类</h4>
+<h5 id="定义-4"><a class="markdownIt-Anchor" href="#定义-4"></a> <strong>定义</strong></h5>
+<p>没有名字的内部类就叫做匿名内部类。</p>
+<h5 id="使用-4"><a class="markdownIt-Anchor" href="#使用-4"></a> <strong>使用</strong></h5>
+<p>匿名内部类的使用示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">interface AnonymityOuter &#123;</span><br><span class="line">    void hi();</span><br><span class="line">&#125;</span><br><span class="line">class AnonymityTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        AnonymityOuter anonymityOuter &#x3D; new AnonymityOuter() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public void hi() &#123;</span><br><span class="line">                System.out.println(&quot;Hi, AnonymityOuter.&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        anonymityOuter.hi();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中，new AnonymityOuter() 之后的 {…} 大括号包含的部分就为匿名内部类。</p>
+<h5 id="匿名内部类特点"><a class="markdownIt-Anchor" href="#匿名内部类特点"></a> <strong>匿名内部类特点</strong></h5>
+<ul>
+<li>匿名内部类必须继承一个父类或者实现一个接口</li>
+<li>匿名内部类不能定义任何静态成员和方法</li>
+<li>匿名内部类中的方法不能是抽象的</li>
+</ul>
+<h3 id="枚举类"><a class="markdownIt-Anchor" href="#枚举类"></a> 枚举类</h3>
+<p>枚举类是 JDK 1.5 引入的新特性，使用关键字“enum”声明。枚举功能虽小，却非常实用，大大方便了程序的开发者。</p>
+<h5 id="枚举类的使用"><a class="markdownIt-Anchor" href="#枚举类的使用"></a> <strong>枚举类的使用</strong></h5>
+<p>请参考以下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">enum ColorEnum &#123;</span><br><span class="line">    RED,</span><br><span class="line">    BLUE,</span><br><span class="line">    YELLOW,</span><br><span class="line">    GREEN</span><br><span class="line">&#125;</span><br><span class="line">class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        ColorEnum color &#x3D; ColorEnum.GREEN;</span><br><span class="line">        switch (color) &#123;</span><br><span class="line">            case RED:</span><br><span class="line">                System.out.println(&quot;Red&quot;);</span><br><span class="line">                break;</span><br><span class="line">            case BLUE:</span><br><span class="line">                System.out.println(&quot;Blue&quot;);</span><br><span class="line">                break;</span><br><span class="line">            case YELLOW:</span><br><span class="line">                System.out.println(&quot;Yellow&quot;);</span><br><span class="line">                break;</span><br><span class="line">            case GREEN:</span><br><span class="line">                System.out.println(&quot;Green&quot;);</span><br><span class="line">                break;</span><br><span class="line">            default:</span><br><span class="line">                break;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="枚举类命名规范"><a class="markdownIt-Anchor" href="#枚举类命名规范"></a> <strong>枚举类命名规范</strong></h5>
+<p>《阿里巴巴 Java 开发手册》对枚举类的命名规范建议，如下图：</p>
+<p><img src="https://images.gitbook.cn/64e7ff70-c7b3-11e9-a87f-3bdeb236b9c4" alt="enter image description here" /></p>
+<h5 id="扩展枚举类"><a class="markdownIt-Anchor" href="#扩展枚举类"></a> <strong>扩展枚举类</strong></h5>
+<p>我们可以自定义一些枚举类方法，扩展枚举类的使用，请参考以下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">enum ColorsEnum &#123;</span><br><span class="line">    RED(&quot;红色&quot;, 1),</span><br><span class="line">    BLUE(&quot;蓝色&quot;, 2),</span><br><span class="line">    YELLOW(&quot;黄色&quot;, 3),</span><br><span class="line">    GREEN(&quot;绿色&quot;, 4);</span><br><span class="line">    ColorsEnum(String name, int index) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">        this.index &#x3D; index;</span><br><span class="line">    &#125;</span><br><span class="line">    private String name;</span><br><span class="line">    private int index;</span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line">    public int getIndex() &#123;</span><br><span class="line">        return index;</span><br><span class="line">    &#125;</span><br><span class="line">    public void setIndex(int index) &#123;</span><br><span class="line">        this.index &#x3D; index;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class EnumTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        System.out.println(ColorsEnum.RED.getName());</span><br><span class="line">        System.out.println(ColorsEnum.RED.getIndex());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行以上代码返回的结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">红色</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+<h3 id="相关面试题"><a class="markdownIt-Anchor" href="#相关面试题"></a> 相关面试题</h3>
+<h4 id="1java-中的内部类有哪些"><a class="markdownIt-Anchor" href="#1java-中的内部类有哪些"></a> 1.Java 中的内部类有哪些？</h4>
+<p>答：内部类包含以下 4 种：</p>
+<ul>
+<li>静态内部类：static class StaticInnerClass{}；</li>
+<li>成员内部类：private class InstanceInnerClass{}；</li>
+<li>局部内部类：定义在方法或者表达式内部；</li>
+<li>匿名内部类：(new Thread(){}).start()。</li>
+</ul>
+<h4 id="2以下关于匿名内部类说法错误的是"><a class="markdownIt-Anchor" href="#2以下关于匿名内部类说法错误的是"></a> 2.以下关于匿名内部类说法错误的是？</h4>
+<p>A：匿名内部类必须继承一个父类或者实现一个接口<br />
+B：匿名内部类中的方法不能是抽象的<br />
+C：匿名内部类可以实现接口的部分抽象方法<br />
+D：匿名内部类不能定义任何静态成员和方法</p>
+<p>答：C<br />
+题目解析：匿名内部类规定必须实现接口的所有抽象方法，否则程序会报错，如下图所示。</p>
+<p><img src="https://images.gitbook.cn/7d00d230-c7b3-11e9-9e56-8d3dec542204" alt="enter image description here" /></p>
+<h4 id="3以下枚举类比较和equals结果一致吗为什么"><a class="markdownIt-Anchor" href="#3以下枚举类比较和equals结果一致吗为什么"></a> 3.以下枚举类比较“==”和“equals”结果一致吗？为什么？</h4>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EnumTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ColorEnum redColor = ColorEnum.RED;</span><br><span class="line">        ColorEnum redColor2 = ColorEnum.RED;</span><br><span class="line">        System.out.println(redColor == redColor2);</span><br><span class="line">        System.out.println(redColor.equals(redColor2));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">ColorEnum</span> </span>&#123;</span><br><span class="line">    RED,</span><br><span class="line">    BLUE</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>答：结果一致，都是 <code>true</code>。<br />
+题目分析：因为枚举类重写了 equals 方法，equals 方法里直接使用的 <code>==</code> 比较的，而枚举类不能通过 new 进行创建，使用 ColorEnum.RED 得到的对象，其实使用的是对象的引用地址，所以 <code>==</code> 比较的结果一定是 true。equals 被重写的源码如下图：</p>
+<p><img src="https://images.gitbook.cn/8feae480-c7b3-11e9-9e56-8d3dec542204" alt="enter image description here" /></p>
+<h4 id="4使用静态内部类的好处有哪些"><a class="markdownIt-Anchor" href="#4使用静态内部类的好处有哪些"></a> 4.使用静态内部类的好处有哪些？</h4>
+<p>答：使用静态内部类的好处如下：<br />
+作用域不会扩散到包外；</p>
+<ul>
+<li>可以通过“外部类.内部类”的方式直接访问；</li>
+<li>内部类可以访问外部类中的所有静态属性和方法。</li>
+</ul>
+<h4 id="5以下代码执行的结果是"><a class="markdownIt-Anchor" href="#5以下代码执行的结果是"></a> 5.以下代码执行的结果是？</h4>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">class OuterClass &#123;</span><br><span class="line">    String name &#x3D; &quot;OuterClass&quot;;</span><br><span class="line">    protected static class InnerClass &#123;</span><br><span class="line">        String name &#x3D; &quot;InnerClass&quot;;</span><br><span class="line">        public void sayHi() &#123;</span><br><span class="line">            System.out.println(OuterClass.this.name);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class InnerClassTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        OuterClass.InnerClass innerClass &#x3D; new OuterClass.InnerClass();</span><br><span class="line">        innerClass.sayHi();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>答：程序报错。<br />
+题目解析：在静态成员内部类中不能直接访问非静态外部类，因此程序会报错。</p>
+<h4 id="6成员内部类和局部内部类有什么区别"><a class="markdownIt-Anchor" href="#6成员内部类和局部内部类有什么区别"></a> 6.成员内部类和局部内部类有什么区别？</h4>
+<p>答：内部成员类和局部内部类的区别如下。</p>
+<ul>
+<li>内部成员类可以使用任意访问修饰符，局部内部类不能使用任何访问修饰符；</li>
+<li>局部内部类是声明在外部类的方法或其他作用域范围内的，内部类是直接声明在外部类之中的，与方法和属性平级。</li>
+</ul>
+<h4 id="7为什么要使用内部类内部类的使用场景有哪些"><a class="markdownIt-Anchor" href="#7为什么要使用内部类内部类的使用场景有哪些"></a> 7.为什么要使用内部类？内部类的使用场景有哪些？</h4>
+<p>答：使用内部类的好处有以下两个。</p>
+<ul>
+<li>可以作为多继承的一种实现方式，最早内部类的实现就是平衡 Java 语言中没有多继承的一种方式；</li>
+<li>方便将存在一定逻辑关系的类组织在一起，又可以对外界隐藏。<br />
+内部类可以作为多继承的一种实现方式进行使用，因为每个内部类都能独立的继承一个类或接口，所以整个类就可以实现多继承。</li>
+</ul>
+<h4 id="8以下代码执行的结果是"><a class="markdownIt-Anchor" href="#8以下代码执行的结果是"></a> 8.以下代码执行的结果是？</h4>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">class Outer &#123;</span><br><span class="line">    public int num &#x3D; 1;</span><br><span class="line">    class Inner &#123;</span><br><span class="line">        public int num &#x3D; 2;</span><br><span class="line">        public void show() &#123;</span><br><span class="line">            int num &#x3D; 3;</span><br><span class="line">            System.out.println(num);</span><br><span class="line">            System.out.println(this.num);</span><br><span class="line">            System.out.println(Outer.this.num);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class InnerTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        new Outer().new Inner().show();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>答：输出内容如下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">3</span><br><span class="line">2</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+<h4 id="9枚举有哪些应用场景"><a class="markdownIt-Anchor" href="#9枚举有哪些应用场景"></a> 9.枚举有哪些应用场景？</h4>
+<p>答：枚举类的主要应用场景如下：<br />
+<strong>① 枚举类可作为高级的常量类</strong><br />
+示例代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">enum</span> <span class="title">Color</span> </span>&#123;</span><br><span class="line">    RED(<span class="string">&quot;#FF0000&quot;</span>, <span class="string">&quot;255,0,0&quot;</span>),</span><br><span class="line">    GREEN(<span class="string">&quot;#00FFFF&quot;</span>, <span class="string">&quot;0,255,255&quot;</span>),</span><br><span class="line">    YELLOW(<span class="string">&quot;#FFFF00&quot;</span>, <span class="string">&quot;255,255,0&quot;</span>);</span><br><span class="line">    String hex, rgb;</span><br><span class="line">    Color(String hex, String rgb) &#123;</span><br><span class="line"> <span class="keyword">this</span>.hex = hex;</span><br><span class="line"> <span class="keyword">this</span>.rgb = rgb;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>② 枚举类可方便的用于 switch 判断</strong><br />
+示例代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">switch</span>(color)</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">case</span> RED:</span><br><span class="line">    System.out.println(<span class="string">&quot;红灯停&quot;</span>);</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line"><span class="keyword">case</span> GREEN:</span><br><span class="line">    System.out.println(<span class="string">&quot;绿灯行&quot;</span>);</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line"><span class="keyword">case</span> YELLOW:</span><br><span class="line">    System.out.println(<span class="string">&quot;看情况&quot;</span>);</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line"><span class="keyword">default</span>:</span><br><span class="line">    System.out.println(<span class="string">&quot;灯坏了&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="10枚举类在-jvm-中是如何实现的"><a class="markdownIt-Anchor" href="#10枚举类在-jvm-中是如何实现的"></a> 10.枚举类在 JVM 中是如何实现的？</h4>
+<p>答：枚举类在 JVM（Java 虚拟机） 中其实是通过普通的 static final 形式实现的。<br />
+题目解析：我们使用 javap 命令来分析枚举类最终编译的结果，查看编译后的结果，就找到了枚举类在 JVM 中的具体实现了。<br />
+首先定义一个枚举类，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">DBEnum</span> </span>&#123;</span><br><span class="line">    ORACLE,</span><br><span class="line">    DB2,</span><br><span class="line">    MYSQL,</span><br><span class="line">    SQLSERVER</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再使用命令 <code>javac DBEnum.java</code> 编译 .class 文件，然后再使用命令 <code>javap DBEnum.class</code>，我们看到最终执行的结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Compiled from &quot;EnumTest.java&quot;</span><br><span class="line">final class DBEnum extends java.lang.Enum&lt;DBEnum&gt; &#123;</span><br><span class="line">public static final DBEnum ORACLE;</span><br><span class="line">public static final DBEnum DB2;</span><br><span class="line">public static final DBEnum MYSQL;</span><br><span class="line">public static final DBEnum SQLSERVER;</span><br><span class="line">public static DBEnum[] values();</span><br><span class="line">public static DBEnum valueOf(java.lang.String);</span><br><span class="line">static &#123;&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由此可以断定，枚举类在 JVM 中的实现也是通过普通的 static final 实现的。</p>
+<h4 id="11枚举类可以被继承吗"><a class="markdownIt-Anchor" href="#11枚举类可以被继承吗"></a> 11.枚举类可以被继承吗？</h4>
+<p>答：不能被继承，因为枚举类编译后的实际代码是 final class 的形式，类被 final 修饰了自然不能被继承。</p>
+<h4 id="12枚举类是否是线程安全的"><a class="markdownIt-Anchor" href="#12枚举类是否是线程安全的"></a> 12.枚举类是否是线程安全的？</h4>
+<p>答：枚举类是线程安全的，因为枚举类被编译后是 final class 的形式存在的，所以枚举类是线程安全的。</p>
+<h4 id="13枚举是否可以被序列化"><a class="markdownIt-Anchor" href="#13枚举是否可以被序列化"></a> 13.枚举是否可以被序列化？</h4>
+<p>答：枚举是可以被序列化的，Oracle 官方对此给出了说明，内容如下：</p>
+<blockquote>
+<p>Enum constants are serialized differently than ordinary serializable or externalizable objects. The serialized form of an enum constant consists solely of its name; field values of the constant are not transmitted. To serialize an enum constant, ObjectOutputStream writes the string returned by the constant’s name method. Like other serializable or externalizable objects, enum constants can function as the targets of back references appearing subsequently in the serialization stream. The process by which enum constants are serialized cannot be customized; any class-specific writeObject and writeReplace methods defined by enum types are ignored during serialization. Similarly, any serialPersistentFields or serialVersionUID field declarations are also ignored–all enum types have a fixed serialVersionUID of 0L</p>
+</blockquote>
+<p>原文地址：<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/api/java/io/ObjectOutputStream.html">https://docs.oracle.com/javase/8/docs/api/java/io/ObjectOutputStream.html</a><br />
+大致的意思是说：枚举的序列化和其他普通类的序列化不同，枚举序列化的时候，只是将枚举对象的 name 属性输出到结果中，反序列化的时候则是通过 java.lang.Enum 的 valueOf 方法根据名字查找枚举对象。</p>
+<h3 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h3>
+<p>通过本文我们系统地学习了 Java 的各种内部类：静态内部类、成员内部类、局部内部类、匿名内部类，知道了它们特点和区别，并学习了枚举类了使用，知道了枚举类在编译之后，其实还是普通的最终类（final class）。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <!--<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6442249173079218"
+     data-ad-slot="9150075714"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+-->
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://idea360.cn/2020/10/08/interview-java-9/" title="9.各种内部类和枚举类的使用 + 面试题" target="_blank" rel="external">https://idea360.cn/2020/10/08/interview-java-9/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/qidian360" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="https://gitee.com/idea360/oss/raw/master/images/one.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/qidian360" target="_blank"><span class="text-dark">当我遇上你</span><small class="ml-1x"></small></a></h3>
+        <div>勿在浮沙筑高楼</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/10/08/interview-java-10/" title="10.抽象类和接口的应用 + 面试题"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/10/08/interview-java-8/" title="8.类与 Object 的应用 + 面试题"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn collapsed" data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="wechat" data-mobile-sites="wechat"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/zfbsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="https://gitee.com/idea360/oss/raw/master/images/wxsk.JPG" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/qidian360" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 当我遇上你
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'nPtA4r7LjqdHMXOW4Gs9yQz0',
+    appKey: 'UUYHyTz9su4cY3J1XDKWlxIH',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: true
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>
