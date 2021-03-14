@@ -21,16 +21,16 @@
   <script data-ad-client="ca-pub-6442249173079218" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
   
   
-  <title>【Spring源码解析】生命周期-BeanPostProcessor-后置处理器 | 当我遇上你</title>
-  <meta name="description" content="前言 123456789101112131415@Componentpublic class CustomBeanPostProcessor implements BeanPostProcessor &amp;#123;    @Override    public Object postProcessBeforeInitialization(Object bean, String beanName)">
+  <title>【Spring源码解析】生命周期-BeanPostProcessor原理 | 当我遇上你</title>
+  <meta name="description" content="java debug跟踪 123456789101112131415161718192021222324252627282930protected Object initializeBean(String beanName, Object bean, @Nullable RootBeanDefinition mbd) &amp;#123;        if (System.getSecurityMana">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【Spring源码解析】生命周期-BeanPostProcessor-后置处理器">
-<meta property="og:url" content="https://idea360.cn/2021/03/10/spring-source-code-lifecycle-BeanPostProcessor1/index.html">
+<meta property="og:title" content="【Spring源码解析】生命周期-BeanPostProcessor原理">
+<meta property="og:url" content="https://idea360.cn/2021/03/14/spring-source-code-lifecycle-BeanPostProcessor2/index.html">
 <meta property="og:site_name" content="当我遇上你">
-<meta property="og:description" content="前言 123456789101112131415@Componentpublic class CustomBeanPostProcessor implements BeanPostProcessor &amp;#123;    @Override    public Object postProcessBeforeInitialization(Object bean, String beanName)">
+<meta property="og:description" content="java debug跟踪 123456789101112131415161718192021222324252627282930protected Object initializeBean(String beanName, Object bean, @Nullable RootBeanDefinition mbd) &amp;#123;        if (System.getSecurityMana">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-03-10T14:06:56.000Z">
-<meta property="article:modified_time" content="2021-03-13T05:29:41.775Z">
+<meta property="article:published_time" content="2021-03-14T05:54:57.000Z">
+<meta property="article:modified_time" content="2021-03-14T06:13:03.025Z">
 <meta property="article:author" content="当我遇上你">
 <meta property="article:tag" content="spring">
 <meta property="article:tag" content="源码">
@@ -39,7 +39,7 @@
 <meta property="article:tag" content="生命周期">
 <meta name="twitter:card" content="summary">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://idea360.cn/2021/03/10/spring-source-code-lifecycle-BeanPostProcessor1/index.html">
+  <link rel="canonical" href="https://idea360.cn/2021/03/14/spring-source-code-lifecycle-BeanPostProcessor2/index.html">
   
     <link rel="alternate" href="/atom.xml" title="当我遇上你" type="application/atom+xml">
   
@@ -209,21 +209,21 @@
   <div class="slimContent">
     <nav id="toc" class="article-toc">
       <h3 class="toc-title">文章目录</h3>
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text"> 前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">2.</span> <span class="toc-text"> 最后</span></a></li></ol>
+      
     </nav>
   </div>
 </aside>
 
 <main class="main" role="main">
   <div class="content">
-  <article id="post-spring-source-code-lifecycle-BeanPostProcessor1" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <article id="post-spring-source-code-lifecycle-BeanPostProcessor2" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
     
     <div class="article-header">
       
         
   
     <h1 class="article-title" itemprop="name">
-      【Spring源码解析】生命周期-BeanPostProcessor-后置处理器
+      【Spring源码解析】生命周期-BeanPostProcessor原理
     </h1>
   
 
@@ -231,8 +231,8 @@
       <div class="article-meta">
         <span class="article-date">
     <i class="icon icon-calendar-check"></i>
-	<a href="/2021/03/10/spring-source-code-lifecycle-BeanPostProcessor1/" class="article-date">
-	  <time datetime="2021-03-10T14:06:56.000Z" itemprop="datePublished">2021-03-10</time>
+	<a href="/2021/03/14/spring-source-code-lifecycle-BeanPostProcessor2/" class="article-date">
+	  <time datetime="2021-03-14T05:54:57.000Z" itemprop="datePublished">2021-03-14</time>
 	</a>
 </span>
         
@@ -259,22 +259,19 @@
 
 	<span class="article-read hidden-xs">
     	<i class="icon icon-eye-fill" aria-hidden="true"></i>
-    	<span id="/2021/03/10/spring-source-code-lifecycle-BeanPostProcessor1/" class="leancloud_visitors"  data-flag-title="【Spring源码解析】生命周期-BeanPostProcessor-后置处理器">
+    	<span id="/2021/03/14/spring-source-code-lifecycle-BeanPostProcessor2/" class="leancloud_visitors"  data-flag-title="【Spring源码解析】生命周期-BeanPostProcessor原理">
 			<span class="leancloud-visitors-count">0</span>
 		</span>
     </span>
 
-        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/03/10/spring-source-code-lifecycle-BeanPostProcessor1/#comments" class="article-comment-link">评论</a></span>
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/03/14/spring-source-code-lifecycle-BeanPostProcessor2/#comments" class="article-comment-link">评论</a></span>
         
       </div>
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomBeanPostProcessor</span> <span class="keyword">implements</span> <span class="title">BeanPostProcessor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">postProcessBeforeInitialization</span><span class="params">(Object bean, String beanName)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;postProcessBeforeInitialization...&quot;</span> + beanName);</span><br><span class="line">        <span class="keyword">return</span> bean;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">postProcessAfterInitialization</span><span class="params">(Object bean, String beanName)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;postProcessAfterInitialization...&quot;</span> + beanName);</span><br><span class="line">        <span class="keyword">return</span> bean;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * postProcessBeforeInitialization...beanConfigOfLifeCycle</span></span><br><span class="line"><span class="comment"> * postProcessAfterInitialization...beanConfigOfLifeCycle</span></span><br><span class="line"><span class="comment"> * cat constructor...</span></span><br><span class="line"><span class="comment"> * postProcessBeforeInitialization...cat</span></span><br><span class="line"><span class="comment"> * cat init...</span></span><br><span class="line"><span class="comment"> * postProcessAfterInitialization...cat</span></span><br><span class="line"><span class="comment"> * dog constructor...</span></span><br><span class="line"><span class="comment"> * postProcessBeforeInitialization...dog</span></span><br><span class="line"><span class="comment"> * dog init...</span></span><br><span class="line"><span class="comment"> * postProcessAfterInitialization...dog</span></span><br><span class="line"><span class="comment"> * car constructor...</span></span><br><span class="line"><span class="comment"> * postProcessBeforeInitialization...car</span></span><br><span class="line"><span class="comment"> * car init...</span></span><br><span class="line"><span class="comment"> * postProcessAfterInitialization...car</span></span><br><span class="line"><span class="comment"> * 容器创建完成</span></span><br><span class="line"><span class="comment"> * car destory...</span></span><br><span class="line"><span class="comment"> * dog destroy...</span></span><br><span class="line"><span class="comment"> * cat destroy...</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test07</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    AnnotationConfigApplicationContext applicationContext = <span class="keyword">new</span> AnnotationConfigApplicationContext(BeanConfigOfLifeCycle.class);</span><br><span class="line">    System.out.println(<span class="string">&quot;容器创建完成&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 关闭容器</span></span><br><span class="line">    applicationContext.close();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="最后"><a class="markdownIt-Anchor" href="#最后"></a> 最后</h1>
-<p>本篇到此结束，欢迎大家关注公众号【当我遇上你】。</p>
+        <p>java debug跟踪</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> Object <span class="title">initializeBean</span><span class="params">(String beanName, Object bean, <span class="meta">@Nullable</span> RootBeanDefinition mbd)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (System.getSecurityManager() != <span class="keyword">null</span>) &#123;</span><br><span class="line">            AccessController.doPrivileged((PrivilegedAction&lt;Object&gt;) () -&gt; &#123;</span><br><span class="line">                invokeAwareMethods(beanName, bean);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;, getAccessControlContext());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            invokeAwareMethods(beanName, bean);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Object wrappedBean = bean;</span><br><span class="line">        <span class="keyword">if</span> (mbd == <span class="keyword">null</span> || !mbd.isSynthetic()) &#123;</span><br><span class="line">            wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            invokeInitMethods(beanName, wrappedBean, mbd);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> BeanCreationException(</span><br><span class="line">                    (mbd != <span class="keyword">null</span> ? mbd.getResourceDescription() : <span class="keyword">null</span>),</span><br><span class="line">                    beanName, <span class="string">&quot;Invocation of init method failed&quot;</span>, ex);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (mbd == <span class="keyword">null</span> || !mbd.isSynthetic()) &#123;</span><br><span class="line">            wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> wrappedBean;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -295,7 +292,7 @@
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="https://idea360.cn/2021/03/10/spring-source-code-lifecycle-BeanPostProcessor1/" title="【Spring源码解析】生命周期-BeanPostProcessor-后置处理器" target="_blank" rel="external">https://idea360.cn/2021/03/10/spring-source-code-lifecycle-BeanPostProcessor1/</a>
+      <a href="https://idea360.cn/2021/03/14/spring-source-code-lifecycle-BeanPostProcessor2/" title="【Spring源码解析】生命周期-BeanPostProcessor原理" target="_blank" rel="external">https://idea360.cn/2021/03/14/spring-source-code-lifecycle-BeanPostProcessor2/</a>
     </li>
     
     <li class="post-copyright-license">
@@ -342,12 +339,12 @@
   <ul class="pager pull-left">
     
     <li class="prev">
-      <a href="/2021/03/14/spring-source-code-lifecycle-BeanPostProcessor2/" title="【Spring源码解析】生命周期-BeanPostProcessor原理"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+      <a href="/2021/03/14/spring-source-code-lifecycle-BeanPostProcessor3/" title="【Spring源码解析】生命周期-BeanPostProcessor在spring底层的应用"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
     </li>
     
     
     <li class="next">
-      <a href="/2021/03/09/spring-source-code-lifecycle-PostConstruct-PreDestroy/" title="Spring源码解析】生命周期-@PostConstruct&amp;@PreDestroy"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+      <a href="/2021/03/10/spring-source-code-lifecycle-BeanPostProcessor1/" title="【Spring源码解析】生命周期-BeanPostProcessor-后置处理器"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
     </li>
     
     
