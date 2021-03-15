@@ -6,7 +6,7 @@
   <link href="https://idea360.cn/atom.xml" rel="self"/>
   
   <link href="https://idea360.cn/"/>
-  <updated>2021-03-14T06:19:06.762Z</updated>
+  <updated>2021-03-15T15:29:52.602Z</updated>
   <id>https://idea360.cn/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>MySQL动态表单设计</title>
+    <link href="https://idea360.cn/2021/03/15/dynamic-forms/"/>
+    <id>https://idea360.cn/2021/03/15/dynamic-forms/</id>
+    <published>2021-03-15T15:21:16.000Z</published>
+    <updated>2021-03-15T15:29:52.602Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="表结构示意"><a class="markdownIt-Anchor" href="#表结构示意"></a> 表结构示意</h1><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> IF <span class="keyword">EXISTS</span> `form`;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `form`  (</span><br><span class="line">  `id` <span class="type">bigint</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT COMMENT <span class="string">&#x27;主键&#x27;</span>,</span><br><span class="line">  `owner_id` <span class="type">bigint</span> <span class="keyword">DEFAULT</span> <span class="number">0</span> COMMENT <span class="string">&#x27;所属者, 关联到账号&#x27;</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`) <span class="keyword">USING</span> BTREE</span><br><span class="line">) ENGINE <span class="operator">=</span> InnoDB <span class="type">CHARACTER</span> <span class="keyword">SET</span> <span class="operator">=</span> utf8mb4 <span class="keyword">COLLATE</span> <span class="operator">=</span> utf8mb4_general_ci COMMENT <span class="operator">=</span> <span class="string">&#x27;表单信息&#x27;</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> IF <span class="keyword">EXISTS</span> `form_field`;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `form_field`  (</span><br><span class="line">  `id` <span class="type">bigint</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT COMMENT <span class="string">&#x27;主键&#x27;</span>,</span><br><span class="line">  `form_id` <span class="type">BIGINT</span> <span class="keyword">DEFAULT</span> <span class="number">0</span> COMMENT <span class="string">&#x27;表单id&#x27;</span>,</span><br><span class="line">  `field_id` <span class="type">BIGINT</span> <span class="keyword">DEFAULT</span> <span class="number">0</span> COMMENT <span class="string">&#x27;字段id&#x27;</span>,</span><br><span class="line">  `field_label` <span class="type">VARCHAR</span>(<span class="number">50</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;字段名字(用来显示,如姓名,性别)&#x27;</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`) <span class="keyword">USING</span> BTREE</span><br><span class="line">) ENGINE <span class="operator">=</span> InnoDB <span class="type">CHARACTER</span> <span class="keyword">SET</span> <span class="operator">=</span> utf8mb4 <span class="keyword">COLLATE</span> <span class="operator">=</span> utf8mb4_general_ci COMMENT <span class="operator">=</span> <span class="string">&#x27;表单配置&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> IF <span class="keyword">EXISTS</span> `option`;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `option`  (</span><br><span class="line">  `id` <span class="type">bigint</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT COMMENT <span class="string">&#x27;主键&#x27;</span>,</span><br><span class="line">  `form_field_id` <span class="type">BIGINT</span> <span class="keyword">DEFAULT</span> <span class="number">0</span> COMMENT <span class="string">&#x27;表单字段id&#x27;</span>,</span><br><span class="line">  `<span class="keyword">value</span>` <span class="type">BIGINT</span> <span class="keyword">DEFAULT</span> <span class="number">0</span> COMMENT <span class="string">&#x27;下拉项配置&#x27;</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`) <span class="keyword">USING</span> BTREE</span><br><span class="line">) ENGINE <span class="operator">=</span> InnoDB <span class="type">CHARACTER</span> <span class="keyword">SET</span> <span class="operator">=</span> utf8mb4 <span class="keyword">COLLATE</span> <span class="operator">=</span> utf8mb4_general_ci COMMENT <span class="operator">=</span> <span class="string">&#x27;下拉项&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> IF <span class="keyword">EXISTS</span> `field`;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `field`  (</span><br><span class="line">  `id` <span class="type">bigint</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT COMMENT <span class="string">&#x27;主键&#x27;</span>,</span><br><span class="line">  `label` <span class="type">VARCHAR</span>(<span class="number">50</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;字段名(如单行输入框)&#x27;</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`) <span class="keyword">USING</span> BTREE</span><br><span class="line">) ENGINE <span class="operator">=</span> InnoDB <span class="type">CHARACTER</span> <span class="keyword">SET</span> <span class="operator">=</span> utf8mb4 <span class="keyword">COLLATE</span> <span class="operator">=</span> utf8mb4_general_ci COMMENT <span class="operator">=</span> <span class="string">&#x27;基础字段&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> IF <span class="keyword">EXISTS</span> `form_data`;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `form_data`  (</span><br><span class="line">  `id` <span class="type">bigint</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT COMMENT <span class="string">&#x27;主键&#x27;</span>,</span><br><span class="line">  `form_field_id` <span class="type">BIGINT</span> <span class="keyword">DEFAULT</span> <span class="number">0</span> COMMENT <span class="string">&#x27;表单字段id&#x27;</span>,</span><br><span class="line">  `<span class="keyword">value</span>` <span class="type">VARCHAR</span>(<span class="number">255</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;表单字段数据&#x27;</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`) <span class="keyword">USING</span> BTREE</span><br><span class="line">) ENGINE <span class="operator">=</span> InnoDB <span class="type">CHARACTER</span> <span class="keyword">SET</span> <span class="operator">=</span> utf8mb4 <span class="keyword">COLLATE</span> <span class="operator">=</span> utf8mb4_general_ci COMMENT <span class="operator">=</span> <span class="string">&#x27;表单数据&#x27;</span>;</span><br></pre></td></tr></table></figure><h1 id="图解"><a class="markdownIt-Anchor" href="#图解"></a> 图解</h1><p><img src="https://gitee.com/idea360/oss/raw/master/images/dynamic_form_mysql.png" alt="" /></p><h1 id="最后"><a class="markdownIt-Anchor" href="#最后"></a> 最后</h1><p>本文到此结束，感谢阅读。如果您觉得不错，请关注公众号【当我遇上你】，您的支持是我写作的最大动力。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;表结构示意&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#表结构示意&quot;&gt;&lt;/a&gt; 表结构示意&lt;/h1&gt;
+&lt;figure class=&quot;highlight sql&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;</summary>
+      
+    
+    
+    
+    <category term="mysql" scheme="https://idea360.cn/categories/mysql/"/>
+    
+    
+    <category term="mysql" scheme="https://idea360.cn/tags/mysql/"/>
+    
+    <category term="动态" scheme="https://idea360.cn/tags/%E5%8A%A8%E6%80%81/"/>
+    
+    <category term="表单" scheme="https://idea360.cn/tags/%E8%A1%A8%E5%8D%95/"/>
+    
+  </entry>
   
   <entry>
     <title>【Spring源码解析】生命周期-BeanPostProcessor在spring底层的应用</title>
@@ -302,38 +331,6 @@
     <summary type="html">&lt;h1 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;&lt;/a&gt; 前言&lt;/h1&gt;
 &lt;p&gt;接上一篇 &lt;a href=&quot;&quot;&gt;Spring源码解析之@Scope设置组件作用域&lt;/a&gt;&lt;/p&gt;
 &lt;h1 id=&quot;实现&quot;&gt;&lt;a class=&quot;m</summary>
-      
-    
-    
-    
-    <category term="spring" scheme="https://idea360.cn/categories/spring/"/>
-    
-    
-    <category term="spring" scheme="https://idea360.cn/tags/spring/"/>
-    
-    <category term="源码" scheme="https://idea360.cn/tags/%E6%BA%90%E7%A0%81/"/>
-    
-    <category term="bean" scheme="https://idea360.cn/tags/bean/"/>
-    
-    <category term="注解" scheme="https://idea360.cn/tags/%E6%B3%A8%E8%A7%A3/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>【Spring源码解析】组件注册-@Scope设置组件作用域</title>
-    <link href="https://idea360.cn/2021/03/07/spring-source-code-scope/"/>
-    <id>https://idea360.cn/2021/03/07/spring-source-code-scope/</id>
-    <published>2021-03-07T10:18:20.000Z</published>
-    <updated>2021-03-08T16:03:26.967Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h1><p>接上一篇 <a href="">Spring源码解析之@ComponentScan自定义TypeFilter指定过滤规则</a></p><h1 id="实现"><a class="markdownIt-Anchor" href="#实现"></a> 实现</h1><ol><li>配置</li></ol><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BeanConfig2</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// singleton prototype</span></span><br><span class="line">    <span class="meta">@Scope(&quot;singleton&quot;)</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Person <span class="title">person</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Person(<span class="string">&quot;config&quot;</span>, <span class="number">18</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><ol start="2"><li>测试</li></ol><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test02</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    AnnotationConfigApplicationContext applicationContext = <span class="keyword">new</span> AnnotationConfigApplicationContext(BeanConfig2.class);</span><br><span class="line">    String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();</span><br><span class="line">    <span class="keyword">for</span> (String name: beanDefinitionNames) &#123;</span><br><span class="line">        System.out.println(name);</span><br><span class="line">    &#125;</span><br><span class="line">    Person bean = applicationContext.getBean(Person.class);</span><br><span class="line">    Person bean2 = applicationContext.getBean(Person.class);</span><br><span class="line">    System.out.println(bean2 == bean);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h1 id="最后"><a class="markdownIt-Anchor" href="#最后"></a> 最后</h1><p>本篇到此结束，欢迎大家关注公众号【当我遇上你】。</p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;h1 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;&lt;/a&gt; 前言&lt;/h1&gt;
-&lt;p&gt;接上一篇 &lt;a href=&quot;&quot;&gt;Spring源码解析之@ComponentScan自定义TypeFilter指定过滤规则&lt;/a&gt;&lt;/p&gt;
-&lt;h1</summary>
       
     
     
