@@ -2,7 +2,14 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://idea360.cn/2021/03/27/filter-chain-manage/</loc>
+    <loc>https://idea360.cn/2021/03/27/security-filter-chain/</loc>
+    
+    <lastmod>2021-03-27</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://idea360.cn/2021/03/27/shiro-filter-chain-manage/</loc>
     
     <lastmod>2021-03-27</lastmod>
     
