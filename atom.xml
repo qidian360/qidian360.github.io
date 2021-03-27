@@ -6,7 +6,7 @@
   <link href="https://idea360.cn/atom.xml" rel="self"/>
   
   <link href="https://idea360.cn/"/>
-  <updated>2021-03-22T15:36:25.409Z</updated>
+  <updated>2021-03-27T06:59:17.992Z</updated>
   <id>https://idea360.cn/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Java类操作</title>
+    <link href="https://idea360.cn/2021/03/27/java-class/"/>
+    <id>https://idea360.cn/2021/03/27/java-class/</id>
+    <published>2021-03-27T06:57:57.000Z</published>
+    <updated>2021-03-27T06:59:17.992Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="示例"><a class="markdownIt-Anchor" href="#示例"></a> 示例</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserService</span> </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserServiceImpl</span> <span class="keyword">implements</span> <span class="title">UserService</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">contextLoads</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        UserServiceImpl userServiceImpl = <span class="keyword">new</span> UserServiceImpl();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 父类 isAssignableFrom 子类</span></span><br><span class="line">        System.out.println(UserService.class.isAssignableFrom(UserServiceImpl.class)); <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// userServiceImpl是否是UserService实例</span></span><br><span class="line">        System.out.println(userServiceImpl <span class="keyword">instanceof</span> UserService); <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// UserService能否强转为</span></span><br><span class="line">        System.out.println(UserService.class.isInstance(userServiceImpl)); <span class="comment">// true</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;示例&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#示例&quot;&gt;&lt;/a&gt; 示例&lt;/h1&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span cla</summary>
+      
+    
+    
+    
+    <category term="java" scheme="https://idea360.cn/categories/java/"/>
+    
+    
+    <category term="java" scheme="https://idea360.cn/tags/java/"/>
+    
+  </entry>
   
   <entry>
     <title>基于过滤器实现日志链路跟踪</title>
@@ -274,42 +299,6 @@
     <updated>2021-03-08T16:15:16.405Z</updated>
     
     <content type="html"><![CDATA[<h1 id="实现"><a class="markdownIt-Anchor" href="#实现"></a> 实现</h1><ol><li>定义bean</li></ol><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Cat</span> <span class="keyword">implements</span> <span class="title">InitializingBean</span>, <span class="title">DisposableBean</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Cat</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;cat constructor...&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">destroy</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;cat destroy...&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterPropertiesSet</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;cat init...&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><ol start="2"><li>bean注入</li></ol><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ComponentScan(&quot;cn.idea360.bean&quot;)</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BeanConfigOfLifeCycle</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean(initMethod = &quot;init&quot;, destroyMethod = &quot;destroy&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Car <span class="title">car</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Car();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><ol start="3"><li>测试</li></ol><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * cat constructor...</span></span><br><span class="line"><span class="comment"> * cat init...</span></span><br><span class="line"><span class="comment"> * car constructor...</span></span><br><span class="line"><span class="comment"> * car init...</span></span><br><span class="line"><span class="comment"> * 容器创建完成</span></span><br><span class="line"><span class="comment"> * car destory...</span></span><br><span class="line"><span class="comment"> * cat destroy...</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test07</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    AnnotationConfigApplicationContext applicationContext = <span class="keyword">new</span> AnnotationConfigApplicationContext(BeanConfigOfLifeCycle.class);</span><br><span class="line">    System.out.println(<span class="string">&quot;容器创建完成&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 关闭容器</span></span><br><span class="line">    applicationContext.close();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h1 id="最后"><a class="markdownIt-Anchor" href="#最后"></a> 最后</h1><p>本篇到此结束，欢迎大家关注公众号【当我遇上你】。</p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;h1 id=&quot;实现&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#实现&quot;&gt;&lt;/a&gt; 实现&lt;/h1&gt;
-&lt;ol&gt;
-&lt;li&gt;定义bean&lt;/li&gt;
-&lt;/ol&gt;
-&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td cl</summary>
-      
-    
-    
-    
-    <category term="spring" scheme="https://idea360.cn/categories/spring/"/>
-    
-    
-    <category term="spring" scheme="https://idea360.cn/tags/spring/"/>
-    
-    <category term="源码" scheme="https://idea360.cn/tags/%E6%BA%90%E7%A0%81/"/>
-    
-    <category term="bean" scheme="https://idea360.cn/tags/bean/"/>
-    
-    <category term="注解" scheme="https://idea360.cn/tags/%E6%B3%A8%E8%A7%A3/"/>
-    
-    <category term="生命周期" scheme="https://idea360.cn/tags/%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>【Spring源码解析】生命周期-@Bean指定初始化和销毁方法</title>
-    <link href="https://idea360.cn/2021/03/09/spring-source-code-lifecycle-bean/"/>
-    <id>https://idea360.cn/2021/03/09/spring-source-code-lifecycle-bean/</id>
-    <published>2021-03-08T16:01:13.000Z</published>
-    <updated>2021-03-08T16:06:03.563Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="实现"><a class="markdownIt-Anchor" href="#实现"></a> 实现</h1><ol><li>定义bean</li></ol><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Car</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Car</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;car constructor...&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;car init...&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">destroy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;car destory...&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><ol start="2"><li>注册bean</li></ol><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BeanConfigOfLifeCycle</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean(initMethod = &quot;init&quot;, destroyMethod = &quot;destroy&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Car <span class="title">car</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Car();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><ol start="3"><li>测试</li></ol><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * car constructor...</span></span><br><span class="line"><span class="comment"> * car init...</span></span><br><span class="line"><span class="comment"> * 容器创建完成</span></span><br><span class="line"><span class="comment"> * car destory...</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test06</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    AnnotationConfigApplicationContext applicationContext = <span class="keyword">new</span> AnnotationConfigApplicationContext(BeanConfigOfLifeCycle.class);</span><br><span class="line">    System.out.println(<span class="string">&quot;容器创建完成&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 关闭容器</span></span><br><span class="line">    applicationContext.close();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h1 id="最后"><a class="markdownIt-Anchor" href="#最后"></a> 最后</h1><p>本篇到此结束，欢迎大家关注公众号【当我遇上你】。</p>]]></content>
     
     
       
