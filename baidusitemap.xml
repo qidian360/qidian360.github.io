@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://idea360.cn/2021/03/28/spring-boot-logback-appender-custom/</loc>
-    <lastmod>2021-04-05</lastmod>
+    <loc>https://idea360.cn/2021/04/03/spring-boot-property-custom/</loc>
+    <lastmod>2021-04-11</lastmod>
   </url>
   <url>
-    <loc>https://idea360.cn/2021/04/03/spring-boot-property-custom/</loc>
-    <lastmod>2021-04-04</lastmod>
+    <loc>https://idea360.cn/2021/03/28/spring-boot-logback-appender-custom/</loc>
+    <lastmod>2021-04-05</lastmod>
   </url>
   <url>
     <loc>https://idea360.cn/2021/03/30/spring-factories/</loc>
