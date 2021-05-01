@@ -22,18 +22,21 @@
   
   
   <title>Git提交commit规范 | 当我遇上你</title>
-  <meta name="description" content="规范 123456&lt;type&gt;[optional scope]: &lt;description&gt;[optional body][optional footer(s)] 每次提交，Commit message 都包括三个部分：Header，Body 和 Footer。 其中，Header 是必需的，Body 和 Footer 可以省略。  Header Header部分只有一行">
+  <meta name="description" content="日志规范 123456&lt;type&gt;[optional scope]: &lt;description&gt;[optional body][optional footer(s)] 每次提交，Commit message 都包括三个部分：Header，Body 和 Footer。 其中，Header 是必需的，Body 和 Footer 可以省略。 Header Header部分只有一">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Git提交commit规范">
 <meta property="og:url" content="https://idea360.cn/2020/09/06/git-commit/index.html">
 <meta property="og:site_name" content="当我遇上你">
-<meta property="og:description" content="规范 123456&lt;type&gt;[optional scope]: &lt;description&gt;[optional body][optional footer(s)] 每次提交，Commit message 都包括三个部分：Header，Body 和 Footer。 其中，Header 是必需的，Body 和 Footer 可以省略。  Header Header部分只有一行">
+<meta property="og:description" content="日志规范 123456&lt;type&gt;[optional scope]: &lt;description&gt;[optional body][optional footer(s)] 每次提交，Commit message 都包括三个部分：Header，Body 和 Footer。 其中，Header 是必需的，Body 和 Footer 可以省略。 Header Header部分只有一">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/git-merge.jpeg">
+<meta property="og:image" content="https://gitee.com/idea360/oss/raw/master/images/git-rebase.jpeg">
 <meta property="article:published_time" content="2020-09-06T15:35:22.000Z">
-<meta property="article:modified_time" content="2021-05-01T04:09:29.860Z">
+<meta property="article:modified_time" content="2021-05-01T05:30:42.909Z">
 <meta property="article:author" content="当我遇上你">
 <meta property="article:tag" content="git">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/idea360/oss/raw/master/images/git-merge.jpeg">
   <!-- Canonical links -->
   <link rel="canonical" href="https://idea360.cn/2020/09/06/git-commit/index.html">
   
@@ -205,7 +208,7 @@
   <div class="slimContent">
     <nav id="toc" class="article-toc">
       <h3 class="toc-title">文章目录</h3>
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%84%E8%8C%83"><span class="toc-number">1.</span> <span class="toc-text"> 规范</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#header"><span class="toc-number">1.1.</span> <span class="toc-text"> Header</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#type"><span class="toc-number">1.1.1.</span> <span class="toc-text"> type</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#tag"><span class="toc-number">2.</span> <span class="toc-text"> Tag</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%90%88%E5%B9%B6commit"><span class="toc-number">3.</span> <span class="toc-text"> 合并commit</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">4.</span> <span class="toc-text"> 最后</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">5.</span> <span class="toc-text"> 参考</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%97%A5%E5%BF%97%E8%A7%84%E8%8C%83"><span class="toc-number">1.</span> <span class="toc-text"> 日志规范</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#master%E4%B8%BB%E5%88%86%E6%94%AF%E6%89%93tag"><span class="toc-number">2.</span> <span class="toc-text"> master主分支打Tag</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%90%88%E5%B9%B6commit%E6%8F%90%E4%BA%A4%E8%AE%B0%E5%BD%95"><span class="toc-number">3.</span> <span class="toc-text"> 合并commit提交记录</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9A%82%E5%AD%98%E6%9C%AC%E5%9C%B0%E4%BF%AE%E6%94%B9"><span class="toc-number">4.</span> <span class="toc-text"> 暂存本地修改</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#merge%E5%92%8Crebase"><span class="toc-number">5.</span> <span class="toc-text"> merge和rebase</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">6.</span> <span class="toc-text"> 最后</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">7.</span> <span class="toc-text"> 参考</span></a></li></ol>
     </nav>
   </div>
 </aside>
@@ -266,17 +269,17 @@
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <h1 id="规范"><a class="markdownIt-Anchor" href="#规范"></a> 规范</h1>
+        <h1 id="日志规范"><a class="markdownIt-Anchor" href="#日志规范"></a> 日志规范</h1>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;type&gt;[optional scope]: &lt;description&gt;</span><br><span class="line"></span><br><span class="line">[optional body]</span><br><span class="line"></span><br><span class="line">[optional footer(s)]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>每次提交，Commit message 都包括三个部分：Header，Body 和 Footer。</p>
 <p>其中，Header 是必需的，Body 和 Footer 可以省略。</p>
-<h2 id="header"><a class="markdownIt-Anchor" href="#header"></a> Header</h2>
+<p><strong>Header</strong></p>
 <p>Header部分只有一行，包括三个字段：type（必需）、scope（可选）和subject（必需）。</p>
-<h3 id="type"><a class="markdownIt-Anchor" href="#type"></a> type</h3>
+<p><strong>type</strong></p>
 <p>type用于说明 commit 的类别，只允许使用下面7个标识。</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">feat：新功能（feature）</span><br><span class="line">fix：修补bug</span><br><span class="line">docs：文档（documentation）</span><br><span class="line">style： 格式（不影响代码运行的变动）</span><br><span class="line">refactor：重构（即不是新增功能，也不是修改bug的代码变动）</span><br><span class="line">test：增加测试</span><br><span class="line">chore：构建过程或辅助工具的变动</span><br></pre></td></tr></table></figure>
 <p>如果type为feat和fix，则该 commit 将肯定出现在 Change log 之中。其他情况（docs、chore、style、refactor、test）由你决定，要不要放入 Change log，建议是不要。</p>
-<h1 id="tag"><a class="markdownIt-Anchor" href="#tag"></a> Tag</h1>
+<h1 id="master主分支打tag"><a class="markdownIt-Anchor" href="#master主分支打tag"></a> master主分支打Tag</h1>
 <p><strong>创建标签</strong></p>
 <p>git tag -a tag1 -m “我是tag1描述”</p>
 <p><strong>推送标签</strong></p>
@@ -285,7 +288,7 @@
 <p>git tag -d tag1</p>
 <p><strong>删除远程标签</strong></p>
 <p>git push origin :refs/tags/tag1</p>
-<h1 id="合并commit"><a class="markdownIt-Anchor" href="#合并commit"></a> 合并commit</h1>
+<h1 id="合并commit提交记录"><a class="markdownIt-Anchor" href="#合并commit提交记录"></a> 合并commit提交记录</h1>
 <p>如果我们想合并远程仓库提交记录, 则</p>
 <ol>
 <li>首先查看当前的日志记录, 假设下边的是我们的提交记录, 我们要将这5条合并为1条记录。</li>
@@ -311,6 +314,16 @@
 <li>同步到远程仓库</li>
 </ol>
 <p><strong>git push -f</strong></p>
+<h1 id="暂存本地修改"><a class="markdownIt-Anchor" href="#暂存本地修改"></a> 暂存本地修改</h1>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git stash -help</span><br></pre></td></tr></table></figure>
+<h1 id="merge和rebase"><a class="markdownIt-Anchor" href="#merge和rebase"></a> merge和rebase</h1>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/git-merge.jpeg" alt="" /></p>
+<p><img src="https://gitee.com/idea360/oss/raw/master/images/git-rebase.jpeg" alt="" /></p>
+<p>rebase使用场景:</p>
+<p>首先我们从dev分支拉取了记录。假设我们在dev-aaa分支修改了记录, 其他人修改了dev-bbb并合并到了dev分支, 那么dev和dev-aaa这两个分支各自&quot;前进&quot;了。</p>
+<p>此时如果merge操作则会在合并代码后有1条merge记录。</p>
+<p>如果rebase则会将dev-aaa的提交追加到dev-bbb的提交之后。(dev-aaa的代码进行了commit, 尚未push)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. git rebase dev</span><br><span class="line">2. 解决冲突并 git add .</span><br><span class="line">3. git rebase --continue 完成本地仓库的rebase合并</span><br><span class="line">4. git push推送到远端仓库</span><br></pre></td></tr></table></figure>
 <h1 id="最后"><a class="markdownIt-Anchor" href="#最后"></a> 最后</h1>
 <p>本文到此结束，感谢阅读。如果您觉得不错，请关注公众号【当我遇上你】，您的支持是我写作的最大动力。</p>
 <h1 id="参考"><a class="markdownIt-Anchor" href="#参考"></a> 参考</h1>
