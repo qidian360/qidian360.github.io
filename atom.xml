@@ -6,7 +6,7 @@
   <link href="https://idea360.cn/atom.xml" rel="self"/>
   
   <link href="https://idea360.cn/"/>
-  <updated>2021-04-18T06:53:19.377Z</updated>
+  <updated>2021-05-01T03:21:48.835Z</updated>
   <id>https://idea360.cn/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>编程规范</title>
+    <link href="https://idea360.cn/2021/05/01/code-format/"/>
+    <id>https://idea360.cn/2021/05/01/code-format/</id>
+    <published>2021-05-01T03:20:04.000Z</published>
+    <updated>2021-05-01T03:21:48.835Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="异常处理"><a class="markdownIt-Anchor" href="#异常处理"></a> 异常处理</h1><p>绝大部分场景，不允许捕获异常，不要乱加空判断。只有明显不需要关心的异常，如关闭资源的时候的io异常，可以捕获然后什么都不干，其他时候，不允许捕获异常，都抛出去，到controller处理。空判断大部分时候不需要，你如果写了空判断，你就必须测试为空和不为空二种场景，要么就不要写空判断。</p><blockquote><p>强调，有些空判断是要的，如：参数是用户输入的情况下</p></blockquote><h1 id="参考"><a class="markdownIt-Anchor" href="#参考"></a> 参考</h1><ul><li><a href="https://xwjie.github.io/rule/exception.html#%E9%94%99%E8%AF%AF%E8%8C%83%E4%BE%8B">https://xwjie.github.io/rule/exception.html#错误范例</a></li></ul>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;异常处理&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#异常处理&quot;&gt;&lt;/a&gt; 异常处理&lt;/h1&gt;
+&lt;p&gt;绝大部分场景，不允许捕获异常，不要乱加空判断。只有明显不需要关心的异常，如关闭资源的时候的io异常，可以捕获然后什么都不干，其他时候</summary>
+      
+    
+    
+    
+    <category term="java" scheme="https://idea360.cn/categories/java/"/>
+    
+    
+    <category term="java" scheme="https://idea360.cn/tags/java/"/>
+    
+    <category term="规范" scheme="https://idea360.cn/tags/%E8%A7%84%E8%8C%83/"/>
+    
+  </entry>
   
   <entry>
     <title>线程池笔记</title>
@@ -284,34 +311,6 @@
     <category term="日志" scheme="https://idea360.cn/tags/%E6%97%A5%E5%BF%97/"/>
     
     <category term="链路跟踪" scheme="https://idea360.cn/tags/%E9%93%BE%E8%B7%AF%E8%B7%9F%E8%B8%AA/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>自定义DelegatingFilterProxy</title>
-    <link href="https://idea360.cn/2021/03/21/DelegatingFilterProxy/"/>
-    <id>https://idea360.cn/2021/03/21/DelegatingFilterProxy/</id>
-    <published>2021-03-21T15:33:40.000Z</published>
-    <updated>2021-03-21T15:36:02.980Z</updated>
-    
-    <content type="html"><![CDATA[<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> cuishiying</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021-01-22</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WebConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Filter <span class="title">tokenAuthFilter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> TokenAuthFilter();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/** * 注册filter，统一处理api开头的请求 * <span class="doctag">@return</span> FilterRegistrationBean */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> FilterRegistrationBean <span class="title">tokenAuthFilterRegistration</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        FilterRegistrationBean registration = <span class="keyword">new</span> FilterRegistrationBean();</span><br><span class="line">        <span class="comment">// DelegatingFilterProxy把servlet 容器中的filter同spring容器中的bean关联起来, spring会去查找tokenAuthFilter的filter</span></span><br><span class="line">        registration.setFilter(<span class="keyword">new</span> DelegatingFilterProxy(<span class="string">&quot;tokenAuthFilter&quot;</span>));</span><br><span class="line">        registration.addUrlPatterns(<span class="string">&quot;/*&quot;</span>);</span><br><span class="line">        registration.setName(<span class="string">&quot;tokenAuthFilter&quot;</span>);</span><br><span class="line">        registration.setOrder(<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">return</span> registration;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> cuishiying</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021-01-22</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TokenAuthFilter</span> <span class="keyword">implements</span> <span class="title">Filter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">TokenAuthFilter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;myFilter&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doFilter</span><span class="params">(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)</span> <span class="keyword">throws</span> IOException, ServletException </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;filter...&quot;</span>);</span><br><span class="line">        filterChain.doFilter(servletRequest, servletResponse);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>springboot程序启动即可自动调用TokenAuthFilter</p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=</summary>
-      
-    
-    
-    
-    <category term="spring" scheme="https://idea360.cn/categories/spring/"/>
-    
-    
-    <category term="spring" scheme="https://idea360.cn/tags/spring/"/>
-    
-    <category term="filter" scheme="https://idea360.cn/tags/filter/"/>
-    
-    <category term="DelegatingFilterProxy" scheme="https://idea360.cn/tags/DelegatingFilterProxy/"/>
     
   </entry>
   
